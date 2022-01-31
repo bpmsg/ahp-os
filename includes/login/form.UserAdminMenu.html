@@ -1,0 +1,38 @@
+<div style='display:block;padding:5px;'>
+<fieldset style='margin-left:2px;'><legend>User Administration</legend>
+<div style='display:block;float:left;padding:2px;'>
+User: 
+<?php	if(!empty($storedUsers)){
+		$cnt = count($storedUsers);
+		echo "&nbsp;&nbsp;<select name='user_name' maxlength='8'>";
+		if ($userName !="")
+			echo "<option value='$userName'>$userName</option>";
+		foreach($storedUsers as $val){
+			if($val != $userName)
+				echo "<option value='$val'>$val</option>";
+		}
+		echo "</select>";
+	} else {
+		$userName = "";
+		echo "&nbsp;&nbsp;<input type='text' maxlength='8' value='$userName' name='userName' disabled>";
+	}
+?>
+<p><input type='submit' value='View' name='OPEN' >
+&nbsp;&nbsp;<input type='submit' value='Close' name='CLOSE' >
+&nbsp;&nbsp;<input type='submit' value='Deact' name='DEACT' onclick='return deletconfig()' >
+&nbsp;&nbsp;<input type='submit' value='React' name='REACT' onclick='return deletconfig()' >
+&nbsp;&nbsp;<input type='submit' value='Del' name='DEL' onclick='return deletconfig() '></p>
+</div>
+<div style='padding:2px;float:right;'>
+<input type='submit' value='Del all' name='DELALL' onclick='return deletconfig()'>
+&nbsp;<small><input type='checkbox' name='ACT' value='0'>active</small>
+&nbsp;&nbsp;<input type='submit' value='Restore' name='RECOV'>
+&nbsp;&nbsp;<input type='submit' value='Clean Audit Table' name='CLEAN' onclick='return deletconfig()'>
+&nbsp;&nbsp;<input type='submit' value='Exit' name='EXIT' >
+<script type='text/javascript'> 
+function deletconfig(){ var del=confirm("Are you sure?");
+	return del;} 
+</script>
+</div>
+</fieldset>
+</div>

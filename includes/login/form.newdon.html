@@ -1,0 +1,123 @@
+<div style='display:block;padding:2px;'>
+<fieldset style='margin-left:2px;'><legend>Input Data</legend>
+<div style='display:block;float:left;padding:2px;'>
+<p>
+	<label for="trNo" >Donation No: </label>
+<?php	
+	if(!empty($trNumbers) && $para['trNo'] == 0 ){
+		echo "<select name='trNo' maxlength='10' style='width: 50px;' >";
+		echo '<option value="',$para['trNo'], '">',$para['trNo'],'</option>';
+		foreach($trNumbers as $val){
+			if($val != $para['trNo'])
+				echo "<option value='$val'>$val</option>";
+		}
+		echo "</select>";
+	} elseif($para['trNo'] >0 ){
+		echo "<input type='text' maxlength='10' style='width: 50px'; value='", $para['trNo'],"' name='trNo' disabled >";
+		echo "<input type='hidden' value='", $para['trNo'],"' name='trNo' >";
+	} else {
+		$trNo = 0;
+		echo "<input type='text' maxlength='10' style='width: 50px; value='",$trNo,"' name='trNo' disabled>";
+	}
+?>
+&nbsp; &nbsp;
+  <label for="pay_type" >Payment Type: </label>
+	<select type="text" id="pay_type" name='pay_type' maxlength='15'>
+		<option value='online'>Paypal</option>
+		<option value='check'>Cheque</option>
+		<option value='cash'>Cash</option>
+	</select>
+ &nbsp; &nbsp;
+  <label for="trId" >Transaction Id: </label>
+  <input id="trId" type="text" name="trId" value="<?php echo $para['trId'] ?>" />
+</p>
+
+<p>
+  <label for="trAmnt" >*Amount received: </label>
+  <input id="trAmnt" type="value" name="trAmnt" value="<?php echo $para['trAmnt'] ?>" />
+	<select type="text" id="trCur" name="trCur" maxlength="3">
+		<option value='SGD'>SGD</option>
+		<option value='USD'>USD</option>
+		<option value='EUR'>EUR</option>
+	</select>
+	&nbsp;&nbsp;
+  <label for="trFee" >Fee: </label>
+  <input id="trFee" type="value" name="trFee" value="<?php echo $para['trFee'] ?>" />
+	<select type="text" id="trCur1" name="trCur1" maxlength="3">
+		<option value='SGD'>SGD</option>
+		<option value='USD'>USD</option>
+		<option value='EUR'>EUR</option>
+	</select>
+	&nbsp;&nbsp;
+  <label for="trFx" >FX: </label>
+  <input id="trFx" type="value" name="trFx" value="<?php echo $para['trFx'] ?>" />
+</p>
+
+<p>
+  <label for="trDate" >*Transaction Date: </label>
+  <input id="trDate" type="date"  name="trDate" value="<?php echo $para['trDate']; ?>" />
+	&nbsp;&nbsp;
+  <label for="trName" >*Name: </label>
+  <input id="trName"  type="text" name="trName"  value="<?php echo $para['trName']; ?>" />
+	&nbsp;&nbsp;
+  <label for="trEmail" >*E-mail: </label>
+  <input id="trEmail" type="text" name="trEmail" value="<?php echo $para['trEmail']; ?>" />
+</p>
+
+<p>
+  <label for="trCmnt" >Comment: </label>
+  <input id="trCmnt" type="text" maxlength="255" size="80" name="trCmnt" value="<?php echo $para['trCmnt']; ?>" />
+</p>
+<p>
+	<label for="trUser" >AHP User: </label>
+<?php	
+	if(!empty($storedUsers)){
+//		$cnt = count($storedUsers);
+		echo "<select name='trUser' style='width: 150px;'>";
+		if ($para['trUser'] !="")
+			echo '<option value="',$para['trUser'], '">',$para['trUser'],'</option>';
+		foreach($storedUsers as $val){
+			if($val != $para['trUser'])
+				echo "<option value='$val'>$val</option>";
+		}
+		echo "</select>";
+	} else {
+		$userName = "";
+		echo "&nbsp;&nbsp;<input type='text' maxlength='8' value='$trUser' name='trUser' disabled>";
+	}
+?>
+	<label for="trUid" >User ID: </label>
+  <input id="trUid"   type="text" name="trUid" value="<?php echo $para['trUid']; ?>" />
+	&nbsp;&nbsp;
+  <label for="trUemail" >User Email: </label>
+  <input id="trUemail"   type="text" name="trUemail" value="<?php echo $para['trUemail']; ?>" />
+</p>
+	<input type='hidden' name='formToken' value='<?php echo $formToken; ?>'>
+ </div>
+</fieldset>
+<p>Please input data.</p>
+
+<fieldset style='margin-left:2px;'><legend>Donation Menu</legend>
+<div style='display:block;float:left;padding:2px;'>
+<input id="updt" type='submit' value='Check/Refresh' name='CHKID'>
+</div>
+<div style='display:block;float:right;padding:2px;'>
+<?php	
+	if($para['trNo'] == 0 || $para['trNo'] == "" ) {
+	  echo "<input id='mod' type='submit' value='Modify' name='MOD' disabled >";
+		echo "&nbsp;&nbsp;";
+ 		echo "<input id='updt' type='submit' value='Insert' name='UPDT' onclick='return confirmation()'>";
+  } else {
+	  echo "<input id='mod'  type='submit' value='Modify' name='MOD'  onclick='return confirmation()'>";
+		echo "&nbsp;&nbsp;";
+  	echo "<input id='updt' type='submit' value='Insert' name='UPDT' disabled >";
+	}
+?>
+	&nbsp;&nbsp;
+  <input id="clear" type='submit' value='Clear' name='CLR'>
+	&nbsp;&nbsp;
+  <input id="cancel" type='submit' value='Cancel' name='CANC'>
+</div>
+</fieldset>
+</div>
+<script src="../js/cfm.js"></script>

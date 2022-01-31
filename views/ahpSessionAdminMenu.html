@@ -1,0 +1,29 @@
+<form method='POST' action='<?php echo $urlAct; ?>'>
+	<div style='display:block;padding:2px;'>
+		<fieldset style='margin-left:2px;'>
+			<legend><?php echo $sessionAdmin->mnu['lgd1']; ?></legend>
+			<div style='display:block;float:left;padding:2px;'>
+				<label><?php echo $sessionAdmin->mnu['lbl1']; ?></label>
+				<?php	if(!empty($storedSessions)){
+					echo "&nbsp;&nbsp;<select name='sessionName' maxlength='8'>";
+					if ($sessionName !="") echo "<option value='$sessionName'>$sessionName</option>";
+					foreach($storedSessions as $val){
+					if($val != $sessionName) echo "<option value='$val'>$val</option>\n";
+					}
+					echo "</select>";
+				} else {
+					$sessionName = "";
+					echo "&nbsp;&nbsp;<input type='text' maxlength='8' value='$sessionName' name='sessionName' disabled>";
+				} ?>
+				&nbsp;&nbsp;<input type='submit' value='<?php echo $sessionAdmin->mnu['btnps1']; ?>' name='OPEN' >
+			</div>
+			<div style='padding:2px;float:right;'>
+				<?php if ($sessionCnt <= SESSIONLMT)
+					echo "&nbsp;&nbsp;<input type='submit' value='",$sessionAdmin->mnu['btnps2'],"' name='NEW' >";
+				?>
+				&nbsp;&nbsp;<input type='submit' value='<?php echo $sessionAdmin->mnu['btnps3']; ?>' name='EXIT' >
+			</div>
+		</fieldset>
+		<script src="js/delcfm.js"></script>
+	</div>
+</form>

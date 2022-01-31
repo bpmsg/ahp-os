@@ -1,0 +1,11 @@
+{
+    "name": "elliottb/phpgraphlib",
+    "type": "library",
+    "description": "PHP Graphing Library that creates graphs natively in PHP",
+    "keywords": ["graph","graphs", "graphing", "gd"],
+    "homepage": "http://github.com/elliottb/phpgraphlib",
+    "license": "MIT",
+    "require": {
+        "php": ">=5.0.0"
+    }
+}

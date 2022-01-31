@@ -1,0 +1,34 @@
+$_SESSION['user_name'] is the login name
+$_SESSION['user_id'] is the login id
+$_SESSION['user_email']
+$_SESSION['user_logged_in']
+$_SESSION['lang']
+
+$_SESSION['tstart'] set in config::startNewSession()
+$_SESSION['sid'] set in config::startNewSession()
+
+called from ahp-hierarchy.php 229 when hierarchy is saved
+sets $_SESSION['mod'] = $_SESSION['sid']
+called in ahp-user-recover.php 178
+
+called in ahp-session-admin.php 52
+unset $_SESSION['groupSession'],$_SESSION['mod']
+
+
+$_SESSION['hText']
+$_SESSION['description']
+$_SESSION['project'] read in ahp-hiercalc,ahp-hiergini, set in ahp-hierarchy, ahp-hiergini, ahp-session-admin, unset in AhpHier
+$_SESSION['project_name'] read in ahp-altcalc, set in AhpDb -> replaced by 'project'
+$_SESSION['altNum']
+$_SESSION['alt']
+
+$_SESSION['pwc']
+$_SESSION['pwcDone']
+$_SESSION['pwcaDone']
+$_SESSION['prioAlt']
+
+$_SESSION['name'] actual name, can be participant's, login or project author
+$_SESSION['owner']
+
+$_SESSION['sessionCode']
+$_SESSION['groupSession'] is set when PCs are expected

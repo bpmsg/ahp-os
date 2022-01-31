@@ -1,0 +1,25 @@
+<fieldset>
+<legend><?php echo $ahpHier->mnu['lgd21']; ?></legend>
+<div style='display:block;float:left;padding:2px;'>
+<?php	if(!$leave){ 
+		if($ahpH->pwcDoneFlg || $ahpH->pwcaDoneFlg)
+			echo "<input class='btnr' type='submit' value='" . $ahpHier->mnu['btn21'] ."' name='group' />";
+		else
+			echo "<input type='submit' value='" . $ahpHier->mnu['btn21'] . "' name='group' >";
+		echo "&nbsp;&nbsp;<input type='submit' value='" . $ahpHier->mnu['btn22'] . "' name='result' disabled='' />";
+	} elseif ($pCnt >0 && $leave){
+		echo "<input type='submit' value='Submit for Group Eval' name='group' disabled=''>";
+		if($groupOwner)
+			echo "&nbsp;&nbsp;<input class='btnr' type='submit' value='" . $ahpHier->mnu['btn22'] . "' name='result' />";
+	}
+?>
+</div>
+
+<div style='display:block;float:right;padding:2px;'>
+<?php
+	echo "<input type='submit' value='" . $ahpHier->mnu['btn16']  . "' name='exit'";
+	echo (  $leave ? "class='btnr' " : "onclick='return leaveconfirm()' ") , '/>'; 
+?>
+<script src="js/lvecfm.js"></script>
+</div>
+</fieldset>

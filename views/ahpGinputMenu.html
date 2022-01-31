@@ -1,0 +1,16 @@
+<form method='POST' action='<?php echo $urlAct ?>'>
+<fieldset>
+	<legend><?php echo $ahpGroupRes->mnu['lgd2']; ?></legend>
+	<div style='display:block;float:left;padding:2px;'>
+	<?php if($loggedIn && $owner) { ?>
+		<input type='submit' value='Download (.csv)' name='download' >
+		&nbsp;<small><input type='checkbox' name='csv' value='0'>
+		<label><?php echo $ahpGroupRes->mnu['lbl4']; ?></label></small>
+	<?php } ?>
+	</div>
+	<div style='float:right'>
+		<input type='submit' value='<?php echo $ahpGroupRes->mnu['btn5']; ?>' name='DONE' >
+	</div>
+</fieldset>
+<div class='msg' style='clear:both;'></div>
+</form>

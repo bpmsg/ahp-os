@@ -1,0 +1,31 @@
+<form method='POST' action='<?php echo $urlAct ?>'>
+<div style='display:block;padding:5px;'>
+<fieldset style='margin-left:2px;'><legend>User Recovery from Backup</legend>
+<div style='display:block;float:left;padding:2px;'>
+User name: 
+<?php	if(!empty($storedUsers)){
+		$cnt = count($storedUsers);
+		echo "&nbsp;&nbsp;<select name='userName' maxlength='8'>";
+		if ($userName !="")
+			echo "<option value='$userName'>$userName</option>";
+		foreach($storedUsers as $val){
+			if($val != $userName)
+				echo "<option value='$val'>$val</option>";
+		}
+		echo "</select>";
+	} else {
+		$userName = "";
+		echo "&nbsp;&nbsp;<input type='text' maxlength='8' value='$userName' name='userName' disabled>";
+	}
+?>
+&nbsp;&nbsp;<input type='submit' value='View' name='OPEN' >
+&nbsp;&nbsp;<input type='submit' value='Close' name='CLOSE' >
+&nbsp;&nbsp;<input type='submit' value='Recover' name='REACT' onclick='return deletconfig()'>
+</div>
+<div style='padding:2px;float:right;'>
+&nbsp;&nbsp;<input type='submit' value='Back' name='EXIT' >
+<script src="cfm.js"></script>
+</div>
+</fieldset>
+</div>
+</form>

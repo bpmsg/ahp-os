@@ -1,0 +1,23 @@
+<div style="display: inline; font-size: small;">
+	<?php echo APP; ?> author: 
+	<span class="author vcard">
+		<span class="fn"> <?php echo AUTHOR; ?></span>, 
+		<span class="org"><?php echo ORG; ?></span>.
+		<?php if(defined('CNTLNK'))
+			echo '<a class="url" href="' . CNTLNK . '; ?>">Contact</a>';
+		?>
+		<span class="updated" title="<?php date('ymd',strtotime($version))?>">
+		Last update: <?php echo date('M d, Y', strtotime($version)); ?></span> 
+	</span>
+	<?php echo $rev; ?>
+</div>
+<!-- End content -->
+</div>
+<!-- Footer -->
+<div style='display:none;'>
+<a href='<?php echo HONEYPOT; ?>'>academic contact and mail</a>
+</div>
+<script src='<?php echo BASE; ?>js/pwk.js'></script>
+<!-- End footer -->
+</body>
+</html>

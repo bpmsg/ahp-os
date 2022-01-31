@@ -1,0 +1,23 @@
+<form method='POST' action='<?php echo $urlAct; ?>'>
+<fieldset>
+	<legend><?php echo $ahpPrioCalc->mnu['lgd2']; ?></legend>
+	<div style='display:block;float:left;padding:2px;'>
+	<?php	if($loggedIn && !$groupMode){ 
+			echo "<input class='btnr' type='submit' value='",$ahpPrioCalc->mnu['btn3'],"' name='save' >";
+		} elseif (isset($_SESSION['sessionCode']) && is_array($_SESSION['prioTot']) && !$ahpH->pwcaDoneFlg) {
+			echo "<input type='submit' value='", $ahpPrioCalc->mnu['btn1'], "' name='group' >";
+		} elseif (isset($_SESSION['sessionCode']) && $ahpH->pwcaDoneFlg) {
+			echo "<input class='btnr' type='submit' value='",$ahpPrioCalc->mnu['btn1'],"' name='group' >";
+		} else
+			echo "<input type='submit' value=",$ahpPrioCalc->mnu['btn1'],"' name='group' disabled=''>";
+	?>
+	</div>
+	<div style='padding:2px;float:right;'>
+	<?php	if($loggedIn && !$groupMode) 
+		echo "&nbsp;&nbsp;<input type='submit' value='",$ahpPrioCalc->mnu['btn2'],"' name='resAlt' >";
+	?>
+	&nbsp;&nbsp;<input type='submit' value='<?php echo $ahpPrioCalc->mnu['done']; ?>' name='back' >
+	</div>
+</fieldset>
+</form>
+<?php	if($loggedIn && !$groupMode) echo $ahpPrioCalc->info['pSave']; ?>

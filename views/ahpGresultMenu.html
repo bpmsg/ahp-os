@@ -1,0 +1,48 @@
+
+<script src="js/btnred.js" >
+</script>
+<form method='POST' action='<?php echo $urlAct ?>'>
+	<fieldset><legend><?php echo $ahpGroupRes->mnu['lgd1']; ?></legend>
+	<div style='display:block;float:left;padding:1px;'>
+
+	<?php	if(!empty($scaleName)){
+		echo "<select class='onchg1' name='scale'>";
+		if ($scaleSel !="") 
+			echo "<option value='$scaleSel'>", $scaleSel, "</option>";
+		foreach($scaleName as $val){
+			if($val != $scaleSel) echo "<option value='$val'>$val</option>";
+		}
+		echo "</select>";
+	} else {
+		$scaleName = "1 - AHP linear scale";
+		echo "&nbsp;&nbsp;<input type='text' maxlength='15' value='$scaleName' name='scaleName' disabled>";
+	}
+
+		echo "&nbsp;<small><input class='onclk1' type='checkbox' name='var' value='", $rflg . "'" . ($rflg ? "checked " : " "), ">
+		<label>var</label></small>";
+	if(!$hierMode)
+		echo "&nbsp;<small><input class='onclk1' type='checkbox' name='wpm' value='", $wpm . "'" . ($wpm ? "checked " : " "), ">
+		<label>wpm</label></small>";
+	if($rflg && ($pSelCnt > 1) && in_array($uid, $admin))
+		echo "&nbsp;<small><input class='onclk1' type='checkbox' name='sd' value='", $sd . "'" . ($sd ? "checked " : " "), ">
+		<label>sd</label></small>";
+	?>
+	<input id='sbm1' type='submit' value='<?php echo $ahpGroupRes->mnu['btn1']; ?>' name='refr' >&nbsp;&nbsp;
+
+	<?php if( ($loggedIn && $owner) || in_array($uid, $admin))
+				{ ?>
+					<input type='submit' value='<?php echo $ahpGroupRes->mnu['btn2']; ?>' name='vinput' >&nbsp;&nbsp;
+					<input type='submit' value='<?php echo $ahpGroupRes->mnu['btn3']; ?>' name='download' >
+					&nbsp;&nbsp;<small><input type='checkbox' name='csv' value='0'>
+					<label><?php echo $ahpGroupRes->mnu['lbl4']; ?></label></small>
+	<?php if ($hierMode) {  ?>
+					&nbsp;&nbsp;<input type='submit' value='<?php echo $ahpGroupRes->mnu['btn4']; ?>' name='h_submit' >
+	<?php	}
+} ?> 
+
+</div><div style='float:right;padding:1px;'>
+		<input type='submit' value='<?php echo $ahpGroupRes->mnu['btn5']; ?>' name='DONE' >
+</div>
+</fieldset>
+</form>
+<div class='msg' style='clear:both;'></div>
