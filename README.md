@@ -135,7 +135,38 @@ ahp-\
      |                       AhpHierXX, AhpHierginiXX, AhpNewsXX,
      |--views (html menus)   AhpPrioCalcXX, AhpSessionAdminXX
 ```
-
+## SQL database structure and triggers
+### Tables
+```
+users			user_id (primary, ai)
+				user_name unique,
+projects		project_id (primary, ai), 
+				project_sc (unique), 
+				project_author (foreign key users,user_name)
+pwc				project_sc (foreign key projects.project_sc)
+				pwc_id (primary, ai)
+alternatives	project_sc (foreign key projects.project_sc)
+audit			a_id (primary, ai)
+donations		tr_no (primary, ai)
+```
+### Triggers
+In the audit table entries are triggered by user and admin actions:
+```
+a_trg	a_act
+U		User login
+		Failed login
+		User activated
+		User deactivated
+		Change of remember me token
+		New user name
+		Change of user email
+		Password change
+		Password reset
+		Other
+I		New user registration
+D		User deleted
+```
+Clean audit table will delete all "Other" entries.
 ## License
 The work is published under GNU GENERAL PUBLIC LICENSE Version 3.
 
