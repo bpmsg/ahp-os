@@ -67,7 +67,7 @@ class AhpAdmin extends LoginAdmin {
 			ON users.user_name = projects.project_author  
 			WHERE users.user_name = :user;";
 
-			$sql = ( DB_TYPE == 'sqlite' ? $sqlite : $mysql);
+			$sql = ( $this->db_type == 'sqlite' ? $sqlite : $mysql);
 			$query = $this->db_connection->prepare($sql);
 			$query->bindValue(':user', $user, PDO::PARAM_STR);
 			$query->execute();		
@@ -106,7 +106,7 @@ class AhpAdmin extends LoginAdmin {
 			 AND DATEDIFF(CURDATE(), user_registration_datetime) < " . $days . 
 			" GROUP BY users.user_email DESC;";
 
-			$sql = ( DB_TYPE == 'sqlite' ? $sqlite : $mysql);
+			$sql = ( $this->db_type == 'sqlite' ? $sqlite : $mysql);
 			$query = $this->db_connection->query($sql);
 			$users = $query->fetchAll(PDO::FETCH_NUM);
 			return $users;
@@ -139,7 +139,7 @@ class AhpAdmin extends LoginAdmin {
 				AND users.user_id != '1' 
 				GROUP BY users.user_email ORDER BY audit.a_ts DESC";
 
-			$sql = ( DB_TYPE == 'sqlite' ? $sqlite : $mysql);
+			$sql = ( $this->db_type == 'sqlite' ? $sqlite : $mysql);
 			$query = $this->db_connection->query($sql);
 			$users = $query->fetchAll(PDO::FETCH_NUM);
 			return $users;
@@ -177,7 +177,7 @@ class AhpAdmin extends LoginAdmin {
 				AND (DATEDIFF(CURDATE(), user_registration_datetime) >= " . $days .  ")
 			GROUP BY users.user_email ORDER BY users.user_registration_datetime DESC;";
 
-			$sql = ( DB_TYPE == 'sqlite' ? $sqlite : $mysql);
+			$sql = ( $this->db_type == 'sqlite' ? $sqlite : $mysql);
 			$query = $this->db_connection->prepare($sql);
 			$query->execute();
 			$users = $query->fetchAll(PDO::FETCH_NUM);
@@ -227,7 +227,7 @@ class AhpAdmin extends LoginAdmin {
                 AND user_active != 0
 			GROUP BY users.user_email ORDER BY users.user_last_login DESC;";
 
-			$sql = ( DB_TYPE == 'sqlite' ? $sqlite : $mysql);
+			$sql = ( $this->db_type == 'sqlite' ? $sqlite : $mysql);
 			$query = $this->db_connection->prepare($sql);
 			$query->execute();
 			$users = $query->fetchAll(PDO::FETCH_NUM);
@@ -249,7 +249,7 @@ public function cleanAuditEntries($lmt=100){
 		$mysql = "CREATE VIEW IF NOT EXISTS aundv AS
     		SELECT a_un, a_trg FROM audit WHERE a_trg = 'D' OR a_trg = 'I'
 			GROUP BY audit.a_un ORDER BY audit.a_un;";
-		$sql = ( DB_TYPE == 'sqlite' ? $sqlite : $mysql);
+		$sql = ( $this->db_type == 'sqlite' ? $sqlite : $mysql);
 		$query = $this->db_connection->prepare( $sql );
 		$query->execute();
 
@@ -282,9 +282,9 @@ public  function checkDbIntegrity(){
 	$fileList = array();
 	// for mariaDb all tables have to be checked
 	$tables = array( "users","projects","pwc","alternatives","audit","donations");
-	$res = array( "0" => array("Database type: " => DB_TYPE));
+	$res = array( "0" => array("Database type: " => $this->db_type));
 
-	if (DB_TYPE == 'sqlite'){
+	if ($this->db_type == 'sqlite'){
 		// --- sqlite
 		$res[] = array("Filename: " => DB_PATH . DBNAME . ".db");
 		$res[] = array("Last access: " => date("M d Y H:i:s.", filemtime(DB_PATH)));
@@ -297,7 +297,7 @@ public  function checkDbIntegrity(){
 			$res = array_merge($res, $query->fetchAll(PDO::FETCH_ASSOC));
 		}	else
 			$res[] = array("Integrity check: " => MESSAGE_DATABASE_ERROR);
-	} elseif (DB_TYPE == 'mysql') {
+	} elseif ($this->db_type == 'mysql') {
 		// --- mariadb (mysql)
 		if ($this->dataBaseConnection()){
 			$vers = $this->db_connection->getAttribute( PDO::ATTR_SERVER_VERSION);
@@ -312,7 +312,7 @@ public  function checkDbIntegrity(){
 		} else
 			$res[] = array("Integrity check: " => MESSAGE_DATABASE_ERROR);
 	} else {
-			$res[] = array("Error: " => DB_TYPE_INVALID);
+			$res[] = array("Error: " => $this->db_type_INVALID);
 	}
 	return $res;
 }

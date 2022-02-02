@@ -21,9 +21,9 @@ public $info = array(
 					Ich bitte euch um Rückmeldung, falls ihr einen Bug entdeckt.</p>
 					<p>Desweiteren wurden einige Code Anpassungen vorgenommen, da ich plane, den gesamten AHP-OS Sourcecode als 
 					 <i>open source</i> unter GNU GENERAL PUBLIC LICENSE Version 3 zu veröffentlichen.</p>",
-	"news2"		=>	"Wir sind immer noch auf der Suche nach Freiwilligen für die Übersetzung aller AHP-OS Ausgaben 
-								in andere Sprachen. Momentan werden Englisch, Deutsch und Spanisch unterstützt. Wenn Du das Programm 
-								unterstützen möchtest, kontaktiere mich bitte über den Kontakt Link unten auf dieser Seite.",
+	"news2"		=>	"Wir sind immer noch auf der Suche nach Freiwilligen für die Übersetzung aller AHP-OS Text Ausgaben 
+								in andere Sprachen. Momentan werden Englisch, Deutsch, Spanisch und Portugisisch unterstützt. 
+								Wenn Du damit helfen möchtest, kontaktiere mich bitte über den Kontakt Link unten auf dieser Seite.",
 	"don"		=>	"<p>Bevor du anfängst: Wenn du ein aktiver Nutzer bist und/oder das Programm dir gefällt,
 								bitte hilf, die Webseite aktiv am Leben zu halten. 
 								Ich habe laufende Kosten fürs Webhosting, Zertifikat, Spamfilter <i>etc.</i>, und möchte   

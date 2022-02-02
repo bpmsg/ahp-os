@@ -27,7 +27,7 @@ public $info = array(
 				   conjunto El código fuente de AHP-OS está disponible como descripción 
 				   abierta bajo GNU GENERAL PUBLIC LICENSE Versión 3 en un futuro próximo.
 								</p>",
-  "news2"	=>	"<p>Esta versión soporta varios idiomas para AHP-OS. Actualmente un inglés, alemán y español. 
+  "news2"	=>	"<p>Esta versión soporta varios idiomas para AHP-OS. Actualmente un Inglés, Alemán, Portugués y Español. 
                 Si está interesado en contribuir y traducir los archivos a su idioma,
 				por favor póngase en contacto conmigo.</p>",
   "don"     =>  "<p>

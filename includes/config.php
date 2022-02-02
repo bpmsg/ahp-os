@@ -98,14 +98,14 @@
 	else
 		define('MY_DOMAIN',$_SERVER['SERVER_NAME']);
 
+	define('DB_PATH', ABS_PATH . BASE . "db" . DIRECTORY_SEPARATOR);
+
 	if( DB_TYPE == "mysql"){
-		// provide access data to your mysql database
+		// provide access to your mysql database
 		define( 'DBHOST', MY_DOMAIN . ":3307");
-		define( 'DB_PATH', "na");
 		$dbName = DBNAME;
 	} else {
 		$dbName = DBNAME . '.db';	
-		define('DB_PATH', ABS_PATH . BASE . "db" . DIRECTORY_SEPARATOR);
 	}
 
 	// --- COOKIES

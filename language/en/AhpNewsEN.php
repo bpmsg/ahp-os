@@ -23,7 +23,7 @@ public $info = array(
 					AHP-OS source code available as <i>open source</i> under GNU GENERAL PUBLIC LICENSE Version 3 in the near future.</p>",
 	"news2"		=>	"<p>
 								We are still looking to find volunteers for a translation of all AHP-OS output into other 
-								languages. At the moment English, German and Spanish is supported. If you are willing to support the program,
+								languages. At the moment English, German, Spanish and Portugese is supported. If you are willing to support the program,
 								please contact me via the contact link at the bottom of this page.
 								</p>",
 	"don"		=>	"<p>

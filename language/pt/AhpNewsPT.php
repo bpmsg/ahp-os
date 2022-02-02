@@ -24,11 +24,17 @@ public $info = array(
 						pretendo fazer todo o conjunto Código fonte AHP-OS disponível como open 
 						fonte ao abrigo da GNU GENERAL PUBLIC LICENSE Versão 3 num futuro próximo.</p>",
 	"news2"		=>	"<p>
-						Ainda estamos procurando voluntários para uma tradução de todos os resultados do AHP-OS para outras línguas. No momento, há suporte para inglês, alemão e espanhol. Se você estiver disposto a apoiar o programa,entre em contato comigo através do link de contato na parte inferior desta página.
+						Ainda estamos procurando voluntários para uma tradução de todos os resultados do AHP-OS para outras línguas. 
+						No momento, há suporte para Inglês, Alemão, Espanhol e Português. 
+						Se você estiver disposto a apoiar o programa,entre em contato comigo através do link de 
+						contato na parte inferior desta página.
 						</p>",
 	"don"		=>	"<p>
-						Antes de começar: se você é um usuário ativo ou gosta do programa, ajude com uma doação para manter este site está vivo.
-						Tenho custos de manutenção para hospedagem na web, certificado, proteção contra spam e manutenção e desejo manter o AHP-OS gratuito para todos os usuários. Como um doador, sua conta será mantida ativa sem a solicitação de reativação, mesmo que você não acesse por um período superior a 3 meses.
+						Antes de começar: se você é um usuário ativo ou gosta do programa, ajude com uma doação para 
+						manter este site está vivo. Tenho custos de manutenção para hospedagem na web, certificado, 
+						proteção contra spam e manutenção e desejo manter o AHP-OS gratuito para todos os usuários. 
+						Como um doador, sua conta será mantida ativa sem a solicitação de reativação, mesmo que você 
+						não acesse por um período superior a 3 meses.
  						</p>"
 );
 }

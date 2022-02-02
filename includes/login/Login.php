@@ -31,7 +31,7 @@ class Login
     /**
      * @var string Type of used database
      */
-    private $db_type = DB_TYPE; //
+    public $db_type = DB_TYPE; //
 
     /**
      * @var string Path of the database file
@@ -103,7 +103,8 @@ class Login
 */
     public function __construct($dbname = DBNAME)
     {
-		$this->db_name = $dbname;
+		// if db names is explicitely given with extension .db, type is set to sqlite 
+
         // create/read session
 		if(!isset($_SESSION)) session_start();
 		global $lang;
@@ -182,7 +183,7 @@ class Login
             // create a database connection, using the constants from config/config.php
             try {
 					if ($this->db_type == 'sqlite'){
-	      				$this->db_connection = new PDO( DB_TYPE . ':' . DB_PATH . $this->db_name . ".db");
+	      				$this->db_connection = new PDO( $this->db_type . ':' . DB_PATH . $this->db_name . ".db");
 	      			} else {
 						// --- MySQL database type - added 2015-10-01
 						$dsn = 'mysql:host=' . DBHOST . ';dbname=' . $this->db_name . ';charset=utf8';

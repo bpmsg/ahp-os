@@ -58,7 +58,13 @@ class LoginAdmin extends Login {
 /** Methods */
 	public function __construct($dbname = DBNAME){
 		parent::__construct($dbname);
-		$this->db_name = $dbname;
+
+		// if db names is explicitely given with extension .db, type is set to sqlite 
+		if(substr($dbname, -3) == ".db"){
+			$this->db_type = "sqlite";
+			$this->db_name = substr($dbname,0,strlen($dbname)-3);
+		} else
+			$this->db_name = $dbname;
 	}
 
 /*** USER ADMINISTRATION ***/
@@ -95,9 +101,9 @@ class LoginAdmin extends Login {
 /* get user name list as array in alphbetic order used for user selection in menu */
 	public function getUserNames(){
 		if ($this->dataBaseConnection()){
-			$sql = 'SELECT user_name FROM users ORDER BY user_name ' ;
-			$sql .= ( DB_TYPE == 'sqlite' ? 'COLLATE NOCASE ' : '');
-			$sql .= 'ASC;';
+			$sql = "SELECT user_name FROM users ORDER BY user_name " ;
+			$sql .= ( $this->db_type == 'sqlite' ? "COLLATE NOCASE " : "");
+			$sql .= "ASC;";
 			$query = $this->db_connection->prepare($sql);
 			$query->execute();
 			$result = $query->fetchAll(PDO::FETCH_COLUMN );
@@ -126,7 +132,7 @@ class LoginAdmin extends Login {
 			substr( round(julianday('now', 'localtime') - julianday( users.user_last_login ),1) || ' d',1,7) 
 			FROM users WHERE users.user_name = :user";
 
-			$sql = ( DB_TYPE == 'sqlite' ? $sqlite : $mysql);
+			$sql = ( $this->db_type == 'sqlite' ? $sqlite : $mysql);
 			$query = $this->db_connection->prepare($sql);
 			$query->bindValue(':user', $user, PDO::PARAM_STR);
 			$query->execute();		
@@ -150,7 +156,7 @@ class LoginAdmin extends Login {
 			FROM users WHERE users.user_active = 1 
 			AND julianday( users.user_registration_datetime) > julianday('now', 'localtime', '" . -$days . " days') 
 		    GROUP BY users.user_email ORDER BY users.user_registration_datetime DESC;";
-			$sql = ( DB_TYPE == 'sqlite' ? $sqlite : $mysql);
+			$sql = ( $this->db_type == 'sqlite' ? $sqlite : $mysql);
 			$query = $this->db_connection->query($sql);
 			$users = $query->fetchAll(PDO::FETCH_NUM);
 			return $users;
@@ -173,7 +179,7 @@ class LoginAdmin extends Login {
 			FROM users WHERE julianday( users.user_last_login) > julianday('now', '" . -$hours . " hours') 
 			GROUP BY users.user_email ORDER BY julianday( users.user_last_login ) DESC;";
 
-			$sql = ( DB_TYPE == 'sqlite' ? $sqlite : $mysql);
+			$sql = ( $this->db_type == 'sqlite' ? $sqlite : $mysql);
 			$query = $this->db_connection->query($sql);
 			$users = $query->fetchAll(PDO::FETCH_NUM);
 			return $users;
@@ -199,7 +205,7 @@ class LoginAdmin extends Login {
 			 < julianday('now', '" . -$days . " day', 'localtime') 
 			  GROUP BY users.user_email ORDER BY julianday(users.user_registration_datetime) DESC;";
 
-			$sql = ( DB_TYPE == 'sqlite' ? $sqlite : $mysql);
+			$sql = ( $this->db_type == 'sqlite' ? $sqlite : $mysql);
 			$query = $this->db_connection->prepare($sql);
 			$query->execute();
 			$users = $query->fetchAll(PDO::FETCH_NUM);
@@ -226,7 +232,7 @@ class LoginAdmin extends Login {
 			 	< julianday('now', '" . -$days . " day', 'localtime') 
 				GROUP BY users.user_email ORDER BY julianday( users.user_last_login ) DESC;";
 
-			$sql = ( DB_TYPE == 'sqlite' ? $sqlite : $mysql);
+			$sql = ( $this->db_type == 'sqlite' ? $sqlite : $mysql);
 			$query = $this->db_connection->prepare($sql);
 			$query->execute();
 			$users = $query->fetchAll(PDO::FETCH_NUM);
@@ -259,7 +265,7 @@ class LoginAdmin extends Login {
 			$hash = sha1(uniqid(mt_rand(), true));
 			$actv = 0;
 			$dttm = date("Y-m-d H:i:s");
-			$this->db_connection->exec( (DB_TYPE == 'sqlite' ? 'BEGIN TRANSACTION;' : 'START TRANSACTION;') );
+			$this->db_connection->exec( ($this->db_type == 'sqlite' ? 'BEGIN TRANSACTION;' : 'START TRANSACTION;') );
 			$sql = "UPDATE users SET user_active = :actv, user_activation_hash = :hash, user_registration_datetime = :dttm  
 		 	WHERE user_name = :name;";
 			try {
@@ -316,7 +322,7 @@ class LoginAdmin extends Login {
 			$hash = "NULL";
 			$actv = 1;
 			$dttm = date("Y-m-d H:i:s");
-			$this->db_connection->exec( (DB_TYPE == 'sqlite' ? 'BEGIN TRANSACTION;' : 'START TRANSACTION;') );
+			$this->db_connection->exec( ($this->db_type == 'sqlite' ? 'BEGIN TRANSACTION;' : 'START TRANSACTION;') );
 			$sql = "UPDATE users SET user_active = :actv, user_activation_hash = :hash, user_registration_datetime = :dttm  
 		 	WHERE user_name = :name;";
 			try {
@@ -433,7 +439,7 @@ class LoginAdmin extends Login {
 			a_uid, a_un, a_act as 'activity' FROM audit 
 			WHERE a_uid LIKE :uid AND a_act != 'other' ORDER BY a_id DESC LIMIT " . $limit . ";";
 
-			$query = $this->db_connection->prepare( (DB_TYPE == 'sqlite' ? $sqlite : $mysql));
+			$query = $this->db_connection->prepare( ($this->db_type == 'sqlite' ? $sqlite : $mysql));
 			$query->bindValue(':uid', $uid, PDO::PARAM_STR);
 			$query->execute();
 			$result = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -457,7 +463,7 @@ class LoginAdmin extends Login {
 			a_uid, a_un, a_act as 'activity' FROM audit 
 			WHERE a_uid LIKE :uid AND a_act != 'other' ORDER BY a_id ASC LIMIT 1;";
 
-			$query = $this->db_connection->prepare( (DB_TYPE == 'sqlite' ? $sqlite : $mysql));
+			$query = $this->db_connection->prepare( ($this->db_type == 'sqlite' ? $sqlite : $mysql));
 			$query->bindValue(':uid', $uid, PDO::PARAM_STR);
 			$query->execute();
 			$result = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -522,7 +528,7 @@ public function getUserFlow($m = 12){
         LIMIT " . $m . ";";
 
 		
-		$sql = ( DB_TYPE == 'sqlite' ? $sqlite : $mysql);
+		$sql = ( $this->db_type == 'sqlite' ? $sqlite : $mysql);
 		$query = $this->db_connection->prepare( $sql );
 		$query->execute();
 		$reg['I'] = array_combine($mnth, $query->fetchall(PDO::FETCH_COLUMN));
@@ -545,7 +551,7 @@ public function getUserFlow($m = 12){
         ORDER by DATE_FORMAT(audit.a_ts, '%Y-%m') DESC
         LIMIT " . $m . ";";
 
-		$sql = ( DB_TYPE == 'sqlite' ? $sqlite : $mysql);
+		$sql = ( $this->db_type == 'sqlite' ? $sqlite : $mysql);
 		$query = $this->db_connection->prepare( $sql );
 		$query->execute();
 		$reg['D'] = array_combine($mnth, $query->fetchall(PDO::FETCH_COLUMN));

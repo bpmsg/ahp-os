@@ -2,8 +2,8 @@
 /**
 * Analytic Hierarchy Process database functions for ahp
 *
-* $LastChangedDate: 2022-02-02 09:14:40 +0800 (Wed, 02 Feb 2022) $
-* $Rev: 87 $
+* $LastChangedDate: 2022-02-02 14:26:34 +0800 (Wed, 02 Feb 2022) $
+* $Rev: 88 $
 *
 * @author Klaus D. Goepel
 * @copyright 2014-2017 Klaus D. Goepel
@@ -103,13 +103,17 @@ const ENCL = '"';
 	
 /** Methods */
 	public function __construct($dbname = DBNAME){
-		$this->db_name = $dbname;
 		mb_internal_encoding('UTF-8');
 		global $lang;
 		$class = get_class() . $lang;
 		$this->lang = $lang;
 		$this->ahpDbTxt = new $class;
-		$this->db_name = $dbname;
+		// if db names is explicitely given with extension .db, type is set to sqlite 
+		if(substr($dbname, -3) == ".db"){
+			$this->db_type = "sqlite";
+			$this->db_name = substr($dbname,0,strlen($dbname)-3);
+		} else
+			$this->db_name = $dbname;
 		return;
 	}
 
@@ -134,12 +138,12 @@ const ENCL = '"';
       // create a database connection, using the constants from config/config.php
     	try {
 				if ($this->db_type == 'sqlite'){
-					$this->db_connection = new PDO( DB_TYPE . ':' . DB_PATH . $this->db_name. ".db");
+					$this->db_connection = new PDO( $this->db_type . ':' . DB_PATH . $this->db_name. ".db");
  				} elseif($this->db_type == 'mysql'){
 					$dsn = 'mysql:host=' . DBHOST . ';dbname=' . $this->db_name . ';charset=utf8';
 					$this->db_connection = new PDO($dsn, DBUSER, DBPASS);
 	 			} else {
- 					$err[] = $this->ahpDbTxt->err['dbType'] . DB_TYPE;
+ 					$err[] = $this->ahpDbTxt->err['dbType'] . $this->db_type;
  					return false;
  				}
  				return true;
@@ -208,9 +212,9 @@ const ENCL = '"';
 	public function getStoredSessions($name){
 		$result = array();
 		if ($this->dataBaseConnection()){
-			$sql = "SELECT `project_sc` FROM `projects` WHERE `project_author` = :name ORDER BY `project_sc`;";
-			// --- TODO: check, is this correct? ---
-			$sql .= (DB_TYPE == "sqlite" ? " COLLATE NOCASE ASC;" : ";") ;
+			$sql = "SELECT `project_sc` FROM `projects` WHERE `project_author` = :name ORDER BY `project_sc`";
+			// --- Order ascending regardless of case ---
+			$sql .= ($this->db_type == "sqlite" ? " COLLATE NOCASE ASC;" : ";") ;
 			$query = $this->db_connection->prepare($sql);
 			$query->bindValue(':name', $name, PDO::PARAM_STR);
 			$query->execute();
@@ -900,7 +904,7 @@ public function restoreUser($user, $projects, $pwc, $alt=array()){
 	if($this->databaseConnection()){
 
 		$this->db_connection->exec( "SET autocommit=0");
-		$this->db_connection->exec( (DB_TYPE == 'sqlite' ? "BEGIN TRANSACTION;" : "START TRANSACTION;") );
+		$this->db_connection->exec( ($this->db_type == 'sqlite' ? "BEGIN TRANSACTION;" : "START TRANSACTION;") );
 
 		// write user data
 		try {
@@ -1199,7 +1203,7 @@ $mysql ="CREATE VIEW IF NOT EXISTS alv AS
     ORDER BY actlv DESC
     LIMIT " . ($lmt+1) . ";";
 
-		$sql = ( DB_TYPE == 'sqlite' ? $sqlite : $mysql);
+		$sql = ( $this->db_type == 'sqlite' ? $sqlite : $mysql);
 		$query = $this->db_connection->prepare( $sql );
 		$query->execute();
 

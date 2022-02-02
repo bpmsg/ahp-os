@@ -18,16 +18,17 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  * 
- *  Revision: $Rev: 87 $
+ *  Revision: $Rev: 88 $
  * 
  */
 
 include 'includes/config.php';
 
 /* 
- * Backup database has to be same type as active database! 
+ * for sqlite database name has to include extension db
  */
 $backupDb = 'ahp-os_bck';
+//$backupDb = 'ahp_os.2021-12-26.db';
 
 $storedUsers = array();  // users in active database
 $deletedUsers = array(); // users in backup db but not in active db
@@ -38,12 +39,13 @@ $ahpUser = array();
 $pageTitle ='AHP recover';
 $title="AHP-OS User Recovery";
 $subTitle = "User recovery from bachup database";
-$version = substr('$LastChangedDate: 2022-02-02 09:14:40 +0800 (Wed, 02 Feb 2022) $',18,10);
-$rev = trim('$Rev: 87 $', "$");
+$version = substr('$LastChangedDate: 2022-02-02 14:26:34 +0800 (Wed, 02 Feb 2022) $',18,10);
+$rev = trim('$Rev: 88 $', "$");
 
+// productive database
 $login =  new Login();
 $ahpAdm = new AhpAdmin();
-$ahpDb =  new AhpDb(); // productive database
+$ahpDb =  new AhpDb();
 
 // backup database
 $ahpAdmBck = new AhpAdmin($backupDb);
