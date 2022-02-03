@@ -273,7 +273,7 @@ $sqliteDonationsTable = "CREATE TABLE IF NOT EXISTS `donations` (
       // create a database connection, using the constants from config/config.php
     	try {
 				if (DB_TYPE == 'sqlite'){
-	      	                        $dbConnection = new PDO( DB_TYPE . ':' . DB_PATH );
+	      	                        $dbConnection = new PDO( DB_TYPE . ':' . DB_PATH . DBNAME . ".db");
 					return true;
  				} elseif (DB_TYPE == 'mysql'){
 					$dsn = 'mysql:host=' . DBHOST . ';dbname=' . DBNAME . ';charset=utf8';
