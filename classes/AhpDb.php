@@ -2,8 +2,8 @@
 /**
 * Analytic Hierarchy Process database functions for ahp
 *
-* $LastChangedDate: 2022-02-02 14:26:34 +0800 (Wed, 02 Feb 2022) $
-* $Rev: 88 $
+* $LastChangedDate: 2022-02-03 14:55:25 +0800 (Thu, 03 Feb 2022) $
+* $Rev: 91 $
 *
 * @author Klaus D. Goepel
 * @copyright 2014-2017 Klaus D. Goepel
@@ -24,8 +24,7 @@
 *
 * public  function construct()
 * public  function getErrors()
-* public  function databaseConnection()  public because used in ahp recover
-* public  function checkDbIntegrity()    todo: extend for mariadb
+* public  function checkDbIntegrity()
 * public  function generateSessionCode($length=8, $strength=0)
 * public  function checkSessionCode($sc)
 * public  function getStoredSessions($name)
@@ -41,6 +40,7 @@
 * public  function setSessfmPrjc($sc)
 * public  function toggleStatus($sc)
 *
+* private function databaseConnection()
 * private function readParticipantData($sc)
 * private function getPwc($sc, $participant, $nod)
 * private function convertPwc($pwc)
@@ -80,8 +80,10 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-define ( "MESSAGE_DATABASE_ERROR", "Database error ");
-
+define ( 'MESSAGE_DATABASE_ERROR', "Database connection error ");
+define ( 'DB_DELETE_ERROR', "Cannot delete data");
+define ( 'DB_NOTHING_TO_DELETE', "Nothing to delete");
+define ( 'DB_PROJECT_WRITE_ERROR', "Error writing to database");
 
 class AhpDb {
 
@@ -130,7 +132,7 @@ const ENCL = '"';
  * Checks if database connection is opened. If not, then this method tries to open it.
  * @return bool Success status of the database connecting process
  */
-  public function databaseConnection(){
+  private function databaseConnection(){
     // if connection already exists
   	if ($this->db_connection != null) {
     	return true;
@@ -162,8 +164,8 @@ const ENCL = '"';
  */
 	public function generateSessionCode($length=8, $strength=0) {
     $vowels = 'aeuy';
-    $consonants = 'bdghjmnpqrstvz';
-    if ($strength & 1) $consonants .= 'BDGHJLMNPQRSTVWXZ';
+    $consonants = 'bcdfghjkmnpqrstvwxz';
+    if ($strength & 1) $consonants .= 'BCDFGHJLMNPQRSTVWXZ';
     if ($strength & 2) $vowels .= "AEUY";
     if ($strength & 4) $consonants .= '23456789';
     if ($strength & 8) $consonants .= '@#$%';
@@ -915,7 +917,7 @@ public function restoreUser($user, $projects, $pwc, $alt=array()){
 			 :user_registration_ip, :user_registration_datetime, :user_last_login);";	
 			$queryIns = $this->db_connection->prepare($sql);
 		} catch (PDOException $e){
-			$this->err[] = MESSAGE_DATABASE_ERROR . $e;
+			$this->err[] = DB_PROJECT_WRITE_ERROR . $e;
 		}
 		if(is_object($queryIns)){
 		   $queryIns->bindValue(':user_name', $user['user_name'], PDO::PARAM_STR);
@@ -986,7 +988,7 @@ public function restoreUser($user, $projects, $pwc, $alt=array()){
 			}
 			if(!$insState){
 				$this->db_connection->exec( "ROLLBACK;");
-				$this->err[] = "pwc insert failed ";
+				$this->err[] = DB_PROJECT_WRITE_ERROR;
 				return false;
 			}
 		}
@@ -1007,7 +1009,7 @@ public function restoreUser($user, $projects, $pwc, $alt=array()){
 			}
 			if(!$insState){
 				$this->db_connection->exec( "ROLLBACK;");
-				$this->err[] = "alt insert failed ";
+				$this->err[] = DB_PROJECT_WRITE_ERROR;
 				return false;
 			}
 		}
@@ -1024,7 +1026,7 @@ public function restoreUser($user, $projects, $pwc, $alt=array()){
 		$insState &= $queryIns->execute();
 		if(!$insState){
 			$this->databaseConnection->exec( "ROLLBACK;");
-			$thisd->err[] = "Audit table insert failed ";
+			$thisd->err[] = DB_PROJECT_WRITE_ERROR;
 			return false;
 		}
 		// --- COMMIT all inserts 
@@ -1101,7 +1103,7 @@ $dn = array();
 				$hText = $result[0]['project_hText'];
 				$text = $ahpH = new AhpHier();
 				$ahpH->setHierarchy($hText);
-				$query = $this->db_connection->prepare("SELECT DISTINCT `pwc.pwc_node` FROM `pwc` WHERE `project_sc` = :sc;");
+				$query = $this->db_connection->prepare("SELECT DISTINCT `pwc_node` FROM `pwc` WHERE `project_sc` = :sc;");
 				$query->bindValue(':sc', $sc, PDO::PARAM_STR);
 				$query->execute();
 				$pwcnods = $query->fetchAll(PDO::FETCH_COLUMN);

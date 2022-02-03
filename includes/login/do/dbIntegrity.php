@@ -21,6 +21,8 @@
  *
  */
 	define ('LMT', 1000); // limit of how many projects are checked
+	define ('MONTHS_USER_FLOW', 6);
+	define ('TOP_USERS', 20);
 
 /* Includes */
 	include '../../config.php';
@@ -34,15 +36,14 @@ $ahpAdmin = new AhpAdmin();
 
 // --- MAIN
 $title="Database Integrity";
-$version = substr('$LastChangedDate$',18,10);
-$rev = trim('$Rev$', "$");
+$version = substr('$LastChangedDate: 2022-02-03 14:55:25 +0800 (Thu, 03 Feb 2022) $',18,10);
+$rev = trim('$Rev: 91 $', "$");
 
 $webHtml = new WebHtml($title);
 	include('../form.login-hl.php');
 echo "<h1>$title</h1>";
 
 if($login->isUserLoggedIn() && in_array($_SESSION['user_id'], $admin )) {
-	$m = 6;
 	$err = array();
 	$reg = array();
 	// --- php version
@@ -65,8 +66,8 @@ if($login->isUserLoggedIn() && in_array($_SESSION['user_id'], $admin )) {
 		echo $project, "<br>";
 
 	echo '<h3>User Flow</h3>';
-	$reg = $ahpAdmin->getUserFlow($m);
-	echo "Last " . $m . " months: <br>";
+	$reg = $ahpAdmin->getUserFlow(MONTHS_USER_FLOW);
+	echo "Last " . MONTHS_USER_FLOW . " months: <br>";
 	foreach($reg['I'] as $mnth=>$val){
 			$reg['F'][$mnth] = $val - $reg['D'][$mnth];
 			echo "$mnth ", $reg['F'][$mnth], " users<br>";
@@ -80,13 +81,14 @@ if($login->isUserLoggedIn() && in_array($_SESSION['user_id'], $admin )) {
 	echo '<h3>Top 40 Users</h3>';
 	if(DONATIONS)
 		echo "<p>Users, who have donated, are highlighted.</p>";
-	$res =$ahpDb->getTopUsers(40);
-	if(!empty($res)){
+	$res =$ahpDb->getTopUsers(TOP_USERS);
+	$resCnt = count($res);
+	if(!empty($res) and $resCnt > 0){
 		// LEFT PART
 		echo '<div style="float:left;">';
 		echo "<table>";
 		echo "<tr>","<th>No</th><th class='nwb'>Date</th>","<th class='la'>User</th>", "<th>Index</th>","</tr>";
-		for ($i=0; $i < 20; $i++){
+		for ($i=0; $i < (int) $resCnt/2; $i++){
 			$style = ($i%2 ? "class='odd'" : "class='even'");
 			echo "<tr $style>";
 			echo "<td style='text-align:right;'>", $i+1, "</td>";
@@ -102,7 +104,7 @@ if($login->isUserLoggedIn() && in_array($_SESSION['user_id'], $admin )) {
 		echo '</div><div>';
 		echo "<table>";
 		echo "<tr>","<th>No</th><th class='nwb'>Date</th>","<th class='la'>User</th>", "<th>Index</th>","</tr>";
-		for ($i=20; $i < 40; $i++){
+		for ($i= round($resCnt/2); $i < $resCnt; $i++){
 			$style = ($i%2 ? "class='odd'" : "class='even'");
 			echo "<tr $style>";
 			echo "<td style='text-align:right;'>", $i+1, "</td>";
@@ -117,7 +119,7 @@ if($login->isUserLoggedIn() && in_array($_SESSION['user_id'], $admin )) {
 		echo '</div>';
 	} else
 		echo "<p><span class='err'>no top user data available</span></p>";
-	echo "<p><a href='do-user-admin.php'>back</a></p>";
 	echo '<div style="clear:both"></div>';
+	echo "<p><a href='do-user-admin.php'>back</a></p>";
 }
 $webHtml->webHtmlFooter($version);
