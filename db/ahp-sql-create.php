@@ -24,7 +24,7 @@
 define('DROP_DB_FIRST', false);
 define('CREATE_TABLES', true);
 define('DROP_DONATION_FIRST', false);
-define('CREATE_TRIGGER', true);
+define('CREATE_TRIGGERS', true);
 define('DROP_TRIGGER_FIRST', false);
 
 include '../includes/config.php';

@@ -30,8 +30,8 @@ $errMsg = "";
 $msg = "";
 $sessionName= "";
 
-$version = substr('$LastChangedDate$',18,10);
-$rev = trim('$Rev$', "$");
+$version = substr('$LastChangedDate: 2022-02-03 15:37:44 +0800 (Thu, 03 Feb 2022) $',18,10);
+$rev = trim('$Rev: 92 $', "$");
 
 $login = new Login();
 
@@ -386,7 +386,8 @@ if($login->isUserLoggedIn() === true){
 		printf($sessionAdmin->msg["usrStat2"], $uCnt,LHRS);
 		printf($sessionAdmin->msg["usrStat3"], $name,$sessionCnt);
 		printf($sessionAdmin->msg["usrStat4"], $counts['actlv']);
-		echo ( !$don ? $sessionAdmin->msg["usrDon1"] : $sessionAdmin->msg["usrDon2"]) . "! ";
+		if(DONATIONS)
+			echo ( !$don ? $sessionAdmin->msg["usrDon1"] : $sessionAdmin->msg["usrDon2"]) . "! ";
 		echo $sessionAdmin->titles['h2myProjects'];
 		if ($sessionCnt > SESSIONLMT ) 
 			echo $sessionAdmin->err["sLmt"];

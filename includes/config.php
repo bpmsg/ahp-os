@@ -75,7 +75,11 @@
 
 /*  Spam honeypot - set to '' or modify footer.html if not used 
  */
-	define('HONEYPOT', "https://bpmsg.com/tools/academicclub.php");
+	define('HONEYPOT', "");
+
+/*  enable additional functions for user donations
+ */
+	define('DONATIONS', false);
 
 
 // -------------------------------------------------------------------
@@ -102,7 +106,7 @@
 
 	if( DB_TYPE == "mysql"){
 		// provide access to your mysql database
-		define( 'DBHOST', MY_DOMAIN . ":3307");
+		define( 'DBHOST', MY_DOMAIN . ":3306");
 		$dbName = DBNAME;
 	} else {
 		$dbName = DBNAME . '.db';	
@@ -158,8 +162,6 @@
 	
 	// --- Admin, register
 	define('ADMIN_ID', 1); // --- user id(s) of administrators for user accounts
-	// --- enables additional functions for user donation administrations
-	define('DONATIONS', true);
 	define('URL_HOME', "//" . MY_DOMAIN) ; // --- Home link url
 	define('SITE_URL', "//" . MY_DOMAIN . BASE); // --- Site link url
 
