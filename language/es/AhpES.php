@@ -46,12 +46,14 @@ public $info = array(
                 </ol>",
   "intro13" =>  "<p style='text-align:justify;'>
                 En las opciones 2 y 3, puede exportar los resultados como archivos .csv (con los valores separados por comas) para
-                continuar 
-                su procesamiento en Ms Excel. <b>Para los términos de uso por favor vea nuestro </b> 
-                <a href='https://bpmsg.com/about/user-agreement-and-privacy-policy/' >
-                acuerdo de usuario y política de privacidad.</a> Si te gusta el programa, <span class='err'>por favor ayudame con una 
+                continuar su procesamiento en Ms Excel.",
+  "intro14" =>	"<p style='text-align:justify;'>
+				<b>Para los términos de uso por favor vea nuestro </b> 
+                <a href='https://bpmsg.com/about/user-agreement-and-privacy-policy/'>acuerdo de usuario y política de privacidad.</a></p>",
+  "intro15"	=>	"<p style='text-align:justify;'>
+				Si te gusta el programa, <span class='err'>por favor ayudame con una 
                 <a href='ahp-news.php'>donación</a> para mantener la web</span>.</p>",
-  "intro14" =>  "<p><b>En tu paper académico por favor cita este trabajo como:</b><br>
+  "intro16" =>  "<p><b>En tu paper académico por favor cita este trabajo como:</b><br>
                 <code>Goepel, K.D. (2018). Implementation of an Online Software Tool for the Analytic Hierarchy 
                 Process (AHP-OS). <i>International Journal of the Analytic Hierarchy Process</i>, Vol. 10 Issue 3 2018, pp 469-487,
                 <br><a href='https://doi.org/10.13033/ijahp.v10i3.590'>https://doi.org/10.13033/ijahp.v10i3.590</a>

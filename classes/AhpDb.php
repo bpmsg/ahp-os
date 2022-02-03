@@ -2,8 +2,8 @@
 /**
 * Analytic Hierarchy Process database functions for ahp
 *
-* $LastChangedDate: 2022-02-03 14:55:25 +0800 (Thu, 03 Feb 2022) $
-* $Rev: 91 $
+* $LastChangedDate: 2022-02-03 17:21:17 +0800 (Thu, 03 Feb 2022) $
+* $Rev: 94 $
 *
 * @author Klaus D. Goepel
 * @copyright 2014-2017 Klaus D. Goepel
@@ -1297,7 +1297,7 @@ public function displaySessionTable($name){
 		echo "<td><span class='res'><a href='$url'>", $project[0], "</a></td>";
 		echo "<td>", $project[1], "</td>";
 		echo "<td class='ca'>", ($project[2]>0 ? "A" : "H"), "</td>";
-		echo "<td class='ca'>",$project[7],"</td>";
+		echo "<td class='ca'>",($project[7] == 0 ? "closed" : "open"),"</td>";
 		echo "<td style='max-width:380px;'>", $project[3], "</td>";
 		echo "<td class='ca'>", $project[5], "</td>";
 		$fmt = ($project[6] == date('Y-m-d') ? " class = 'hl'" : "");

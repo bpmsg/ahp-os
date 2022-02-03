@@ -42,11 +42,16 @@ public $info = array(
 								<a href='ahp-hiergini.php'>Sessão do Grupo AHP</a></span></li>
 								</ol>",
 	"intro13"	=>	"<p style='text-align:justify;'>
-								Para os programas 2 e 3, você pode exportar os resultados como arquivos csv (valores separados por vírgula) para processá-las em excel. <b>Para os termos de uso, consulte nosso </b> 
+								Para os programas 2 e 3, você pode exportar os resultados como arquivos csv (valores separados por vírgula) para processá-las em excel. 
+								</p>",
+	"intro14"	=>	"<p style='text-align:justify;'>
+								<b>Para os termos de uso, consulte nosso </b> 
 								<a href='https://bpmsg.com/about/user-agreement-and-privacy-policy/' >
-								acordo do usuário e política de privacidade.</a> Se você gosta do programa, <span class='err'>por favor ajude realizando
+								acordo do usuário e política de privacidade.</a></p>",
+	"intro15"	=>	"<p style='text-align:justify;'>
+								Se você gosta do programa, <span class='err'>por favor ajude realizando
 								<a href='ahp-news.php'>uma doação</a> para manter o site</span>.</p>",
-	"intro14"	=>	"<p><b> Em o seu trabalho cite:</b><br>
+	"intro16"	=>	"<p><b> Em o seu trabalho cite:</b><br>
 								<code>Goepel, K.D. (2018). Implementation of an Online Software Tool for the Analytic Hierarchy 
 								Process (AHP-OS). <i>International Journal of the Analytic Hierarchy Process</i>, Vol. 10 Issue 3 2018, pp 469-487,
 								<br><a href='https://doi.org/10.13033/ijahp.v10i3.590'>https://doi.org/10.13033/ijahp.v10i3.590</a>

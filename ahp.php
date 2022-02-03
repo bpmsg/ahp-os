@@ -28,8 +28,8 @@ include 'includes/config.php';
 
 session_start();
 
-$version = substr('$LastChangedDate: 2022-02-03 16:35:59 +0800 (Thu, 03 Feb 2022) $',18,10);
-$rev = trim('$Rev: 93 $', "$");
+$version = substr('$LastChangedDate: 2022-02-03 17:21:17 +0800 (Thu, 03 Feb 2022) $',18,10);
+$rev = trim('$Rev: 94 $', "$");
 
 // sets the session variable for language
 $lang = filter_input(INPUT_GET, 'lang', FILTER_SANITIZE_STRING);
@@ -88,7 +88,14 @@ echo $ahpOs->titles['h2subTitle'];
 echo $ahpOs->info['intro11'];
 echo $ahpOs->info['intro12'];
 echo $ahpOs->info['intro13'];
+
+// --- Terms of use link
 echo $ahpOs->info['intro14'];
+
+if(DONATIONS)
+	echo $ahpOs->info['intro15'];
+
+echo $ahpOs->info['intro16'];
 
 if(!$loggedIn && ($lang == 'EN' || $lang == 'ES' || $lang == 'PT')){
 	echo $ahpOs->info['intro21'];

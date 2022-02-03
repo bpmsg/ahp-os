@@ -46,11 +46,15 @@ public $info = array(
 								</ol>",
 	"intro13"	=>	"<p style='text-align:justify;'>
 								For programs 2 and 3 you can export the results as csv files (comma separated values) for further 
-								processing in excel. <b>For terms of use please see our </b> 
+								processing in excel.</p>",
+	"intro14"	=>	"<p style='text-align:justify;'>
+								<b>For terms of use please see our </b> 
 								<a href='https://bpmsg.com/about/user-agreement-and-privacy-policy/' >
-								user agreement and privacy policy.</a> If you like the program, <span class='err'>please help and consider a 
+								user agreement and privacy policy.</a></p>",
+	"intro15"	=>	"<p style='text-align:justify;'>
+								If you like the program, <span class='err'>please help and consider a 
 								<a href='ahp-news.php'>donation</a> to maintain the website</span>.</p>",
-	"intro14"	=>	"<p><b>For your work please cite:</b><br>
+	"intro16"	=>	"<p><b>For your work please cite:</b><br>
 								<code>Goepel, K.D. (2018). Implementation of an Online Software Tool for the Analytic Hierarchy 
 								Process (AHP-OS). <i>International Journal of the Analytic Hierarchy Process</i>, Vol. 10 Issue 3 2018, pp 469-487,
 								<br><a href='https://doi.org/10.13033/ijahp.v10i3.590'>https://doi.org/10.13033/ijahp.v10i3.590</a>
