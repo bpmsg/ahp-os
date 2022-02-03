@@ -20,7 +20,7 @@ Php package (c) Klaus D Goepel, 2013-2022
 * Partial judgments,
 * A posteriori application of different AHP judgment scales,
 * Group decision making using weighted geometric mean aggregation of
-* individual judgments (WGM-AIJ),
+ individual judgments (WGM-AIJ),
 * Group consensus calculation based on Shannon α and β-entropy,
 * Weight uncertainty estimation using Monte Carlo simulation,
 * Sensitivity analysis,
@@ -33,13 +33,14 @@ Php package (c) Klaus D Goepel, 2013-2022
 
 In your http root directory:
 `git clone https://github.com/bpmsg/ahp-os.git ahp`
-Modify `includes/config.php` to set your database and mail parameters.
+Modify `includes/config.php` to set your database and mail parameters. 
+Set permission for config.php to 640.
 As a database, either **`sqlite`** or **`mysql`** (MariaDB) can be 
 defined. If you expect to have less than hundred users, sqlite will 
 work fine.If you use `mysql`, create an empty database first.
-**Note: For sqlite ensure php PDO drivers are enabled**
+**Note: For sqlite ensure php PDO drivers are enabled.** 
 You can check with phpinfo() under PDO, PDO support. 
-Run `db/ahp-sql-create.php` to create the necessary tables and triggers.
+Run `db/ahp-sql-create.php` to create the necessary tables and triggers. 
 
 
 ## Usage
@@ -63,13 +64,12 @@ are published in:
 
 The `ADMIN` user is defined by the user id given in the `config.php` 
 file. The package allows to administer users. Users, not active over a 
-period of 90 days (do-user-admin, $daysInactive), can be deactivated 
-and an optional email for reactivation will be sent. If their account is  
-not activated within 48 hours ($daysNotActivated), it can be deleted by 
-the admninistrator.
-
-Donations can be tracked, and the above deactivation will not apply to 
-donors.
+period of 90 days (can be set in `includes/login/do/do-user-admin`, 
+`$daysInactive`), can be deactivated by the administrator and an 
+optional email with a reactivation link will be sent. If their account 
+is  not activated within 48 hours (set with `$daysNotActivated`), 
+the complete user account with all data can be deleted by the 
+admninistrator. 
 
 ## Limitations
 
@@ -157,8 +157,14 @@ ahp-\
      |                       AhpHierXX, AhpHierginiXX, AhpNewsXX,
      |--views (html menus)   AhpPrioCalcXX, AhpSessionAdminXX
 ```
+## Dependencies
+The source code includes the source of a modified `phpgraphlib` by 
+Elliott Brueggeman and `jscheck` by Gustav Eklundh to check, whether
+JavaScript is enabled for the browse. `PHPMailer`, version 6.5.3 is used 
+for email sending.
+
 ## SQL database structure and triggers
-There are 6 tables in the database, 4 of them to store tahp data:
+There are 6 tables in the database, 4 of them to store ahp data:
 * users: user data
 * projects: project data 
 * pwc: pairwise comparisons of participants
