@@ -33,8 +33,11 @@ Php package (c) Klaus D Goepel, 2013-2022
 
 In your http root directory:
 `git clone https://github.com/bpmsg/ahp-os.git ahp`
-Modify `includes/config.php` to set your database and mail parameters. 
-Set permission for config.php to 640.
+Create a `config.php` file, or duplicate the `config-sample.php` file
+in the `includes` directory and rename it to `config.php`.
+Edit/modify `includes/config.php` to set your database and mail 
+parameters. Set permission for `config.php` to 640.
+
 As a database, either **`sqlite`** or **`mysql`** (MariaDB) can be 
 defined. If you expect to have less than hundred users, sqlite will 
 work fine.If you use `mysql`, create an empty database first.
@@ -160,8 +163,8 @@ ahp-\
 ## Dependencies
 The source code includes the source of a modified `phpgraphlib` by 
 Elliott Brueggeman and `jscheck` by Gustav Eklundh to check, whether
-JavaScript is enabled for the browse. `PHPMailer`, version 6.5.3 is used 
-for email sending.
+JavaScript is enabled for the browser. `PHPMailer`, version 6.5.3 is 
+used for email sending.
 
 ## SQL database structure and triggers
 There are 6 tables in the database, 4 of them to store ahp data:
