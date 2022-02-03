@@ -35,8 +35,8 @@ else
 $class = 'AhpNews' . $lang;
 $ahpOs = new $class;
 
-$version = substr('$LastChangedDate$',18,10);
-$rev = trim('$Rev$', "$");
+$version = substr('$LastChangedDate: 2022-02-03 16:35:59 +0800 (Thu, 03 Feb 2022) $',18,10);
+$rev = trim('$Rev: 93 $', "$");
 
 /* 
  * --- Web Page HTML OUTPUT --- 
@@ -55,11 +55,14 @@ printf($ahpOs->titles1['h3release'], $version, $rev);
 echo $ahpOs->info['news1'];
 echo $ahpOs->titles1['h3news2'];
 echo $ahpOs->info['news2'];
-echo $ahpOs->titles1['h3don'];
-echo $ahpOs->info['don'];
+if(DONATIONS){
+	echo $ahpOs->titles1['h3don'];
+	echo $ahpOs->info['don'];
 	include "views/paypal-don.html"; 
+}
 echo "<div style='clear:both;text-align:justify;'>";
-echo "<p><a href='https://paypal.me/ahpDonation' target='_blank'>Paypal.me/ahpDonation</a></p>";
+if(DONATIONS)
+	echo "<p><a href='https://paypal.me/ahpDonation' target='_blank'>Paypal.me/ahpDonation</a></p>";
 echo $ahpOs->msg['tu'];
 echo '<br><img src="images/Klaus.png" alt="Klaus" width="103" height="44" />';
 echo "<div style='text-align:center;'><a href='" . SITE_URL . "'>",$ahpOs->msg['cont'],"</a></p></div>";

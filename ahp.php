@@ -28,8 +28,8 @@ include 'includes/config.php';
 
 session_start();
 
-$version = substr('$LastChangedDate$',18,10);
-$rev = trim('$Rev$', "$");
+$version = substr('$LastChangedDate: 2022-02-03 16:35:59 +0800 (Thu, 03 Feb 2022) $',18,10);
+$rev = trim('$Rev: 93 $', "$");
 
 // sets the session variable for language
 $lang = filter_input(INPUT_GET, 'lang', FILTER_SANITIZE_STRING);
@@ -82,7 +82,8 @@ echo "<p>Language: <a href='", $urlAct, "?lang=en'>English</a>
 		   &nbsp;&nbsp;<a href='", $urlAct, "?lang=es'>Español</a>
 		   &nbsp;&nbsp;<a href='", $urlAct, "?lang=pt'>Português</a>
 		  </p>";
-echo "<p>Donation: <a href='https://paypal.me/ahpDonation'>paypal.me/ahpDonation</a></p>";
+if(DONATIONS)
+	echo "<p>Donation: <a href='https://paypal.me/ahpDonation'>paypal.me/ahpDonation</a></p>";
 echo $ahpOs->titles['h2subTitle'];
 echo $ahpOs->info['intro11'];
 echo $ahpOs->info['intro12'];
