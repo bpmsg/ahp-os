@@ -106,8 +106,8 @@ class Registration
         } else {
             // create a database connection, using the constants from config/config.php
             try {
-							if ($this->db_type == 'sqlite'){
-	      				$this->db_connection = new PDO($this->db_type . ':' . $this->db_sqlite_path);
+					if ($this->db_type == 'sqlite'){
+	      				$this->db_connection = new PDO($this->db_type . ':' . $this->db_sqlite_path . DBNAME . ".db");
 	      			} else {
 						// --- MySQL database type - added 2015-10-01
 								$dsn = 'mysql:host=' . DBHOST . ';dbname=' . DBNAME . ';charset=utf8';

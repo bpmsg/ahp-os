@@ -210,7 +210,7 @@ class AhpAdmin extends LoginAdmin {
 			WHERE user_id !=" . ADMIN_ID . " 
 			 AND max(julianday( users.user_registration_datetime), julianday( users.user_last_login ))
 			 < julianday('now', '" . -$days . " day', 'localtime') 
-			 AND isnull(donations.trUid)
+			 AND donations.trUid = NULL 
 			 AND user_active != 0
 			GROUP BY users.user_email ORDER BY julianday( users.user_last_login ) DESC;";
 
