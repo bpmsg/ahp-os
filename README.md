@@ -31,16 +31,23 @@ Php package (c) Klaus D Goepel, 2013-2022
 
 ## Installation
 
-Create a folder in your web root directory, e.g. `ahp`.
-Copy all files - keeping the directory structure - into this folder.
-Modify includes/config.php to set your database and mail parameters.
-As a database, either `sqlite` or `mysql` (MariaDB) can be defined.
-If you use `mysql`, create an empty database first.
+In your http root directory:
+`git clone https://github.com/bpmsg/ahp-os.git ahp`
+Modify `includes/config.php` to set your database and mail parameters.
+As a database, either **`sqlite`** or **`mysql`** (MariaDB) can be 
+defined. If you expect to have less than hundred users, sqlite will 
+work fine.If you use `mysql`, create an empty database first.
+**Note: For sqlite ensure php PDO drivers are enabled**
+You can check with phpinfo() under PDO, PDO support. 
 Run `db/ahp-sql-create.php` to create the necessary tables and triggers.
+
 
 ## Usage
 
 Run your web browser and open `http://your-web-root/ahp/`
+In order to use the package, you need to create a user account
+by registering on the web interface.
+
 
 A complete manual and quick reference guide can be found in the `docs` 
 folder. Mathematical background and details about the implementation
@@ -52,16 +59,14 @@ are published in:
 > Vol. 10 Issue 3 2018, pp 469-487,
 > [link](https://doi.org/10.13033/ijahp.v10i3.590)
 
-In order to use the package, you need to create a user account
-by registering on the web interface. The `ADMIN` user is defined 
-by the user id given in the `config.php` file.
-
 ## User administration
 
-The package allows to administer users. Users, not active over a period
-of 90 days, can be deactivated and an optional email for reactivation
-will be sent. If their account is not activated within 48 hours, it can 
-be deleted by the admninistrator.
+The `ADMIN` user is defined by the user id given in the `config.php` 
+file. The package allows to administer users. Users, not active over a 
+period of 90 days (do-user-admin, $daysInactive), can be deactivated 
+and an optional email for reactivation will be sent. If their account is  
+not activated within 48 hours ($daysNotActivated), it can be deleted by 
+the admninistrator.
 
 Donations can be tracked, and the above deactivation will not apply to 
 donors.
@@ -87,6 +92,23 @@ the web root directory.
 
 ```
 ahp-\
+     |-- ahp.php (Main page)
+     |-- ahp-calc.php (AHP priority calculator)
+     |-- ahp-calc1.php
+     |-- ahp-hierarchy.php (AHP hierarchies)
+     |-- ahp-hiercalc.php
+     |-- ahp-hiergini.php
+     |-- ahp-news.php (Latest news)
+     |-- ahp-alt.php
+     |-- ahp-alt1.php
+     |-- ahp-altcalc.php
+     |-- ahp-g-input.php
+     |-- ahp-group.php (AHP results)
+     |-- ahp-group-graph.php
+     |-- ahp-session-admin.php (AHP project administration)
+     |-- ahp-user-recover.php (Recover user from a backup database)
+     |-- index.php (entry page)
+     |
      |-- classes-\
      |           AhpCalc (Eigenvector of DM)
      |           AhpCalcIo (extends AhpCalc, html/csv i/o)
@@ -136,35 +158,41 @@ ahp-\
      |--views (html menus)   AhpPrioCalcXX, AhpSessionAdminXX
 ```
 ## SQL database structure and triggers
+There are 6 tables in the database, 4 of them to store tahp data:
+* users: user data
+* projects: project data 
+* pwc: pairwise comparisons of participants
+* alternatives: ahp alternative names
+
 ### Tables
 ```
-users			user_id (primary, ai)
-				user_name unique,
-projects		project_id (primary, ai), 
-				project_sc (unique), 
-				project_author (foreign key users,user_name)
-pwc				project_sc (foreign key projects.project_sc)
-				pwc_id (primary, ai)
+users	user_id (primary, ai)
+		user_name unique,
+projects	project_id (primary, ai), 
+			project_sc (unique), 
+			project_author (foreign key users,user_name)
+pwc	        project_sc (foreign key projects.project_sc)
+	        pwc_id (primary, ai)
 alternatives	project_sc (foreign key projects.project_sc)
-audit			a_id (primary, ai)
-donations		tr_no (primary, ai)
+audit		a_id (primary, ai)
+donations	tr_no (primary, ai)
 ```
 ### Triggers
 In the audit table entries are triggered by user and admin actions:
 ```
 a_trg	a_act
-U		User login
-		Failed login
-		User activated
-		User deactivated
-		Change of remember me token
-		New user name
-		Change of user email
-		Password change
-		Password reset
-		Other
-I		New user registration
-D		User deleted
+U	User login
+	Failed login
+	User activated
+	User deactivated
+	Change of remember me token
+	New user name
+	Change of user email
+	Password change
+	Password reset
+	Other
+I	New user registration
+D	User deleted
 ```
 Clean audit table will delete all "Other" entries.
 ## License

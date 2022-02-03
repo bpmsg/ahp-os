@@ -318,12 +318,14 @@ echo "<p>Database type: <span class='msg'>", DB_TYPE, "</span></p>";
 
 /* --- Create empty file for SQLite DB --- */
 if( DB_TYPE == "sqlite"){
-	if (file_exists( DB_PATH ))
-		echo "<p class='err'>Warning: SQLITE database $dbName already exists!</p>";
-	else {
-		touch(DB_PATH . "/" . $dbName);
-		echo "<p class='msg'>SQLITE database $dbName file created.</p>";
-	}
+        if (file_exists(DB_PATH . DBNAME . ".db" ))
+                echo "<p class='err'>Warning: SQLITE database $dbName already exists!<br>"
+                . DB_PATH . DBNAME . ".db</p>";
+        else {
+                touch(DB_PATH . DBNAME . ".db");
+                echo "<p class='msg'>SQLITE database file created. <br>"
+                . DB_PATH . DBNAME . ".db</p>";
+        }        
 }
 
 /* --- Exit when no DB connection can be established --- */
