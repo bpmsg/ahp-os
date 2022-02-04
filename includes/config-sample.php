@@ -30,13 +30,13 @@
 /*  When updating the productive system: 
  *  you can still do testing with your local IP 'MY_IP'
  */
-	define('UPDATE', true);
+	define('UPDATE', false);
 	define('MY_IP',"192.168.1.112");
 
 	// --- ini_set('error_reporting', E_ERROR | E_WARNING);
 	ini_set('error_reporting', E_ALL & ~E_NOTICE);
-	ini_set('display_errors',1); // Set to 0 for productive env.
-	define('DEBUG', false);       // --- Debug on/off
+	ini_set('display_errors',1); // --- Set to 0 for productive env!
+	define('DEBUG', false);      // --- Debug on/off
 
 /*  Mail settings */
 
@@ -94,7 +94,8 @@
 	// --- DIRECTORIES (PATH)
 	define('ABS_PATH', $_SERVER['DOCUMENT_ROOT']);
 	define('BASE',
- 		substr($_SERVER['SCRIPT_NAME'],0,1+strpos($_SERVER['SCRIPT_NAME'],DIRECTORY_SEPARATOR,1)));
+ 		substr($_SERVER['SCRIPT_NAME'],0,
+			1+strpos($_SERVER['SCRIPT_NAME'],DIRECTORY_SEPARATOR,1)));
 
 	// --- DOMAIN
 	if(isset($_SERVER['HTTP_HOST']))
@@ -211,8 +212,10 @@
 		$lang = strtolower(substr($className, -2,2));
 		$paths = array(
 			ABS_PATH . BASE . 'classes'  . DIRECTORY_SEPARATOR,
-			ABS_PATH . BASE . 'includes' . DIRECTORY_SEPARATOR . 'login' . DIRECTORY_SEPARATOR,
-			ABS_PATH . BASE . 'language' . DIRECTORY_SEPARATOR . $lang . DIRECTORY_SEPARATOR
+			ABS_PATH . BASE . 'includes' . DIRECTORY_SEPARATOR 
+			. 'login' . DIRECTORY_SEPARATOR,
+			ABS_PATH . BASE . 'language' . DIRECTORY_SEPARATOR 
+			. $lang . DIRECTORY_SEPARATOR
 		);
 		foreach($paths as $path){
 			$file = $path . $className . '.php';
@@ -263,7 +266,8 @@
 			}
 		}
 		closeSession();
-		die("INVALID SESSION, SESSION EXPIRED! -&nbsp;&nbsp;<a href=" . SITE_URL . ">Back</a>");
+		die("INVALID SESSION, SESSION EXPIRED! 
+			-&nbsp;&nbsp;<a href=" . SITE_URL . ">Back</a>");
 	}
 
 	/* Close session */

@@ -27,7 +27,7 @@ Php package (c) Klaus D Goepel, 2013-2022
 * Weighted sum model (WSM) and weighted product model (WPM) for the
   aggregation of alternatives,
 * Export of input and result data as comma separated value (CSV) files
-  for further processing or presentation in a spreadsheet program
+  for further processing or presentation in a spreadsheet program.
 
 ## Installation
 
@@ -40,10 +40,13 @@ parameters. Set permission for `config.php` to 640.
 
 As a database, either **`sqlite`** or **`mysql`** (MariaDB) can be 
 defined. If you expect to have less than hundred users, sqlite will 
-work fine.If you use `mysql`, create an empty database first.
-**Note: For sqlite ensure php PDO drivers are enabled.** 
+work fine. Using `mysql`, create an empty database first.
+**Note: Please ensure that php PDO drivers are enabled.** 
 You can check with phpinfo() under PDO, PDO support. 
-Run `db/ahp-sql-create.php` to create the necessary tables and triggers. 
+Run `db/ahp-sql-create.php` to create the necessary tables and triggers.
+
+AHP-OS is tested to run with PHP version 7.2, 7.3, and 7.4.9, 
+sqlite 3.22 and 5.5.5-10.3.29-MariaDB.
 
 
 ## Usage
@@ -128,6 +131,7 @@ ahp-\
      |                        generates sql tables & triggers)
      |--includes-\
      |            config.php (Package Configuration)
+	 |            config-sample.php
      |            footer.html
      |            header.html
      |            showCaptcha.php
@@ -178,8 +182,8 @@ There are 6 tables in the database, 4 of them to store ahp data:
 users	user_id (primary, ai)
 		user_name unique,
 projects	project_id (primary, ai), 
-			project_sc (unique), 
-			project_author (foreign key users,user_name)
+		project_sc (unique), 
+		project_author (foreign key users,user_name)
 pwc	        project_sc (foreign key projects.project_sc)
 	        pwc_id (primary, ai)
 alternatives	project_sc (foreign key projects.project_sc)
@@ -189,7 +193,7 @@ donations	tr_no (primary, ai)
 ### Triggers
 In the audit table entries are triggered by user and admin actions:
 ```
-a_trg	a_act
+a_trg	a_act (activity)
 U	User login
 	Failed login
 	User activated
