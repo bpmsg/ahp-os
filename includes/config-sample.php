@@ -56,6 +56,16 @@
 	define('DBUSER',  "ahp-os"); // for mysql
 	define('DBPASS',  "ahp-os-mariaDB-password");
 
+	if( DB_TYPE == "mysql"){
+		/* provide access to your mariadb database
+		 * e.g. 'localhost:3306' or example.com:3306'
+		 */
+		define( 'DBHOST', MY_DOMAIN . ":3306");
+		$dbName = DBNAME;
+	} else {
+		$dbName = DBNAME . '.db';	
+	}
+
 
 /*  Comment link from your blog and/or contact link, 
  *  comment out if you don't want to provide
@@ -104,14 +114,6 @@
 		define('MY_DOMAIN',$_SERVER['SERVER_NAME']);
 
 	define('DB_PATH', ABS_PATH . BASE . "db" . DIRECTORY_SEPARATOR);
-
-	if( DB_TYPE == "mysql"){
-		// provide access to your mysql database
-		define( 'DBHOST', MY_DOMAIN . ":3306");
-		$dbName = DBNAME;
-	} else {
-		$dbName = DBNAME . '.db';	
-	}
 
 	// --- COOKIES
 	define('COOKIE_RUNTIME', 1209600); // 1209600 seconds = 2 weeks
@@ -211,11 +213,9 @@
 	function appClassLoader($className){
 		$lang = strtolower(substr($className, -2,2));
 		$paths = array(
-			ABS_PATH . BASE . 'classes'  . DIRECTORY_SEPARATOR,
-			ABS_PATH . BASE . 'includes' . DIRECTORY_SEPARATOR 
-			. 'login' . DIRECTORY_SEPARATOR,
-			ABS_PATH . BASE . 'language' . DIRECTORY_SEPARATOR 
-			. $lang . DIRECTORY_SEPARATOR
+			ABS_PATH . BASE . 'classes/',
+			ABS_PATH . BASE . 'includes/login/',
+			ABS_PATH . BASE . 'language/' . $lang . '/'
 		);
 		foreach($paths as $path){
 			$file = $path . $className . '.php';
