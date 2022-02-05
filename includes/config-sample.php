@@ -57,10 +57,8 @@
 	define('DBPASS',  "ahp-os-mariaDB-password");
 
 	if( DB_TYPE == "mysql"){
-		/* provide access to your mariadb database
-		 * e.g. 'localhost:3306' or example.com:3306'
-		 */
-		define( 'DBHOST', MY_DOMAIN . ":3306");
+		/* provide access to your mariadb database */
+		define( 'DBHOST', "localhost:3306");
 		$dbName = DBNAME;
 	} else {
 		$dbName = DBNAME . '.db';	
@@ -105,7 +103,7 @@
 	define('ABS_PATH', $_SERVER['DOCUMENT_ROOT']);
 	define('BASE',
  		substr($_SERVER['SCRIPT_NAME'],0,
-			1+strpos($_SERVER['SCRIPT_NAME'],DIRECTORY_SEPARATOR,1)));
+			1+strpos($_SERVER['SCRIPT_NAME'],'/',1)));
 
 	// --- DOMAIN
 	if(isset($_SERVER['HTTP_HOST']))
@@ -113,7 +111,7 @@
 	else
 		define('MY_DOMAIN',$_SERVER['SERVER_NAME']);
 
-	define('DB_PATH', ABS_PATH . BASE . "db" . DIRECTORY_SEPARATOR);
+	define('DB_PATH', ABS_PATH . BASE . "db/");
 
 	// --- COOKIES
 	define('COOKIE_RUNTIME', 1209600); // 1209600 seconds = 2 weeks
@@ -165,6 +163,7 @@
 	
 	// --- Admin, register
 	define('ADMIN_ID', 1); // --- user id(s) of administrators for user accounts
+
 	define('URL_HOME', "//" . MY_DOMAIN) ; // --- Home link url
 	define('SITE_URL', "//" . MY_DOMAIN . BASE); // --- Site link url
 

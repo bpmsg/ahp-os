@@ -84,8 +84,8 @@ class AhpAdmin extends LoginAdmin {
 	public function getAllUsers($days){
 		if ($this->dataBaseConnection()){
 
-			$sqlite = "SELECT user_id, user_name, user_email, nullif(count(projects.project_sc),0), 
-			date(users.user_registration_datetime), 
+			$sqlite = "SELECT user_id, user_name, user_email, 
+			nullif(count(projects.project_sc),0), date(users.user_registration_datetime), 
 			substr( round(julianday('now', 'localtime') - julianday( users.user_last_login ),1) || ' d',1,7),
 			donations.trUid  
 			FROM users 
@@ -96,15 +96,17 @@ class AhpAdmin extends LoginAdmin {
 			AND julianday( users.user_registration_datetime) > julianday('now', 'localtime', '" . -$days . " days')
 			GROUP BY users.user_email ORDER BY julianday(users.user_registration_datetime) DESC;";
 
-			$mysql = "SELECT user_id, user_name, user_email, count(projects.project_sc), users.user_registration_datetime, 
+			$mysql = "SELECT user_id, user_name, user_email, 
+			count(DISTINCT projects.project_sc), users.user_registration_datetime, 
 			(CONCAT(DATEDIFF(CURDATE(), user_registration_datetime), ' d')) as days,
 			donations.trUid
 			FROM users 
 			LEFT JOIN donations ON users.user_id = donations.trUid 
 			LEFT JOIN projects ON users.user_name = projects.project_author 
-			WHERE users.user_active = 1 AND users.user_id != '" . ADMIN_ID . "'
-			 AND DATEDIFF(CURDATE(), user_registration_datetime) < " . $days . 
-			" GROUP BY users.user_email DESC;";
+			WHERE users.user_id != '" . ADMIN_ID . "'
+			AND users.user_active = 1
+			AND DATEDIFF(CURDATE(), user_registration_datetime) < " . $days . " 
+			GROUP BY users.user_email ORDER BY user_registration_datetime DESC;";
 
 			$sql = ( $this->db_type == 'sqlite' ? $sqlite : $mysql);
 			$query = $this->db_connection->query($sql);
@@ -118,7 +120,8 @@ class AhpAdmin extends LoginAdmin {
 	public function getLatestUsers($hours){
 		if ($this->dataBaseConnection()){
 
-			$sqlite = "SELECT user_id, user_name, user_email, nullif(count(projects.project_sc),0), 
+			$sqlite = "SELECT user_id, user_name, user_email, 
+				nullif(count(projects.project_sc),0), 
 				date(users.user_registration_datetime), 
 				substr( round(24 * (julianday('now') - julianday( users.user_last_login)),1) || '   h',1,8),
 				donations.trUid
@@ -129,15 +132,18 @@ class AhpAdmin extends LoginAdmin {
 				AND users.user_id != '" . ADMIN_ID ."'
 				GROUP BY users.user_email ORDER BY julianday( users.user_last_login ) DESC;";
 
-			$mysql = "SELECT users.user_id, users.user_name, users.user_email, nullif(count(projects.project_sc),0),
-				DATE(users.user_registration_datetime), CONCAT(HOUR(TIMEDIFF(NOW(), a_ts)), ':', 
-				MINUTE(TIMEDIFF(NOW(), a_ts)), ' h') AS 'last' FROM `audit` 
-				LEFT JOIN `users` ON `a_uid` = users.user_id
-                LEFT JOIN projects ON users.user_name = projects.project_author 
-				WHERE `a_act` = 'User Login'
-				AND HOUR(TIMEDIFF(NOW(), user_last_login)) <" . $hours . "
-				AND users.user_id != '1' 
-				GROUP BY users.user_email ORDER BY audit.a_ts DESC";
+			$mysql = "SELECT user_id, user_name, user_email, 
+				nullif(count(DISTINCT projects.project_sc),0),
+				DATE(user_registration_datetime), 
+				CONCAT(HOUR(TIMEDIFF(NOW(), user_last_login)), ':', 
+				MINUTE(TIMEDIFF(NOW(), user_last_login)), ' h') AS 'last',
+				donations.trUid
+				FROM users 
+				LEFT JOIN donations ON users.user_id = donations.trUid 
+				LEFT JOIN projects ON user_name = projects.project_author 
+				WHERE HOUR(TIMEDIFF(NOW(), user_last_login)) < " . $hours . "
+				AND user_id != '" . ADMIN . "' 
+				GROUP BY user_email ORDER BY user_last_login DESC;";
 
 			$sql = ( $this->db_type == 'sqlite' ? $sqlite : $mysql);
 			$query = $this->db_connection->query($sql);
@@ -170,12 +176,12 @@ class AhpAdmin extends LoginAdmin {
 			DATEDIFF(CURDATE(), user_registration_datetime),
 			donations.trUid
 			FROM users 
-			LEFT JOIN donations ON users.user_id = donations.trUid 
-			LEFT JOIN projects ON users.user_name = projects.project_author
-			WHERE users.user_id != '" . ADMIN_ID . "'  
-				AND users.user_active = 0
-				AND (DATEDIFF(CURDATE(), user_registration_datetime) >= " . $days .  ")
-			GROUP BY users.user_email ORDER BY users.user_registration_datetime DESC;";
+			LEFT JOIN donations ON user_id = donations.trUid 
+			LEFT JOIN projects  ON user_name = projects.project_author
+			WHERE user_id != '" . ADMIN_ID . "'  
+				AND user_active = 0
+				AND (DATEDIFF(CURDATE(), user_registration_datetime) <= " . $days .  ")
+			GROUP BY user_email ORDER BY user_registration_datetime DESC;";
 
 			$sql = ( $this->db_type == 'sqlite' ? $sqlite : $mysql);
 			$query = $this->db_connection->prepare($sql);
