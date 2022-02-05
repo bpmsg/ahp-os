@@ -504,7 +504,6 @@ class LoginAdmin extends Login {
  */
 public function getUserFlow($m = 12){
 	$mnth = array(); // array with $m months as key
-	$tmp = array();
 	for($i=0; $i<$m; $i++)
 		$mnth[] = date("Y-m",strtotime( date( 'Y-m-01')." -$i months"));
 
@@ -528,15 +527,13 @@ public function getUserFlow($m = 12){
         ORDER by DATE_FORMAT(audit.a_ts, '%Y-%m') DESC
         LIMIT " . $m . ";";
 
-		
 		$sql = ( $this->db_type == 'sqlite' ? $sqlite : $mysql);
 		$query = $this->db_connection->prepare( $sql );
 		$query->execute();
-		$tmp = $query->fetchall(PDO::FETCH_COLUMN);
-		if(!empty($tmp))
-			$reg['I'] = array_combine($mnth, $tmp);
-		else
-			$reg['I'] = array_combine($mnth, array_fill(0,$m,0));
+		$tmp = array_fill(0,$m,0);
+		$tmp = array_replace($tmp, $query->fetchall(PDO::FETCH_COLUMN));
+		$reg['I'] = array_combine($mnth, $tmp);
+
 		// --- Audit trigger "D" = deletions
 		$sqlite = "SELECT count(audit.a_trg) as 'D' FROM audit 
 		WHERE audit.a_ts <= date('now') 
@@ -557,11 +554,9 @@ public function getUserFlow($m = 12){
 		$sql = ( $this->db_type == 'sqlite' ? $sqlite : $mysql);
 		$query = $this->db_connection->prepare( $sql );
 		$query->execute();
-		$tmp = $query->fetchall(PDO::FETCH_COLUMN);
-		if(!empty($tmp))
-			$reg['D'] = array_combine($mnth, $tmp);
-		else
-			$reg['D'] = array_combine($mnth, array_fill(0,$m,0));
+		$tmp = array_fill(0,$m,0);
+		$tmp = array_replace($tmp, $query->fetchall(PDO::FETCH_COLUMN));
+		$reg['D'] = array_combine($mnth, $tmp);
 			
 		return $reg;
 	}
