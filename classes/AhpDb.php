@@ -10,7 +10,8 @@
 * @package AHP online
 * --- Version History ----
 * @since 2014-04-05
-* @version 2017-10-05 displayParticipants added jquery script - last version w/o SVN
+* @version 2017-10-05 displayParticipants added jquery script 
+* - last version w/o SVN
 *
 * @uses $_SESSION['ipart'] list of selected participants
 * @uses $_SESSION['ptick'] tick all participants
@@ -35,8 +36,10 @@
 * public  function getSelectedParticipants($part)
 * public  function getPwcArray($sc, $name, $nod="")
 * public  function deleteRecord($sc)
-* public  function writeProjectData($sc, $project, $description, $hText, $author, $alt=array())
-* public  function updateProjectData($sc, $project, $description, $hText, $author, $alt=array())
+* public  function writeProjectData($sc, $project, $description, $hText,
+* 									 $author, $alt=array())
+* public  function updateProjectData($sc, $project, $description, $hText,
+*									 $author, $alt=array())
 * public  function submitGroupData($sc, $name, $pwc)
 * public  function setSessfmPrjc($sc)
 * public  function toggleStatus($sc)
@@ -54,7 +57,8 @@
 *
 * --- HTML output functions ---
 * public  function displayProjectDetails($sc, $sel=false) - ahp-group, 
-* private function displayParticipantTable($part) - called by displayProjectDetails
+* private function displayParticipantTable($part) 
+* 		- called by displayProjectDetails
 * private function displaySessionTable($name)
 *
 * private function getMatrixFromPwc($pwc) Same function as in ahp class!
@@ -121,7 +125,8 @@ const ENCL = '"';
 
 
 /* 
- * Checks if database connection is opened. If not, then this method tries to open it.
+ * Checks if database connection is opened. If not, then this method 
+ * tries to open it.
  * @return bool Success status of the database connecting process
  */
   public function databaseConnection(){
@@ -129,12 +134,14 @@ const ENCL = '"';
   	if ($this->db_connection != null) {
     	return true;
   	} else {
-      // create a database connection, using the constants from config/config.php
+      // create a db connection, using the constants from config/config.php
     	try {
 				if ($this->db_type == 'sqlite'){
-					$this->db_connection = new PDO( DB_TYPE . ':' . DB_PATH . $this->db_name. ".db");
+					$this->db_connection = new PDO( DB_TYPE . ':' . DB_PATH 
+					. $this->db_name. ".db");
  				} elseif($this->db_type == 'mysql'){
-					$dsn = 'mysql:host=' . DBHOST . ';dbname=' . $this->db_name . ';charset=utf8';
+					$dsn = 'mysql:host=' . DBHOST . ';dbname=' . $this->db_name 
+					. ';charset=utf8';
 					$this->db_connection = new PDO($dsn, DBUSER, DBPASS);
 	 			} else {
  					$err[] = $this->ahpDbTxt->err['dbType'] . DB_TYPE;
@@ -153,6 +160,7 @@ const ENCL = '"';
 
 /* 
  * The session code is used to identify the AHP projects with a unique code
+ * @return string session code
  */
 	public function generateSessionCode($length=8, $strength=0) {
     $vowels = 'aeuy';
@@ -185,7 +193,9 @@ const ENCL = '"';
 	public function checkSessionCode($sc){
 	// check whether session code already existing
 		if ($this->dataBaseConnection()){
-			$queryCheckSc = $this->db_connection->prepare('SELECT project_sc FROM projects WHERE project_sc = :sc');
+			$queryCheckSc = 
+			$this->db_connection->prepare(
+				"SELECT project_sc FROM projects WHERE project_sc = :sc");
 			$queryCheckSc->bindValue(':sc', $sc, PDO::PARAM_STR);
 			$queryCheckSc->execute();
 			$result = $queryCheckSc->fetchAll();
@@ -202,12 +212,14 @@ const ENCL = '"';
 
 /* 
  * get stored sessions from author $name as sorted array of session codes
+ * @return array session codes or empty array
  */
 	public function getStoredSessions($name){
 		$result = array();
 		if ($this->dataBaseConnection()){
-			$sql = "SELECT project_sc FROM projects WHERE project_author = :name ORDER BY project_sc";
-			$sql .= (DB_TYPE == "sqlite" ? ' COLLATE NOCASE ASC;' : ';') ;
+			$sql = "SELECT project_sc FROM projects 
+					WHERE project_author = :name ORDER BY project_sc";
+			$sql .= (DB_TYPE == "sqlite" ? " COLLATE NOCASE ASC;" : ";") ;
 			$query = $this->db_connection->prepare($sql);
 			$query->bindValue(':name', $name, PDO::PARAM_STR);
 			$query->execute();
@@ -225,14 +237,17 @@ const ENCL = '"';
 /* 
  * reads project data with session code $sc from database  
  * @return assoc array of project data:
- * array( ['project_id']=>int, ['project_sc'] =>char(6), ['project_name'] =>varchar(64), 
+ * array( 
+ * ['project_id']=>int, ['project_sc'] =>char(6), 
+ * ['project_name'] =>varchar(64), 
  * ['project_description'] =>text(400), ['project_hText']=>text(6000),
  * ['project_datetime'] =>datetime, ['project_author'] =>varchar(64)
+ * )
  * If alternatives are defined: ['project_alt']=>varchar(64)
  */
 	public function readProjectData($sc){
 		if ($this->checkSessionCode($sc)){
-			$sql = 'SELECT * FROM `projects` WHERE `project_sc` = :sc';
+			$sql = "SELECT * FROM `projects` WHERE `project_sc` = :sc";
 			$query = $this->db_connection->prepare($sql);
 			$query->bindValue(':sc', $sc, PDO::PARAM_STR);
 			$query->execute();
@@ -242,7 +257,7 @@ const ENCL = '"';
 				return array();
 			} 
 			// check for alternatives
-			$sql = 'SELECT `alt` from `alternatives` WHERE `project_sc` = :sc';
+			$sql = "SELECT `alt` from `alternatives` WHERE `project_sc` = :sc";
 			$query = $this->db_connection->prepare($sql);
 			$query->bindValue(':sc', $sc, PDO::PARAM_STR);
 			$query->execute();
@@ -259,17 +274,19 @@ const ENCL = '"';
 
 
 /* Toggle project status open/closed
-*/
+ * @return project status 1 (open) or 0 (closed)
+ */
 	public function toggleStatus($sc){
 			$this->databaseConnection();
-			$sql = 'SELECT `project_status` from `projects` WHERE `project_sc` = :sc';
+			$sql = "SELECT `project_status` from `projects` 
+					WHERE `project_sc` = :sc";
 			$query = $this->db_connection->prepare($sql);
 			$query->bindValue(':sc', $sc, PDO::PARAM_STR);
 			$query->execute();
 			$status = $query->fetch(PDO::FETCH_NUM);
 			$stnew = ($status[0] == 1 ? 0 : 1);
-			$sql = 'UPDATE `projects` SET `project_status` = :stnew
-					WHERE `project_sc` = :sc;'; 
+			$sql = "UPDATE `projects` SET `project_status` = :stnew
+					WHERE `project_sc` = :sc;"; 
 			$query = $this->db_connection->prepare($sql);
 			$query->bindValue(':sc', $sc, PDO::PARAM_STR);
 			$query->bindValue(':stnew', $stnew, PDO::PARAM_STR);
@@ -279,7 +296,7 @@ const ENCL = '"';
 
 
 /* check whether name is already participant in project sc
- * if participant exists, return true, otherwise false
+ * @return bool true if participant exists, false otherwise
  */
 	public function checkParticipant($sc, $name){
 		$p = $this->getParticipants($sc);
@@ -291,13 +308,13 @@ const ENCL = '"';
 
 
 /* get list of participants for project sc 
- * TODO: combine getParticipants and readParticipantData
- * @return array of participant names for project $sc
+ * @return array of participant names for project $sc or empty array
  */
 	public function getParticipants($sc){
 		if ($this->dataBaseConnection()){
 			if ( $this->checkSessionCode($sc)){
-				$sql = 'SELECT DISTINCT pwc_part FROM pwc WHERE project_sc = :sc ORDER BY pwc_timestamp DESC;';
+				$sql = "SELECT DISTINCT pwc_part FROM pwc 
+					WHERE project_sc = :sc ORDER BY pwc_timestamp DESC;";
 				$query = $this->db_connection->prepare($sql);
 				$query->bindValue(':sc', $sc, PDO::PARAM_STR);
 				$query->execute();
@@ -316,8 +333,9 @@ const ENCL = '"';
  */
 	private function readParticipantData($sc){
 		if ($this->dataBaseConnection()){
-			$sql = "SELECT pwc_part, max(pwc_timestamp) AS 'pwcDate' FROM pwc WHERE project_sc = :sc
-			GROUP BY pwc_part ORDER BY pwcDate DESC;";
+			$sql = "SELECT pwc_part, max(pwc_timestamp) AS 'pwcDate' 
+				FROM pwc WHERE project_sc = :sc
+				GROUP BY pwc_part ORDER BY pwcDate DESC;";
 			$query = $this->db_connection->prepare($sql);
 			$query->bindValue(':sc', $sc, PDO::PARAM_STR);
 			$query->execute();
@@ -328,11 +346,13 @@ const ENCL = '"';
 
 
 /* 
- * delete participant with name $pn
+ * delete participant with name $pn from project with session code $sc
+ * @return bool true if deleted, false otherwise
  */
 	public function delParticipant($sc, $pn){
 		if ($this->dataBaseConnection()){
-			$sql = 'DELETE FROM `pwc` WHERE `project_sc` = :sc AND `pwc_part` = :pn;';
+			$sql = "DELETE FROM `pwc` WHERE `project_sc` = :sc 
+				AND `pwc_part` = :pn;";
 			$query = $this->db_connection->prepare($sql);
 			$query->bindValue(':sc', $sc, PDO::PARAM_STR);
 			$query->bindValue(':pn', $pn, PDO::PARAM_STR);
@@ -347,8 +367,8 @@ const ENCL = '"';
 
 
 /* 
- * get complete array of all pairwise comparisons from participant $name for project $sc
- * If parameter $node is given, get pwc for this node only
+ * get complete array of all pairwise comparisons from participant $name 
+ * for project $sc. If parameter $node is given, get pwc for this node only
  * Reads [pwc_ab] => varchar(255) and [pwc_intense] => varchar(255) from DB
  * [pwc_ab] is 0 (preference "A") or 1 (preference "B")
  * [pwc_intense] contains rational scale values range 1 to 9
@@ -361,7 +381,8 @@ const ENCL = '"';
 		$nodes = array();
 		$pwcA = array();
 		if($nod==""){
-			$sql = 'SELECT pwc_node FROM pwc WHERE project_sc = :sc AND pwc_part = :name;';
+			$sql = "SELECT pwc_node FROM pwc WHERE project_sc = :sc 
+				AND pwc_part = :name;";
 			$query = $this->db_connection->prepare($sql);
 			$query->bindValue(':sc', $sc, PDO::PARAM_STR);
 			$query->bindValue(':name', $name, PDO::PARAM_STR);
@@ -383,14 +404,16 @@ const ENCL = '"';
 
 
 /* 
- * get pairwise comparisons for project $sc from participant $participant for node $node
+ * get pairwise comparisons for project $sc from 
+ * participant $participant for node $node
  * @return array [pwc_ab] => varchar(255) and [pwc_intense] => varchar(255) 
- * @uses function convertPwc to get final arraymatching ahpH
+ * @uses function convertPwc to get final array matching ahpH
  */
 	private function getPwc($sc, $participant, $nod) {
 		if ( $this->checkSessionCode($sc)){
-			$sql = 'SELECT `pwc_ab`, `pwc_intense` FROM `pwc` 
-				WHERE `project_sc` = :sc AND `pwc_part` = :participant AND `pwc_node` LIKE :nod';
+			$sql = "SELECT `pwc_ab`, `pwc_intense` FROM `pwc` 
+				WHERE `project_sc` = :sc AND `pwc_part` = :participant 
+					AND `pwc_node` LIKE :nod";
 			$query = $this->db_connection->prepare($sql);
 			$query->bindValue(':sc', $sc, PDO::PARAM_STR);
 			$query->bindValue(':participant', $participant, PDO::PARAM_STR);
@@ -405,7 +428,9 @@ const ENCL = '"';
 	}
 
 
-/* converts pwc array of a specific node from two strings to an array [A],[Intense] */
+/* converts pwc array of a specific node from two strings 
+ * to an array [A],[Intense]  
+ */
 	private function convertPwc($pwc){
 		$pwcA = $pwc['pwc_ab'];
 		$pwcI = $pwc['pwc_intense'];
@@ -414,7 +439,8 @@ const ENCL = '"';
 	}
 
 
-/* converts $pwc array [node][A],[node][Intense] into two strings ['node']['pwc_ab'], ['node']['pwc_intense']
+/* converts $pwc array [node][A],[node][Intense] into 
+ * two strings ['node']['pwc_ab'], ['node']['pwc_intense']
  * called by submitGroupData
  */
 	private function convertPwcToString($pwc){
@@ -494,7 +520,8 @@ $pwcsCnt = 0;
 					$nodeTxt .= $branch[$j] . "=" . round($ev[$j],8) . ", ";
 				$nodeTxt = rtrim($nodeTxt,", ") . ";";
 				$txtNa = explode(":", $nodeTxt);
-				$_SESSION['hText'] = $ahpH->setNewText($_SESSION['hText'], $node, $txtNa[1]);
+				$_SESSION['hText'] = $ahpH->setNewText($_SESSION['hText'],
+							$node, $txtNa[1]);
 				unset($ahp);
 			}
 			// pwcDone will be set when calling hierarchy
@@ -518,14 +545,15 @@ $pwcsCnt = 0;
 			} else {
 				$_SESSION['pwcaDone'] = false;
 			}
-			foreach($pwcs as $leaf=>$pwc){ // calculate $_SESSION['prioAlt'][$header]
-//				$ahp = new AhpCalc($altNum);
+			foreach($pwcs as $leaf=>$pwc){ 
+			// calculate $_SESSION['prioAlt'][$header]
 				$ahp->set_evm($pwc);
 				$ev = $ahp->evm_evec;
 				$_SESSION['prioAlt'][$leaf] = $ev;
 			}
 		}
-		$url = $ahp->getUrlCode($urlAlt, $altNum, $_SESSION['project'], $_SESSION['alt']);
+		$url = $ahp->getUrlCode($urlAlt, $altNum, $_SESSION['project'],
+								$_SESSION['alt']);
 	}
 return $url;
 }
@@ -536,8 +564,8 @@ return $url;
  */
 public function deleteRecord($sc){
 	if( $this->checkSessionCode($sc)){
-		$this->db_connection->exec( 'PRAGMA foreign_keys = ON;' );
-		$sql = 'DELETE FROM `projects` WHERE `project_sc` = :project_sc;';	
+		$this->db_connection->exec( "PRAGMA foreign_keys = ON;" );
+		$sql = "DELETE FROM `projects` WHERE `project_sc` = :project_sc;";	
 		$query = $this->db_connection->prepare($sql);
 		$query->bindValue(':project_sc', $sc, PDO::PARAM_STR);
 		$deleteStatus = $query->execute();
@@ -552,20 +580,24 @@ public function deleteRecord($sc){
 }
 
 
-/* writes project data into database 
- * 
+/*  
+ * writes project data into database
  */
-	public function writeProjectData($sc, $project, $description, $hText, $author, $alt=array()){
+	public function writeProjectData($sc, $project, $description, $hText, 
+						$author, $alt=array()){
 		if ( $this->checkSessionCode($sc)){
 			$this->err[] = $this->ahpDbTxt->err['scInUse'];
 			return false;
 		}
 		// write project data
 		try {
-			$sql = 'INSERT INTO projects (
-			project_sc, project_name, project_description, project_hText, project_datetime, project_author
-			) VALUES ( :project_sc, :project_name, :project_description, :project_hText, :project_datetime, :project_author
-			);';
+			$sql = "INSERT INTO projects (
+			project_sc, project_name, project_description, project_hText, 
+			project_datetime, project_author) 
+			VALUES (
+			 :project_sc, :project_name, :project_description,
+			 :project_hText, :project_datetime, :project_author
+			);";
 			$queryInsert = $this->db_connection->prepare($sql);
 			$queryInsert->bindValue(':project_sc', $sc, PDO::PARAM_STR);
 			$queryInsert->bindValue(':project_name', $project, PDO::PARAM_STR);
@@ -580,8 +612,9 @@ public function deleteRecord($sc){
 			}
 			// Alternatives			
 			if(!empty($alt)){
-				$this->db_connection->exec( 'PRAGMA foreign_keys = ON;' );
-				$sql = 'INSERT INTO alternatives (project_sc, alt) VALUES (:project_sc, :alt)';
+				$this->db_connection->exec( "PRAGMA foreign_keys = ON;" );
+				$sql = "INSERT INTO alternatives (project_sc, alt) 
+					VALUES (:project_sc, :alt);";
 				$queryIns = $this->db_connection->prepare($sql);
 				$queryIns->bindValue(':project_sc', $sc, PDO::PARAM_STR);
 				foreach ($alt as $altName){
@@ -604,12 +637,14 @@ public function deleteRecord($sc){
 /* 
  * Update/modify project data 
  */
-	public function updateProjectData($sc, $project, $description, $hText, $alt=array()){
+	public function updateProjectData($sc, $project, $description, 
+										$hText, $alt=array()){
 		if ( !$this->checkSessionCode($sc)){
 			$this->err[] = $this->ahpDbTxt->err['scInv'];
 			return false;
 		}
-		$query = $this->db_connection->prepare("SELECT project_hText FROM projects WHERE project_sc = :sc;");
+		$query = $this->db_connection->prepare(
+		"SELECT project_hText FROM projects WHERE project_sc = :sc;");
 		$query->bindValue(':sc', $sc, PDO::PARAM_STR);
 		$query->execute();
 		$phText = $query->fetch(PDO::FETCH_NUM);
@@ -618,11 +653,12 @@ public function deleteRecord($sc){
 			return false;
 		}
 		// update project data
-		$this->db_connection->exec( 'PRAGMA foreign_keys = ON;' );
+		$this->db_connection->exec( "PRAGMA foreign_keys = ON;" );
 		try {
-			$sql = 'UPDATE projects SET project_name = :project_name, project_description = :project_description , 
-					project_hText = :project_hText 
-					WHERE project_sc = :project_sc;';
+			$sql = "UPDATE projects SET project_name = :project_name, 
+						project_description = :project_description , 
+						project_hText = :project_hText 
+					WHERE project_sc = :project_sc;";
 			$query = $this->db_connection->prepare($sql);
 			$query->bindValue(':project_sc', $sc, PDO::PARAM_STR);
 			$query->bindValue(':project_name', $project, PDO::PARAM_STR);
@@ -637,14 +673,15 @@ public function deleteRecord($sc){
 			$this->err[] = $this->ahpDbTxt->err['dbWrite'] . $e;
 		}
 		// check, whether project has alternatives
-			$sql = 'select count(project_sc) FROM alternatives WHERE `project_sc` = :project_sc;';	
+			$sql = "select count(project_sc) FROM alternatives 
+					WHERE `project_sc` = :project_sc;";	
 			$query = $this->db_connection->prepare($sql);
 			$query->bindValue(':project_sc', $sc, PDO::PARAM_STR);
 			$query->execute();
 			$acnt = $query->fetch(PDO::FETCH_NUM);
 		// first delete existing
 		if($acnt>0){
-			$sql = 'DELETE FROM alternatives WHERE `project_sc` = :project_sc;';	
+			$sql = "DELETE FROM alternatives WHERE `project_sc` = :project_sc;";	
 			$query = $this->db_connection->prepare($sql);
 			$query->bindValue(':project_sc', $sc, PDO::PARAM_STR);
 			$deleteStatus = $query->execute();
@@ -656,9 +693,10 @@ public function deleteRecord($sc){
 		// Alternatives: then insert new ones		
 		if(!empty($alt)){
 			// insert new ones
-			$this->db_connection->exec( 'PRAGMA foreign_keys = ON;' );
+			$this->db_connection->exec( "PRAGMA foreign_keys = ON;" );
 			try {
-				$sql = 'INSERT INTO alternatives (project_sc, alt) VALUES (:project_sc, :alt)';
+				$sql = "INSERT INTO alternatives (project_sc, alt) 
+						VALUES (:project_sc, :alt)";
 				$queryIns = $this->db_connection->prepare($sql);
 				$queryIns->bindValue(':project_sc', $sc, PDO::PARAM_STR);
 				foreach ($alt as $altName){
@@ -687,7 +725,8 @@ public function deleteRecord($sc){
 		$pwcConv = $this->convertPwcToString($pwc);
 			$timestamp = time();
 		if ($this->dataBaseConnection()){
-			$sql = 'SELECT pwc_node FROM pwc WHERE project_sc = :sc AND pwc_part = :part;';
+			$sql = "SELECT pwc_node FROM pwc WHERE project_sc = :sc 
+					AND pwc_part = :part;";
 			$query = $this->db_connection->prepare($sql);
 			$query->bindValue(':sc', $sc, PDO::PARAM_STR);
 			$query->bindValue(':part', $name, PDO::PARAM_STR);
@@ -701,9 +740,10 @@ public function deleteRecord($sc){
 				// there are already pwcs submitted for nodes
 				try {
 					foreach($pwcUpdNod as $node) {
-						$this->db_connection->exec( 'PRAGMA foreign_keys = ON;' );
+						$this->db_connection->exec( "PRAGMA foreign_keys = ON;" );
 						$sql = "SELECT pwc_ab, pwc_intense FROM pwc 
-							WHERE project_sc = :sc AND pwc_part = :part AND pwc_node = :nod;";
+							WHERE project_sc = :sc AND pwc_part = :part 
+							AND pwc_node = :nod;";
 						$query = $this->db_connection->prepare($sql);
 						$query->bindValue(':sc', $sc, PDO::PARAM_STR);
 						$query->bindValue(':part', $name, PDO::PARAM_STR);
@@ -738,9 +778,12 @@ public function deleteRecord($sc){
 			if(count($pwcNewNod)>0){
 			// write new judgments
 				try {
-					$this->db_connection->exec( 'PRAGMA foreign_keys = ON;' );
-					$sql = 'INSERT INTO `pwc` ( `project_sc`, `pwc_part`, `pwc_timestamp`, `pwc_node`, `pwc_ab`, `pwc_intense`)
-					VALUES ( :project_sc, :pwc_part, :pwc_timestamp, :pwc_node, :pwc_ab, :pwc_intense);';
+					$this->db_connection->exec( "PRAGMA foreign_keys = ON;" );
+					$sql = "INSERT INTO `pwc` (
+					 `project_sc`, `pwc_part`, `pwc_timestamp`, `pwc_node`, 
+					 `pwc_ab`, `pwc_intense`)
+					VALUES ( :project_sc, :pwc_part, :pwc_timestamp, 
+							 :pwc_node, :pwc_ab, :pwc_intense);";
 					$queryIns = $this->db_connection->prepare($sql);
 					$queryIns->bindValue(':project_sc', $sc, PDO::PARAM_STR);
 					$queryIns->bindValue(':pwc_part', $name, PDO::PARAM_STR);
@@ -769,45 +812,19 @@ public function deleteRecord($sc){
 		return array();
 	}
 
-
-/* NOT IN USE??? DELETE??
- * writes judgment data of participant into database 
- * pwc in format pwc[0] = sc, pwc[1] = name, pwc[2] = timestamp pwc[3] = node, pwc[4] = A pwc[5] = I
- * STILL IN USE ????
- */
-	private function writePwcData($sc, $participant, $pwc){
-		if ($this->dataBaseConnection()){
-			// write participants data
-			try {
-				$insState = true;
-				$sql = 'INSERT INTO pwc ( project_sc, pwc_part, pwc_timestamp, pwc_node, pwc_ab, pwc_intense 
-) VALUES ( :project_sc, :pwc_part, :pwc_timestamp, :pwc_node, :pwc_ab, :pwc_intense );';
-				$queryIns = $this->db_connection->prepare($sql);
-				$queryIns->bindValue(':project_sc', $sc, PDO::PARAM_STR);
-				$queryIns->bindValue(':pwc_part', $participant, PDO::PARAM_STR);
-					$queryIns->bindValue(':pwc_timestamp', $pwc[2], PDO::PARAM_INT);
-					$queryIns->bindValue(':pwc_node', $pwc[3], PDO::PARAM_STR);
-					$queryIns->bindValue(':pwc_ab', $pwc[4], PDO::PARAM_STR);
-					$queryIns->bindValue(':pwc_intense', $pwc[5], PDO::PARAM_STR);
-					$insState &= $queryIns->execute();
-				return $insState;
-			} catch (PDOException $e){
-				$this->err[] = $this->ahpDbTxt->err['dbWrite'] . $e;
-			}
-		}
-		return false;
-	}
-
-
 /* 
  * Used by displaySessionTable below
  */
 private function getAllSessions($name){
 	if ($this->dataBaseConnection()){
-		$sql = "SELECT projects.project_sc, projects.project_name, altcnt, projects.project_description, projects.project_author, 
-		count(pwpart), date(projects.project_datetime), projects.project_status FROM projects
-		LEFT JOIN (SELECT DISTINCT pwc.project_sc AS pwsc, pwc.pwc_part AS pwpart FROM pwc) AS t1 ON projects.project_sc = pwsc 
-			LEFT JOIN (SELECT alternatives.project_sc AS altsc, count(projects.project_sc) AS altcnt FROM projects, alternatives 
+		$sql = "SELECT projects.project_sc, projects.project_name, altcnt, 
+			projects.project_description, projects.project_author, 
+			count(pwpart), date(projects.project_datetime), 
+			projects.project_status FROM projects
+			LEFT JOIN (SELECT DISTINCT pwc.project_sc AS pwsc, 
+				pwc.pwc_part AS pwpart FROM pwc) AS t1 ON projects.project_sc = pwsc 
+			LEFT JOIN (SELECT alternatives.project_sc AS altsc, 
+				count(projects.project_sc) AS altcnt FROM projects, alternatives 
 			WHERE projects.project_sc = alternatives.project_sc 
     		GROUP BY alternatives.project_sc) AS t2 ON projects.project_sc = altsc 
 		WHERE projects.project_author = :name 
@@ -846,12 +863,14 @@ $dn = array();
 	if ($this->dataBaseConnection()){
 		if(empty($prjSc)){			
 			// all projects with pwc
-			$query = $this->db_connection->prepare("SELECT DISTINCT project_sc FROM pwc;");
+			$query = $this->db_connection->prepare(
+							"SELECT DISTINCT project_sc FROM pwc;");
 			$query->execute();
 			$prjSc = $query->fetchAll(PDO::FETCH_COLUMN);
 		}
 		$pCnt = 0; $dn = array(); $rslt = array();
-		$sql = "SELECT project_author, project_hText from projects WHERE project_sc = :sc;";
+		$sql = "SELECT project_author, project_hText from projects 
+			WHERE project_sc = :sc;";
 		/* for each project get author and hierarchy text */
 		foreach($prjSc as $sc){
 			$query = $this->db_connection->prepare($sql);
@@ -863,7 +882,9 @@ $dn = array();
 				$hText = $result[0]['project_hText'];
 				$text = $ahpH = new AhpHier();
 				$ahpH->setHierarchy($hText);
-				$query = $this->db_connection->prepare("SELECT DISTINCT pwc.pwc_node FROM pwc WHERE project_sc = :sc;");
+				$query = $this->db_connection->prepare(
+					"SELECT DISTINCT pwc.pwc_node FROM pwc 
+						WHERE project_sc = :sc;");
 				$query->bindValue(':sc', $sc, PDO::PARAM_STR);
 				$query->execute();
 				$pwcnods = $query->fetchAll(PDO::FETCH_COLUMN);
@@ -879,7 +900,8 @@ $dn = array();
 				if(!empty($dn)){
 					$pCnt++;
 					$rslt[] = " <b>" . $user . "</b>: " 
-					. $sc . ($aflg ? " (a)" : "") . " " . count($dn) . ": " . implode(",",$dn);
+					. $sc . ($aflg ? " (a)" : "") . " " 
+					. count($dn) . ": " . implode(",",$dn);
 				}
 			} else {
 				$pCnt++;
@@ -927,7 +949,9 @@ $sql = "CREATE VIEW IF NOT EXISTS acntv AS
 // View for number of participants in users's projects
 $sql = "CREATE VIEW IF NOT EXISTS dmcntv AS
     SELECT projects.project_author, count(pwpart) as dmCnt FROM projects
-    LEFT JOIN (SELECT DISTINCT pwc.project_sc AS pwsc, pwc.pwc_part AS pwpart FROM pwc) AS t ON projects.project_sc = pwsc
+    LEFT JOIN (SELECT DISTINCT pwc.project_sc AS pwsc, pwc.pwc_part AS pwpart 
+		FROM pwc) AS t 
+		ON projects.project_sc = pwsc
     GROUP BY projects.project_author
     ORDER BY dmCnt DESC;";
 		$query = $this->db_connection->prepare( $sql );
@@ -945,18 +969,24 @@ $sql = "CREATE VIEW IF NOT EXISTS pcntv AS
 // View for combined index for all users, limited to $lmt +1
 $sqlite = "CREATE VIEW IF NOT EXISTS alv AS
     SELECT pcntv.project_author,
-    ROUND(min(20,pcntv.pCnt) + 0.05 * min(300,acntv.aCnt) + 0.003 * min(10000,pcntv.hCnt) + 0.175 * min(200,dmcntv.dmCnt)) as actlv,
+    ROUND(min(20,pcntv.pCnt) + 0.05 * min(300,acntv.aCnt) 
+		+ 0.003 * min(10000,pcntv.hCnt) 
+		+ 0.175 * min(200,dmcntv.dmCnt)) as actlv,
     users.user_last_login  
     FROM pcntv
     JOIN dmcntv ON pcntv.project_author = dmcntv.project_author
     JOIN acntv ON pcntv.project_author = acntv.user
     JOIN users ON pcntv.project_author = users.user_name
-    ORDER BY min(20,pcntv.pCnt) + 0.05 * min(300,acntv.aCnt) + 0.003 * min(10000,pcntv.hCnt) + 0.175 * min(200,dmcntv.dmCnt) DESC
+    ORDER BY min(20,pcntv.pCnt) + 0.05 * min(300,acntv.aCnt) 
+		+ 0.003 * min(10000,pcntv.hCnt) 
+		+ 0.175 * min(200,dmcntv.dmCnt) DESC
     LIMIT " . ($lmt+1) . ";";
 
 $mysql ="CREATE VIEW IF NOT EXISTS alv AS
     SELECT pcntv.project_author,
-    ROUND(LEAST(20,pcntv.pCnt) + 0.05 * LEAST(300,acntv.aCnt) + 0.003 * LEAST(10000,pcntv.hCnt) + 0.175 * LEAST(200,dmcntv.dmCnt)) as actlv,
+    ROUND(LEAST(20,pcntv.pCnt) + 0.05 * LEAST(300,acntv.aCnt) 
+		+ 0.003 * LEAST(10000,pcntv.hCnt) 
+		+ 0.175 * LEAST(200,dmcntv.dmCnt)) as actlv,
     users.user_last_login  
     FROM pcntv
     JOIN dmcntv ON pcntv.project_author = dmcntv.project_author
@@ -1006,10 +1036,11 @@ public function getActivityLevel($name){
 		$act = array_merge($act,$query->fetch(PDO::FETCH_ASSOC));
 		// --- dmCnt
 		$sql = "SELECT count(pwpart) as 'dmCnt' FROM projects
-		LEFT JOIN (SELECT DISTINCT pwc.project_sc AS pwsc, pwc.pwc_part AS 'pwpart' FROM pwc) AS t1
-		ON projects.project_sc = pwsc
-        WHERE projects.project_author=:name
-		GROUP BY projects.project_author;";
+				LEFT JOIN (SELECT DISTINCT pwc.project_sc AS pwsc, 
+					pwc.pwc_part AS 'pwpart' FROM pwc) AS t1
+				ON projects.project_sc = pwsc
+				WHERE projects.project_author=:name
+				GROUP BY projects.project_author;";
 		$query = $this->db_connection->prepare( $sql );
 		$query->bindValue(':name', $name, PDO::PARAM_STR);
 		$query->execute();
@@ -1057,7 +1088,7 @@ public function displaySessionTable($name){
 		echo "<td><span class='res'><a href='$url'>", $project[0], "</a></td>";
 		echo "<td>", $project[1], "</td>";
 		echo "<td class='ca'>", ($project[2]>0 ? "A" : "H"), "</td>";
-		echo "<td class='ca'>",$project[7],"</td>";
+		echo "<td class='ca'>",($project[7] == 1 ? "open": "closed"),"</td>";
 		echo "<td style='max-width:380px;'>", $project[3], "</td>";
 		echo "<td class='ca'>", $project[5], "</td>";
 		$fmt = ($project[6] == date('Y-m-d') ? " class = 'hl'" : "");
@@ -1091,7 +1122,8 @@ public function displayProjectDetails($sc, $sel=true){
 		printf($this->ahpDbTxt->tbl['pdTblR3'],$project['project_description']);
 		printf($this->ahpDbTxt->tbl['pdTblR4'],$project['project_author']);
 		printf($this->ahpDbTxt->tbl['pdTblR5'],$project['project_datetime']);
-		printf($this->ahpDbTxt->tbl['pdTblR6'],($project['project_status'] == 1 ? "open" : "<span class='hl'>closed</span>"));
+		printf($this->ahpDbTxt->tbl['pdTblR6'],
+			($project['project_status'] == 1 ? "open" : "<span class='hl'>closed</span>"));
 		printf($this->ahpDbTxt->tbl['pdTblR7'],$ptype);
 		echo "</tbody></table>";
 		echo "</div>";
@@ -1147,9 +1179,11 @@ private function displayParticipantTable($part, $sel){
 	for($i=0; $i < $pCnt; $i++){
 			echo "<tr ", ($i>9 ? "class='tgl'" : " "), "><td class='ca'>", $pCnt-$i, "</td>";
 			if(isset($_POST['ipart']))
-				echo "<td class='ca'><input class='onclk0' type='checkbox' name='ipart[$i]' value='1' ", (isset($_POST['ipart'][$i]) ? " checked " : ""), "></td>";
+				echo "<td class='ca'><input class='onclk0' type='checkbox' name='ipart[$i]' value='1' ",
+					(isset($_POST['ipart'][$i]) ? " checked " : ""), "></td>";
 			else // all selected by default
-				echo "<td class='ca'><input class='onclk0' type='checkbox' name='ipart[$i]' value='1' ", (isset($_SESSION['ipart'][$i]) ? " checked " : ""), "></td>";
+				echo "<td class='ca'><input class='onclk0' type='checkbox' name='ipart[$i]' value='1' ", 
+					(isset($_SESSION['ipart'][$i]) ? " checked " : ""), "></td>";
 			echo "<td class='res'>",$part[$i][0],"</td><td>",date('Y-m-d',$part[$i][1]),"</td></tr>\n";
 	}
 	if($sel)
@@ -1259,18 +1293,28 @@ public function exportProjectDetails($sc, $ds){
 	$textout[] = "sep=" . $fs . self::NEWL;
 
 // --- Header (Project information)
-	$textout[] = self::ENCL . "Session Code" . self::ENCL . $fs . self::ENCL . $sc . self::ENCL . self::NEWL;
-	$textout[] = self::ENCL . "Project Name" . self::ENCL .$fs . self::ENCL . $pjd['project_name'] . self::ENCL . self::NEWL;
-	$textout[] = self::ENCL . "Description" . self::ENCL . $fs . self::ENCL . $pjd['project_description'] . self::ENCL . self::NEWL;
-	$textout[] = self::ENCL . "Author" . self::ENCL . $fs . self::ENCL . $pjd['project_author'] . self::ENCL . self::NEWL;
-	$textout[] = self::ENCL . "Created" . self::ENCL . $fs . self::ENCL . $pjd['project_datetime'] . self::ENCL . self::NEWL;
-	$textout[] = self::ENCL . "Evaluation type" . self::ENCL . $fs . self::ENCL . ( isset($pjd['project_alt']) ? "Alternatives" : "Hierarchy") . self::ENCL . self::NEWL;
-	$textout[] = self::ENCL . "No of Participants" . self::ENCL . $fs . $partCnt . self::NEWL;
+	$textout[] = self::ENCL . "Session Code" . self::ENCL . $fs 
+					. self::ENCL . $sc . self::ENCL . self::NEWL;
+	$textout[] = self::ENCL . "Project Name" . self::ENCL .$fs 
+					. self::ENCL . $pjd['project_name'] . self::ENCL . self::NEWL;
+	$textout[] = self::ENCL . "Description" . self::ENCL . $fs 
+					. self::ENCL . $pjd['project_description'] . self::ENCL . self::NEWL;
+	$textout[] = self::ENCL . "Author" . self::ENCL . $fs 
+					. self::ENCL . $pjd['project_author'] . self::ENCL . self::NEWL;
+	$textout[] = self::ENCL . "Created" . self::ENCL . $fs 
+					. self::ENCL . $pjd['project_datetime'] . self::ENCL . self::NEWL;
+	$textout[] = self::ENCL . "Evaluation type" . self::ENCL . $fs 
+					. self::ENCL 
+						. ( isset($pjd['project_alt']) ? "Alternatives" : "Hierarchy") 
+					. self::ENCL . self::NEWL;
+	$textout[] = self::ENCL . "No of Participants" 
+					. self::ENCL . $fs . $partCnt . self::NEWL;
 
 	// --- Get decision matrices
 	// loop through participants
 	foreach($part as $name){
-		$textout[] = self::ENCL . "Participant" . self::ENCL . $fs . self::ENCL . $name . self::ENCL . self::NEWL;
+		$textout[] = self::ENCL . "Participant" . self::ENCL . $fs 
+					. self::ENCL . $name . self::ENCL . self::NEWL;
 		$pwcA = $this->getPwcArray($sc, $name);
 		if ($hiermode) {
 		// Hierarchy Mode
@@ -1292,14 +1336,17 @@ public function exportProjectDetails($sc, $ds){
 			$pwcCnt = count($pwc['A']);
 			// matrix dimension from number of pairwise comparisons
 			$n = 1 + (sqrt(8*$pwcCnt + 1)-1)/2;
-			$textout[] = self::ENCL . ($hiermode ? "Node" : "Criterion") . self::ENCL . $fs 
-					. self::ENCL . $node . self::ENCL . $fs 
-					. self::ENCL . $n . "x" . $n . " decision matrix" . self::ENCL . self::NEWL;
+			$textout[] = self::ENCL . ($hiermode ? "Node" : "Criterion") 
+						. self::ENCL . $fs 
+						. self::ENCL . $node . self::ENCL . $fs 
+						. self::ENCL . $n . "x" . $n . " decision matrix" 
+						. self::ENCL . self::NEWL;
 			$dm = $this->getMatrixFromPwc($pwc);
 			for ($i=0; $i<$n; $i++){
 				$buf .= $fs;
 				for($j=0; $j<$n; $j++){
-					$buf .= self::ENCL . number_format($dm[$i][$j], ROUND, $ds, "") . self::ENCL . $fs;
+					$buf .= self::ENCL . number_format($dm[$i][$j], ROUND, $ds, "") 
+						 . self::ENCL . $fs;
 				}
 				$buf .= self::NEWL;
 			}
