@@ -142,7 +142,7 @@ class AhpAdmin extends LoginAdmin {
 				LEFT JOIN donations ON users.user_id = donations.trUid 
 				LEFT JOIN projects ON user_name = projects.project_author 
 				WHERE HOUR(TIMEDIFF(NOW(), user_last_login)) < " . $hours . "
-				AND user_id != '" . ADMIN . "' 
+				AND user_id != '" . ADMIN_ID . "' 
 				GROUP BY user_email ORDER BY user_last_login DESC;";
 
 			$sql = ( $this->db_type == 'sqlite' ? $sqlite : $mysql);
