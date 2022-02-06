@@ -180,7 +180,7 @@ class AhpAdmin extends LoginAdmin {
 			LEFT JOIN projects  ON user_name = projects.project_author
 			WHERE user_id != '" . ADMIN_ID . "'  
 				AND user_active = 0
-				AND (DATEDIFF(CURDATE(), user_registration_datetime) <= " . $days .  ")
+				AND (DATEDIFF(CURDATE(), user_registration_datetime) >= " . $days .  ")
 			GROUP BY user_email ORDER BY user_registration_datetime DESC;";
 
 			$sql = ( $this->db_type == 'sqlite' ? $sqlite : $mysql);
