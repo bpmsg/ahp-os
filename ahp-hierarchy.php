@@ -47,8 +47,8 @@ if (isset($_SESSION['REFERER']))
 	unset($_SESSION['REFERER']);
 $loggedIn = $login->isUserLoggedIn();
 
-$version = substr('$LastChangedDate$',18,10);
-$rev = trim('$Rev$', "$");
+$version = substr('$LastChangedDate: 2022-02-06 09:58:40 +0800 (Sun, 06 Feb 2022) $',18,10);
+$rev = trim('$Rev: 106 $', "$");
 
 $defaultHierarchy = "AHP-Project:Crit-1,Crit-2,Crit-3;";
 
@@ -320,6 +320,10 @@ $webHtml =  new WebHtml($ahpHier->titles['pageTitle']);
  	echo "<form method='POST' action='$urlAct'>";
 
 	echo $ahpHier->titles['h1title'];
+	
+	if(defined( 'SYS_MSG' ))
+	echo "<p class='err'>System message: " . SYS_MSG . "</p>";
+
 	echo $ahpHier->titles['h2subTitle'];
 
 	if (!$loggedIn){

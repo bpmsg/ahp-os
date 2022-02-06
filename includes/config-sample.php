@@ -33,6 +33,10 @@
 	define('UPDATE', false);
 	define('MY_IP',"192.168.1.112");
 
+	// --- Display a system message before maintenance
+	// define( 'SYS_MSG', "Please logout, system maintenance in 30 min!");
+
+
 	// --- ini_set('error_reporting', E_ERROR | E_WARNING);
 	ini_set('error_reporting', E_ALL & ~E_NOTICE);
 	ini_set('display_errors',1); // --- Set to 0 for productive env!

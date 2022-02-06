@@ -63,8 +63,8 @@ $loggedIn = $login->isUserLoggedIn();
 $msg ="";
 $subTitle = $ahpHiergini->titles['subTitle1'];
 
-$version = substr('$LastChangedDate$',18,10);
-$rev = trim('$Rev$', "$");
+$version = substr('$LastChangedDate: 2022-02-06 09:58:40 +0800 (Sun, 06 Feb 2022) $',18,10);
+$rev = trim('$Rev: 106 $', "$");
 
 /** get data (name, session code, description from POST parameter
 * called from ahp-hiergini page
@@ -307,8 +307,13 @@ $iniOwner = false;
  * --- Web Page HTML OUTPUT --- 
  */
 $webHtml = new WebHtml($ahpHiergini->titles['pageTitle']);
-echo '<div style="display:block;float:left">',$loginHeaderText,'</div><div style="clear:both;"></div>';
+echo "<div style='display:block;float:left'>
+		$loginHeaderText</div><div style='clear:both;'></div>";
 echo $ahpHiergini->titles['h1Title'];
+
+if(defined( 'SYS_MSG' ))
+	echo "<p class='err'>System message: " . SYS_MSG . "</p>";
+
 echo "<p>Language: <a href='", $urlAct, "?lang=en'>English</a>
         &nbsp;&nbsp;<a href='", $urlAct, "?lang=de'>Deutsch</a>
         &nbsp;&nbsp;<a href='", $urlAct, "?lang=es'>Español</a>

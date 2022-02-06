@@ -21,7 +21,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
+ 
 include '../../config.php';
+
 // --- SENDING MAIL WHEN USER IS DEACTVATED
 require_once('../../PHPMailer/PHPMailer.php'); // Mailer
 require_once('../../PHPMailer/SMTP.php'); // Mailer
@@ -30,30 +32,34 @@ require_once('../../PHPMailer/Exception.php'); // Mailer
 session_start();
 
 $title= "User Administration";
-$version = substr('$LastChangedDate$',18,10);
-$rev = trim('$Rev$', "$");
+$version = substr('$LastChangedDate: 2022-02-06 09:34:53 +0800 (Sun, 06 Feb 2022) $',18,10);
+$rev = trim('$Rev: 105 $', "$");
 
 $lang = (isset($_SESSION['lang']) ? $_SESSION['lang'] : "EN");
 
-$storedUsers = array();
-$usersInactive = array();
+$storedUsers =   array();
+$usersInactive = array(); // inactive users
+$sel =           array(); // selected inactive users to deactivate
 $msg = "";
 $userName= "";
-$sel = array(); // selected inactive users to deactivate
+$mail_flag = true; // For testing deactivation email can be switched off
+
+$daysInactive = 90;
+
 $loggedIn = false;
 $mail = REGISTRATION_EMAIL;
 
 // specific: used for project session table link
-$urlAhpH =     BASE . $urlAhp;
-$urlGroupRes = BASE . $urlGroupRes;
+$urlAhpH =         BASE . $urlAhp;
+$urlGroupRes =     BASE . $urlGroupRes;
 $urlSessionAdmin = BASE . $urlSessionAdmin;
 
-$login = new Login();
+$login =    new Login();
+$userDb =   new LoginAdmin();
+$ahpAdmin = new AhpAdmin();
+
 if (isset($_SESSION['REFERER']))
 	unset($_SESSION['REFERER']);
-
-$userDb = new LoginAdmin();
-$ahpAdmin = new AhpAdmin();
 
 if ($login->isUserLoggedIn() && in_array($_SESSION['user_id'], $admin )) {
 	$loggedIn = true;
@@ -63,7 +69,6 @@ if ($login->isUserLoggedIn() && in_array($_SESSION['user_id'], $admin )) {
 }
 
 // Last login more than n days ago
-$daysInactive = 90;
 $usersInactive = $ahpAdmin->getInactiveUsers($daysInactive);
 
 /* 
@@ -83,19 +88,20 @@ if( isset($_POST['chk'])){
 			$sel = $_POST['chk'];
 }
 
-if ( isset($_POST['DEL']) || isset($_POST['DELALL']) || isset($_POST['OPEN']) || isset($_POST['DEACT']) || isset($_POST['REACT'])) {
+if ( isset($_POST['DEL']) || isset($_POST['DELALL']) 
+	|| isset($_POST['OPEN']) || isset($_POST['DEACT']) 
+	|| isset($_POST['REACT'])) {
 	$para = filter_input_array(INPUT_POST,FILTER_SANITIZE_STRING);
 	if ( filter_has_var(INPUT_POST, 'user_name') ){
 		$userName = $para['user_name'];
 	}
-	// Delete selected user 
-	if (isset($_POST['DEL'])){
+	
+	if (isset($_POST['DEL'])){    // Delete selected user 
 		if( $userDb->deleteUser($userName) == false){
 			$msg = "User could not be deleted. " . $userDb->getErrors();
 		}
-	}
-	// Delete all inactive users 
-	if (isset($_POST['DELALL'])){
+	} 
+	if (isset($_POST['DELALL'])){ // Delete all inactive users
 		// users without projects no login more than 90 days
 		if (isset($_POST['ACT'])){
 			$days = 90;
@@ -108,11 +114,11 @@ if ( isset($_POST['DEL']) || isset($_POST['DELALL']) || isset($_POST['OPEN']) ||
 				}
 			}
 			$msg = "Deleted inactive users without projects: " 
-			. ( $msg == "" ? "<span class='err'>none" : "<span class='msg'>" . $msg) 
-			. "</span>";
+			. ( $msg == "" ? "<span class='err'>none" : "<span class='msg'>" 
+			. $msg) . "</span>";
 			$userDb->messages = array();
 		// users deactivated more than 2 days
-		$usersInactive = $ahpAdmin->getInactiveUsers($daysInactive); // update list
+		$usersInactive = $ahpAdmin->getInactiveUsers($daysInactive);
 		} else {
 			$days = 2;
 			$users = $ahpAdmin->getInactivatedUsers($days);
@@ -122,19 +128,17 @@ if ( isset($_POST['DEL']) || isset($_POST['DELALL']) || isset($_POST['OPEN']) ||
 				}
 			}
 			$msg = "Deleted inactivated users: " 
-			. ( $msg == "" ? "<span class='err'>none" : "<span class='msg'>" . $msg) 
+			. ($msg == "" ? "<span class='err'>none" : "<span class='msg'>" . $msg) 
 			. "</span>";
 			$userDb->messages = array();
 		}		
 	}
-	// Deactivate selected user
-	if (isset($_POST['DEACT'])){
-		// For testing purposes sending of deactivation email can be switched off
-		$mail_flag = true;
+	
+	if (isset($_POST['DEACT'])){ // Deactivate selected user
 		if(isset($_POST['chk'])){
 			$msg = "<span class='msg'>User(s) "; $err  = "";
 			foreach($sel as $i=>$on){
-				if( $userDb->deactivateUser($usersInactive[$i][1],$mail_flag) == true){
+				if($userDb->deactivateUser($usersInactive[$i][1],$mail_flag)){
 					$msg .= $usersInactive[$i][1] . ", ";
 				} else {
 					$err .= $usersInactive[$i][1] . ", ";
@@ -147,16 +151,17 @@ if ( isset($_POST['DEL']) || isset($_POST['DELALL']) || isset($_POST['OPEN']) ||
 			
 		} else {
 				if( $userDb->deactivateUser($userName,$mail_flag) == true)
-					$msg = "<span class='msg'>User " . $userName . " was deactivated.";
+					$msg = "<span class='msg'>User $userName was deactivated.";
 				else
-					$err = "User " . $userName . " could not be deactivated.";
+					$err = "User $userName could not be deactivated.";
 		}
-		$msg .= ($mail_flag ? " Deactivation email(s) sent." : " No deactivation email sent.</span>");
+		$msg .= ($mail_flag ? " Deactivation email(s) sent." : 
+				" No deactivation email sent.</span>");
 		// get updated list of inactive users
 		$usersInactive = $ahpAdmin->getInactiveUsers($daysInactive);
 	}
-	// Reactivate selected user
-	if (isset($_POST['REACT'])){
+	
+	if (isset($_POST['REACT'])){ // Reactivate selected user
 		if( $userDb->reactivateUser($userName) == true){
 			$msg = "Account of $userName was successfully reactivated";
 		} else {
@@ -176,7 +181,8 @@ if ( isset($_POST['DEL']) || isset($_POST['DELALL']) || isset($_POST['OPEN']) ||
 	// request to delete comes from user edit - this form has formToken
 	if (isset($_POST['user_edit_form_delete'])){
 		$userName = $_SESSION['user_name'];
-		if( isset($_SESSION['formToken']) && isset($_POST['formToken']) && ($_SESSION['formToken'] == $_POST['formToken'])){
+		if( isset($_SESSION['formToken']) && isset($_POST['formToken']) 
+			&& ($_SESSION['formToken'] == $_POST['formToken'])){
 			unset($_SESSION['formToken']);
 			if( $userDb->deactivateUser($userName, true) == true){
 				$msg = sprintf($login->lgTxt->msg['deact'], $userName);
@@ -199,23 +205,24 @@ if($userName !="select"){
 		$storedUsers[0] = $userName;
 	}
 }
-/* 
- * --- MAIN ---
- */
 
 $regUserCnt = $userDb->getActiveUserCnt();
 $uCnt = count($userDb->getLatestUsers( LHRS ));
+
+/* --- HTML --- */
 
 $webHtml = new WebHtml($title);
 include('../../login/' . 'form.login-hl.php');
 echo "<h1>$title</h1>";
 if($loggedIn) {
-	echo "<small><a href='do-log.php'>Log</a>&nbsp;&nbsp;<a href='dbIntegrity.php'>Database</a></small>";
+	echo "<small><a href='do-log.php'>Log</a>
+		&nbsp;&nbsp;<a href='do-dbIntegrity.php'>Database</a></small>";
 	if(DONATIONS)
 		echo "<small>&nbsp;&nbsp;<a href='do-donor-admin.php'>Donations</a></small>";
 	echo "<h2>Registered Users</h2>";
 	echo "<p class='msg'>AHP-OS has <span class='res'>$regUserCnt</span> registered users. ";
-	echo "<span class='res'>$uCnt</span> active users in the last ", LHRS, " hours.</p>";
+	echo "<span class='res'>$uCnt</span> active users in the last ", LHRS, 
+	" hours.</p>";
 
 	// Active users in the last LHRS hours
 	$users = $ahpAdmin->getLatestUsers( LHRS );
@@ -243,6 +250,7 @@ if($loggedIn) {
 	// --- show messages and errors
 	echo "<p>$msg" . $userDb->getErrors() . "</p>";
 
+	// --- user detail
 	echo "<h2>User Details</h2>";
 	if( $userName != "select" && $userName != "" ){
 		echo "<p>User details for user <span class='hl'>$userName</span></p>";
@@ -253,11 +261,8 @@ if($loggedIn) {
 			$ahpDb = new AhpDb();
 			echo "<h3>User Activity Level</h3>";
 			$counts = $ahpDb->getActivityLevel($userName);
-			$alv =  0.35 * (min(200,$counts['dmCnt'])/200);
-			$alv += 0.30 * (min(10000,$counts['hCnt'])/10000);
-			$alv += 0.20 * (min(20,$counts['pCnt'])/20);
-			$alv += 0.15 * (min(300,$counts['aCnt'])/300);
-			echo " Activity Index = <span class='res'>",round($alv*100,1), "% </span>: ";
+			echo " Activity Index = <span class='res'>",$counts['actlv'], 
+			"% </span>: ";
 			echo $counts['pCnt']," Projects, ",
 			$counts['hCnt'], " Hierarchy Chars, ",
 			$counts['dmCnt'], " Participants, ",

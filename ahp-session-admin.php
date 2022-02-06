@@ -30,8 +30,8 @@ $errMsg = "";
 $msg = "";
 $sessionName= "";
 
-$version = substr('$LastChangedDate: 2022-02-03 15:37:44 +0800 (Thu, 03 Feb 2022) $',18,10);
-$rev = trim('$Rev: 92 $', "$");
+$version = substr('$LastChangedDate: 2022-02-06 09:58:40 +0800 (Sun, 06 Feb 2022) $',18,10);
+$rev = trim('$Rev: 106 $', "$");
 
 $login = new Login();
 
@@ -59,9 +59,9 @@ if(isset($_SESSION['groupSession']))
 if(isset($_SESSION['mod']))
 	unset($_SESSION['mod']);
 
-$ahpDb = new AhpDb();
+$ahpDb =    new AhpDb();
 $ahpAdmin = new AhpAdmin();
-$ahpH =  new AhpHierAlt();
+$ahpH =     new AhpHierAlt();
 
 if ($login->isUserLoggedIn() === true) {
   // the user is logged in.
@@ -286,6 +286,9 @@ echo '<script src="js/ahp-session-admin.js"></script>';
 	include('includes/login/form.login-hl.php');
 // Title
 echo $sessionAdmin->titles['h1title'];
+
+if(defined( 'SYS_MSG' ))
+	echo "<p class='err'>System message: " . SYS_MSG . "</p>";
 
 if(!isset($_SESSION['lang'])){
 	echo "<p>Language: <a href='", $urlAct, "?lang=en'>English</a>

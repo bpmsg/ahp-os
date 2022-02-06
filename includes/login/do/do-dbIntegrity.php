@@ -29,12 +29,12 @@
 
 global $ahpDb;
 
-$login = new Login();
-
-$ahpDb = new AhpDb();
+$login =    new Login();
+$ahpDb =    new AhpDb();
 $ahpAdmin = new AhpAdmin();
 
-// --- MAIN
+// --- HTML ---
+
 $title="Database Integrity";
 $version = substr('$LastChangedDate: 2022-02-03 14:55:25 +0800 (Thu, 03 Feb 2022) $',18,10);
 $rev = trim('$Rev: 91 $', "$");
@@ -46,26 +46,29 @@ echo "<h1>$title</h1>";
 if($login->isUserLoggedIn() && in_array($_SESSION['user_id'], $admin )) {
 	$err = array();
 	$reg = array();
-	// --- php version
-	echo '<h3>PHP Version ', phpversion(), '</h3>';
 
-	echo '<h3>Database Info</h3>';
+	// --- php version
+	echo "<h3>PHP Version ", phpversion(), "</h3>";
+
+	// --- database integrity
+	echo "<h3>Database Info</h3>";
 		$res =$ahpAdmin->checkDbIntegrity();
 		foreach($res as $row)
 			echo key($row),"<span class='res'> ",$row[key($row)],"</span><br>";
 
-	echo '<h3>PWC Consistency Check</h3>';
+	echo "<h3>PWC Consistency Check</h3>";
 	$prjts = array();
-		// all projects with pwc
+	// all projects with pwc
 	$rslt = $ahpDb->checkPwcCons();
-	
 	echo "<p><span class='res'>" 
-	. ( count($rslt)==0 ? " o.k.</span>" : "<span class='res'>" . count($rslt) 
+	. ( count($rslt)==0 ? " o.k.</span>" : "<span class='res'>" 
+	. count($rslt) 
 	. "</span> projects affected.</p>");
 	foreach($rslt as $project)
 		echo $project, "<br>";
 
-	echo '<h3>User Flow</h3>';
+	// --- user flow
+	echo "<h3>User Flow</h3>";
 	$reg = $ahpAdmin->getUserFlow(MONTHS_USER_FLOW);
 	echo "Last " . MONTHS_USER_FLOW . " months: <br>";
 	foreach($reg['I'] as $mnth=>$val){
@@ -75,24 +78,30 @@ if($login->isUserLoggedIn() && in_array($_SESSION['user_id'], $admin )) {
 	$cnt = array_sum($reg['F']);
 	$ym = strftime('%Y-%m', time()); // current month
 	echo "<p>$ym: <span class='res'>", $reg['I'][$ym], 
-	"</span> registrations, <span class='res'>", $reg['D'][$ym], "</span> deletions.</br>";
-	echo "<span class='res'>", ( $cnt >0 ? "+" : "") ,$cnt, "</span> users over the last $m months</p>";
+	"</span> registrations, <span class='res'>", $reg['D'][$ym], 
+	"</span> deletions.</br>";
+	echo "<span class='res'>", ( $cnt >0 ? "+" : "") ,$cnt,
+	 "</span> users over the last $m months</p>";
 
-	echo '<h3>Top 40 Users</h3>';
+	// --- top users
+	echo "<h3>Top " . TOP_USERS . " Users</h3>";
 	if(DONATIONS)
 		echo "<p>Users, who have donated, are highlighted.</p>";
 	$res =$ahpDb->getTopUsers(TOP_USERS);
 	$resCnt = count($res);
 	if(!empty($res) and $resCnt > 0){
 		// LEFT PART
-		echo '<div style="float:left;">';
+		echo "<div style='float:left;'>";
 		echo "<table>";
-		echo "<tr>","<th>No</th><th class='nwb'>Date</th>","<th class='la'>User</th>", "<th>Index</th>","</tr>";
+		echo "<tr>","<th>No</th><th class='nwb'>Date</th>",
+		"<th class='la'>User</th>", "<th>Index</th>","</tr>";
 		for ($i=0; $i < (int) $resCnt/2; $i++){
 			$style = ($i%2 ? "class='odd'" : "class='even'");
 			echo "<tr $style>";
 			echo "<td style='text-align:right;'>", $i+1, "</td>";
-			echo "<td>", ( substr($res[$i][2],2,8) == date('y-m-d') ? "<span class='hl'>" . $res[$i][2] . "</span>" : $res[$i][2]), "</td>";
+			echo "<td>", ( substr($res[$i][2],2,8) == date('y-m-d') ? 
+			"<span class='hl'>" . $res[$i][2] . "</span>" : $res[$i][2]),
+			 "</td>";
 			$df = $ahpAdmin->checkDonation($res[$i][0]);
 			$hls = ($df ? "<span class='hl'>" : "<span class='var'>" );
 			echo "<td>", $hls, $res[$i][0], "</span></td>";
@@ -101,14 +110,17 @@ if($login->isUserLoggedIn() && in_array($_SESSION['user_id'], $admin )) {
 		}
 		echo "</table>";
 		// RIGHT PART
-		echo '</div><div>';
+		echo "</div><div>";
 		echo "<table>";
-		echo "<tr>","<th>No</th><th class='nwb'>Date</th>","<th class='la'>User</th>", "<th>Index</th>","</tr>";
+		echo "<tr>","<th>No</th><th class='nwb'>Date</th>",
+		"<th class='la'>User</th>", "<th>Index</th>","</tr>";
 		for ($i= round($resCnt/2); $i < $resCnt; $i++){
 			$style = ($i%2 ? "class='odd'" : "class='even'");
 			echo "<tr $style>";
 			echo "<td style='text-align:right;'>", $i+1, "</td>";
-			echo "<td>", ( substr($res[$i][2],2,8) == date('y-m-d') ? "<span class='hl'>" . $res[$i][2] . "</span>" : $res[$i][2]), "</td>";
+			echo "<td>", ( substr($res[$i][2],2,8) == date('y-m-d') ? 
+			"<span class='hl'>" . $res[$i][2] . "</span>" : $res[$i][2]), 
+			"</td>";
 			$df = $ahpAdmin->checkDonation($res[$i][0]);
 			$hls = ($df ? "<span class='hl'>" : "<span class='var'>" );
 			echo "<td>", $hls, $res[$i][0], "</span></td>";
@@ -116,10 +128,10 @@ if($login->isUserLoggedIn() && in_array($_SESSION['user_id'], $admin )) {
 			echo "</tr>";
 		}
 		echo "</table>";
-		echo '</div>';
+		echo "</div>";
 	} else
 		echo "<p><span class='err'>no top user data available</span></p>";
-	echo '<div style="clear:both"></div>';
+	echo "<div style='clear:both'></div>";
 	echo "<p><a href='do-user-admin.php'>back</a></p>";
 }
 $webHtml->webHtmlFooter($version);
