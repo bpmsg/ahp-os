@@ -126,6 +126,9 @@ input[type=radio]:not(old) + label{
 	line-height  : 1.5em;
 }
 
+#website { display:none; }
+
+
 a:link     {color: #0066cc;}
 a:visited  {color: #743399;}
 a:active,

@@ -24,8 +24,8 @@ require_once('../../PHPMailer/SMTP.php'); // Mailer
 require_once('../../PHPMailer/Exception.php'); // Mailer
 
 $title="User Registration";
-$version = substr('$LastChangedDate$',18,10);
-$rev = trim('$Rev$', "$");
+$version = substr('$LastChangedDate: 2022-02-06 16:09:31 +0800 (Sun, 06 Feb 2022) $',18,10);
+$rev = trim('$Rev: 110 $', "$");
 
 session_start();
 
@@ -43,6 +43,8 @@ $registration = new Registration();
 		$url = $_SESSION['REFERER'];
 	} else 
 		$url = SITE_URL;
+	if(!empty($_POST['website']))
+		die();
 
 // --- MAIN
 $webHtml = new WebHtml($registration->rgTxt->titles['h1reg'], 600);

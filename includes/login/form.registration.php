@@ -27,6 +27,8 @@ if(!$registration->registration_successful && !$registration->verification_succe
  			<input id="login_input_password_repeat" class="login_input" type="password"
  		 	name="user_password_repeat" pattern=".{6,}" value='<?php echo $registration->pwr; ?>' required autocomplete="off" />
 
+			<input id="website" type="text" name="website" />
+
 		<?php if( CAPTCHA ){ ?>
  				<p><img alt='captcha' src='<?php echo '../../showCaptcha.php'; ?>'></p>
  				<p><label for="captcha">CAPTCHA code</label><br>
