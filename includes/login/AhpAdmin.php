@@ -120,6 +120,7 @@ class AhpAdmin extends LoginAdmin {
 	public function getLatestUsers($hours){
 		if ($this->dataBaseConnection()){
 
+			// TODO: change according mysql
 			$sqlite = "SELECT user_id, user_name, user_email, 
 				nullif(count(projects.project_sc),0), 
 				date(users.user_registration_datetime), 
@@ -132,18 +133,19 @@ class AhpAdmin extends LoginAdmin {
 				AND users.user_id != '" . ADMIN_ID ."'
 				GROUP BY users.user_email ORDER BY julianday( users.user_last_login ) DESC;";
 
-			$mysql = "SELECT user_id, user_name, user_email, 
-				nullif(count(DISTINCT projects.project_sc),0),
-				DATE(user_registration_datetime), 
-				CONCAT(HOUR(TIMEDIFF(NOW(), user_last_login)), ':', 
-				MINUTE(TIMEDIFF(NOW(), user_last_login)), ' h') AS 'last',
-				donations.trUid
-				FROM users 
-				LEFT JOIN donations ON users.user_id = donations.trUid 
-				LEFT JOIN projects ON user_name = projects.project_author 
-				WHERE HOUR(TIMEDIFF(NOW(), user_last_login)) < " . $hours . "
-				AND user_id != '" . ADMIN_ID . "' 
-				GROUP BY user_email ORDER BY user_last_login DESC;";
+			$mysql = "SELECT DISTINCT `a_uid`, `a_un`, `a_act`,
+                nullif(count(DISTINCT projects.project_sc),0) AS prj, 
+                DATE(user_registration_datetime) AS reg,
+			    CONCAT( TIMESTAMPDIFF(HOUR,`a_ts`, CURRENT_TIMESTAMP), ' h') AS last,
+                donations.trUid
+                FROM `audit` 
+	            LEFT JOIN users ON `a_un` = users.user_name
+                LEFT JOIN projects ON `a_un` = projects.project_author 
+                LEFT JOIN donations ON `a_uid` = donations.trUid
+                WHERE TIMESTAMPDIFF(HOUR, `a_ts`, CURRENT_TIMESTAMP) < " . $hours . "  
+                AND `a_trg` != 'D' AND `a_act` != 'User deactivated' AND `a_act` != 'Other' 
+ 				AND users.user_id != '" . ADMIN_ID ."'
+   				GROUP BY user_email ORDER BY `a_ts` DESC;";
 
 			$sql = ( $this->db_type == 'sqlite' ? $sqlite : $mysql);
 			$query = $this->db_connection->query($sql);

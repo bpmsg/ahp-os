@@ -32,8 +32,8 @@ require_once('../../PHPMailer/Exception.php'); // Mailer
 session_start();
 
 $title= "User Administration";
-$version = substr('$LastChangedDate: 2022-02-06 09:34:53 +0800 (Sun, 06 Feb 2022) $',18,10);
-$rev = trim('$Rev: 105 $', "$");
+$version = substr('$LastChangedDate: 2022-02-06 15:41:25 +0800 (Sun, 06 Feb 2022) $',18,10);
+$rev = trim('$Rev: 109 $', "$");
 
 $lang = (isset($_SESSION['lang']) ? $_SESSION['lang'] : "EN");
 
@@ -45,6 +45,7 @@ $userName= "";
 $mail_flag = true; // For testing deactivation email can be switched off
 
 $daysInactive = 90;
+$daysInactivated = 2;
 
 $loggedIn = false;
 $mail = REGISTRATION_EMAIL;
@@ -104,8 +105,7 @@ if ( isset($_POST['DEL']) || isset($_POST['DELALL'])
 	if (isset($_POST['DELALL'])){ // Delete all inactive users
 		// users without projects no login more than 90 days
 		if (isset($_POST['ACT'])){
-			$days = 90;
-			$users = $ahpAdmin->getInactiveUsers($days);
+			$users = $ahpAdmin->getInactiveUsers($daysInactive);
 			foreach($users as $user){
 				if ($user[3] == 0){ // no projects
 					$flg = $userDb->deactivateUser($user[1], false);
@@ -120,8 +120,7 @@ if ( isset($_POST['DEL']) || isset($_POST['DELALL'])
 		// users deactivated more than 2 days
 		$usersInactive = $ahpAdmin->getInactiveUsers($daysInactive);
 		} else {
-			$days = 2;
-			$users = $ahpAdmin->getInactivatedUsers($days);
+			$users = $ahpAdmin->getInactivatedUsers($daysInactivated);
 			foreach($users as $user){
 				if( $userDb->deleteUser($user[1]) == true){
 					$msg  .= $user[1] . ", ";
@@ -235,10 +234,9 @@ if($loggedIn) {
 
 	// Inactive users in the last n days	
 	echo "<h2>Inactive Users</h2>";
-	$days = 2;
 	$users = "";
-	echo "<p>Registered but not activated more than $days days ago (delete)</p>";
-	$users = $ahpAdmin->getInactivatedUsers($days);
+	echo "<p>Registered but not activated more than $daysInactivated days ago (delete)</p>";
+	$users = $ahpAdmin->getInactivatedUsers($daysInactivated);
 	$ahpAdmin->displayUserTable($users);
 	echo "<p>Last login more than $daysInactive days ago (check checkbox to deactivate)</p>";
 	$ahpAdmin->displayUserTable($usersInactive, true, $sel);
