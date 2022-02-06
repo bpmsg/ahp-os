@@ -29,6 +29,11 @@ Php package (c) Klaus D Goepel, 2013-2022
 * Export of input and result data as comma separated value (CSV) files
   for further processing or presentation in a spreadsheet program.
 
+### Languages
+Currently language files for English, German, Spanish and Portugese 
+are included. They can be found in the sub-directory `language/xx` with
+xx = en, de, es, pt.
+
 ## Installation
 
 In your http root directory:
@@ -47,7 +52,6 @@ Run `db/ahp-sql-create.php` to create the necessary tables and triggers.
 
 AHP-OS is tested to run with PHP version 7.2, 7.3, and 7.4.9, 
 sqlite 3.22 and 5.5.5-10.3.29-MariaDB.
-
 
 ## Usage
 
@@ -151,7 +155,7 @@ ahp-\
      |        btnr               Registration.php (class)
      |        cfm                |
      |        cfdef               \
-     |        delcfm               do -dbIntegrity
+     |        delcfm               do -do-dbIntegrity
      |        lvecfm                   do-donor-admin
      |        sh-part                  do-edit
      |        webFont                  do-log
