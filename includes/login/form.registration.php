@@ -34,7 +34,7 @@ if(!$registration->registration_successful && !$registration->verification_succe
  				<p><label for="captcha">CAPTCHA code</label><br>
  				<input id="captcha" class="login_input" type="text" pattern="[a-zA-Z0-9]{2,6}" name="captcha" required></p>
   	<?php } else { ?>
- 				<p><img style='display:none; src='<?php echo '../../showCaptcha.php'; ?>'></p>
+ 				<p><img style='display:none;' src='<?php echo '../../showCaptcha.php'; ?>'></p>
   			<input id="captcha" class="login_input" type="text" name="captcha" value="<?php echo $_SESSION['captcha']; ?>" hidden />
  		<?php } ?>
 		<p class='sm'><input id='dpAgr' type=checkbox required ><?php echo $registration->rgTxt->info['conf']; ?></p>
