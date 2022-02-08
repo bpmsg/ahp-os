@@ -28,8 +28,8 @@ include 'includes/config.php';
 
 session_start();
 
-$version = substr('$LastChangedDate: 2022-02-06 09:58:40 +0800 (Sun, 06 Feb 2022) $',18,10);
-$rev = trim('$Rev: 106 $', "$");
+$version = substr('$LastChangedDate: 2022-02-08 15:35:30 +0800 (Tue, 08 Feb 2022) $',18,10);
+$rev = trim('$Rev: 115 $', "$");
 
 // sets the session variable for language
 $lang = filter_input(INPUT_GET, 'lang', FILTER_SANITIZE_STRING);
@@ -114,11 +114,8 @@ if(!$loggedIn){
 		echo $ahpOs->titles['h2contact'];
 		printf($ahpOs->info['contact'], CMTLNK);
 	}
-	echo "<small>The AHP-OS package is realized in php using  
-		PHPGraphLib - By Elliott Brueggeman,   
-		<a href='http://www.phpclasses.org/package/5297-PHP-Check-whether-Javascript-is-enabled-in-the-browser.html' target='_blank'>JsCheck</a> 
-		- By Gustav Eklundh and a quite modified 
-		<a href='http://github.com/panique/' target='_blank'>php-login</a> - by panique.</small>";
+	echo "<small>The AHP-OS package is realized in php and since Feb 2022 available from the author 
+	as open source in <a href='https://github.com/bpmsg/ahp-os' target='_blank' >Github</a>.</small>";
 } else if (in_array($_SESSION['user_id'], $admin ))
 	echo "<small><a href='includes/login/do/do-user-admin.php'>AHP-OS admin</a></small>";
 echo "</div>";

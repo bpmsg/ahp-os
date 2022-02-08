@@ -17,6 +17,7 @@ if (!$cpt) {
   'q'=>"Is ice hot or cold?",
   'a'=>array(md5("cold"))
  );
+ trigger_error("showCaptchaTxt.php: no result from api.textcaptcha.com", E_WARNING);
 }
 
 $_SESSION['captcha'] = $cpt['a'];

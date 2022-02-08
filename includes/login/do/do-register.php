@@ -22,10 +22,18 @@ require_once('../../PHPMailer/SMTP.php'); // Mailer
 require_once('../../PHPMailer/Exception.php'); // Mailer
 
 $title="User Registration";
-$version = substr('$LastChangedDate: 2022-02-08 11:37:08 +0800 (Tue, 08 Feb 2022) $',18,10);
-$rev = trim('$Rev: 114 $', "$");
+$version = substr('$LastChangedDate: 2022-02-08 15:35:30 +0800 (Tue, 08 Feb 2022) $',18,10);
+$rev = trim('$Rev: 115 $', "$");
 
 session_start();
+
+if(isset($_SESSION['reg_s'])){
+	$reg_s = $_SESSION['reg_s'];
+	$reg_e = microtime(true);
+	$reg_t = round( 1000*($reg_e -$reg_s),0);
+} else
+	$reg_t = 0.;
+$_SESSION['reg_s'] = microtime(true);
 
 if(isset($_COOKIE['lang'])  && in_array(strtolower($_COOKIE['lang']),$languages ))
 		$_SESSION['lang'] = $lang = $_COOKIE['lang'];
@@ -53,6 +61,13 @@ $webHtml = new WebHtml($registration->rgTxt->titles['h1reg'], 600);
 	echo "<h1>",$registration->rgTxt->titles['h1reg'],"</h1>";
 	if( SELFREG ){
 		$formToken = $_SESSION['formToken'] = uniqid();
+		if( DEBUG )
+			echo "<p class='msg'>Execution time $reg_t mS</p>";
+		// Antispam measure
+		if ($reg_t != 0. && $reg_t < 3000){
+			echo "<p class='err'>You are very fast in filling out the form";
+			trigger_error("do-register.php: Probably Spam!", E_WARNING);
+		}
 		// show potential errors / feedback (from registration object)
 		if (isset($registration) && $registration->errors)
 			echo "<p class='err'>", implode(' ',$registration->errors), "</p>";
