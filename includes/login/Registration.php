@@ -124,7 +124,8 @@ class Registration
     }
 
     /**
-* handles the entire registration process. checks all error possibilities, and creates a new user in the database if
+* handles the entire registration process. checks all error possibilities, 
+* and creates a new user in the database if
 * everything is fine
 */
     private function registerNewUser($user_name, $user_email, $user_password, $user_password_repeat, $captcha, $formToken = '')
@@ -136,8 +137,11 @@ class Registration
           $this->errors[] = "Form input error";
         //  provided data validity
         // TODO: check for "return true" case early, so put this first
-        } elseif (isset($_SESSION['captcha']) && strtolower($captcha) != strtolower($_SESSION['captcha'])) {
-            $this->errors[] = $this->rgTxt->err['wCp'];  // MESSAGE_CAPTCHA_WRONG;
+        } elseif (CPTTXT && isset($_SESSION['captcha']) 
+			&& !in_array(md5(strtolower(trim($captcha))),$_SESSION['captcha'])){
+				$this->errors[] = $this->rgTxt->err['wCp'];  // MESSAGE_CAPTCHA_WRONG;
+		} elseif (CAPTCHA && !CPTTXT && md5(strtolower($captcha)) != $_SESSION['captcha']){
+				$this->errors[] = $this->rgTxt->err['wCp'];  // MESSAGE_CAPTCHA_WRONG;
         } elseif (empty($user_name)) {
             $this->errors[] = $this->rgTxt->err['unE'];  // MESSAGE_USERNAME_EMPTY;
         } elseif (empty($user_password) || empty($user_password_repeat)) {

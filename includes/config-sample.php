@@ -82,6 +82,7 @@
  */
 	define('SELFREG', true); // --- Whether user can self register
 	define('CAPTCHA', true); // --- set false for intranet, true for web
+	define('CPTTXT', false); // --- when true, text instead of img captcha
 	define('REGISTRATION_EMAIL', true);
 
 

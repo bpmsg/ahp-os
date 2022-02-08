@@ -1,6 +1,5 @@
 <?php
 /*
- * 
     Copyright (C) 2022  <Klaus D. Goepel>
 
     This program is free software: you can redistribute it and/or modify
@@ -15,7 +14,6 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *
  */
 include ('../../config.php');
 
@@ -24,8 +22,8 @@ require_once('../../PHPMailer/SMTP.php'); // Mailer
 require_once('../../PHPMailer/Exception.php'); // Mailer
 
 $title="User Registration";
-$version = substr('$LastChangedDate: 2022-02-06 16:09:31 +0800 (Sun, 06 Feb 2022) $',18,10);
-$rev = trim('$Rev: 110 $', "$");
+$version = substr('$LastChangedDate: 2022-02-08 11:37:08 +0800 (Tue, 08 Feb 2022) $',18,10);
+$rev = trim('$Rev: 114 $', "$");
 
 session_start();
 
@@ -55,8 +53,17 @@ $webHtml = new WebHtml($registration->rgTxt->titles['h1reg'], 600);
 	echo "<h1>",$registration->rgTxt->titles['h1reg'],"</h1>";
 	if( SELFREG ){
 		$formToken = $_SESSION['formToken'] = uniqid();
-		// showing the register view (with the registration form, and messages/errors)
-		include("../form.registration.php");
+		// show potential errors / feedback (from registration object)
+		if (isset($registration) && $registration->errors)
+			echo "<p class='err'>", implode(' ',$registration->errors), "</p>";
+		if (isset($registration) && $registration->messages)
+			echo "<p class='msg'>", implode(' ', $registration->messages), "</p>";		
+		if(!$registration->registration_successful && !$registration->verification_successful)
+			//-- show registration form, if not successfully submitted yet
+			include('../form.registration.php');
+		else
+			echo "<div class='ca'><p><a href='" . SITE_URL .  "'>" 
+			. $registration->rgTxt->wrd['cont'] . "</a></p></div>";
 	} else {
  		echo "<p class='msg'>",$registration->rgTxt->info['nReg'],"</p>";
 	}

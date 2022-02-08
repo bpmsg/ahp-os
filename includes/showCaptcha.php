@@ -1,5 +1,4 @@
 <?php
-
 /**
 * This file generates a captcha string, writes it into the $_SESSION['captcha']
 * and renders a fresh captcha graphic file to the browser.
@@ -16,10 +15,13 @@ if (!extension_loaded('gd')) {
     die("It looks like GD is not installed");
 }
 
+$version = substr('$LastChangedDate: 2022-02-06 16:09:31 +0800 (Sun, 06 Feb 2022) $',18,10);
+$rev = trim('$Rev: 110 $', "$");
+
 session_start();
 
 // target captcha string length
-$iCaptchaLength = 4;
+$iCaptchaLength = 6;
 
 // following letters are excluded from captcha: I, O, Q, S, 0, 1, 5
 $str_choice = 'ABCDEFGHJKLMNPRTUVWXYZ2346789';
@@ -35,23 +37,24 @@ for ($i=0; $i < $iCaptchaLength; $i++) {
 }
 
 // write the captcha into a SESSION variable
-$_SESSION['captcha'] = $str_captcha;
+$_SESSION['captcha'] = md5(strtolower($str_captcha));
 
 // begin to create the image with PHP's GD tools
-$im = imagecreatetruecolor(150, 70);
+//$im = imagecreatetruecolor(150, 70);
+$im = imagecreatetruecolor(220, 70);
 
 $bg = imagecolorallocate($im, 255, 255, 255);
 imagefill($im, 0, 0, $bg);
 
 // create background with 1000 short lines
-/*for($i=0;$i<1000;$i++) {
+for($i=0;$i<1000;$i++) {
 $lines = imagecolorallocate($im, rand(200, 220), rand(200, 220), rand(200, 220));
-$start_x = rand(0,150);
+$start_x = rand(0,220);
 $start_y = rand(0,70);
 $end_x = $start_x + rand(0,5);
 $end_y = $start_y + rand(0,5);
 imageline($im, $start_x, $start_y, $end_x, $end_y, $lines);
-}*/
+}
 
 // create letters. for more info on how this works, please
 // @see php.net/manual/en/function.imagefttext.php
@@ -59,7 +62,8 @@ imageline($im, $start_x, $start_y, $end_x, $end_y, $lines);
 for ($i=0; $i < $iCaptchaLength; $i++) {
     $text_color = imagecolorallocate($im, rand(0, 100), rand(10, 100), rand(0, 100));
     // font-path relative to this file
-    imagefttext($im, 35, rand(-10, 10), 20 + ($i * 30) + rand(-5, +5), 35 + rand(10, 30), $text_color, 'fonts/times_new_yorker.ttf', $str_captcha[$i]);
+    imagefttext($im, 35, rand(-10, 10), 20 + ($i * 30) + rand(-5, +5), 35 
+		+ rand(10, 30), $text_color, 'fonts/times_new_yorker.ttf', $str_captcha[$i]);
 }
 
 // send http-header to prevent image caching (so we always see a fresh captcha image)
