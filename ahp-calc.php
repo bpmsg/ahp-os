@@ -24,13 +24,14 @@
 	include 'includes/config.php';
 	$login = new Login();
 
-// sets the session variable for language
+	// sets the session variable for language
 	$lang = filter_input(INPUT_GET, 'lang', FILTER_SANITIZE_STRING);
 	if($lang != null && $lang != false && in_array($lang, $languages) ){
 		$lang = strtoupper($lang);
 		setcookie('lang', $lang, time() + COOKIE_RUNTIME, "/", COOKIE_DOMAIN);
 		$_SESSION['lang'] = $lang;
-	} elseif(isset($_COOKIE['lang']) && in_array(strtolower($_COOKIE['lang']),$languages ))
+	} elseif(isset($_COOKIE['lang'])
+				&& in_array(strtolower($_COOKIE['lang']),$languages ))
 		$lang = $_COOKIE['lang'];
 	else
 		$lang ='EN';
@@ -41,8 +42,9 @@
 	if (isset($_SESSION['REFERER']))
 		unset($_SESSION['REFERER']);
 
-	$version = substr('$LastChangedDate$',18,10);
-	$rev = trim('$Rev$', "$");
+	$version = substr(
+	'$LastChangedDate: 2022-02-09 12:39:27 +0800 (Wed, 09 Feb 2022) $',18,10);
+	$rev = trim('$Rev: 116 $', "$");
 
 	$criteria = array();
 	$dta = array();	// for graphic display
@@ -66,13 +68,14 @@
 	// --- START MAIN PROGRAM
 	$cr=0.;
 	$txtout = "";	// Textstring fuer file output
-	$err_get =  $ahp->setNamesFromGet( $ahp->n, $ahp->header, $ahp->criteria, CRITMAX, "Crit-");
+	$err_get =  $ahp->setNamesFromGet(
+	 $ahp->n, $ahp->header, $ahp->criteria, CRITMAX, "Crit-");
 	$n = $ahp->n;
 	if ($n == 2)
 		unset($ahp->criteria[2]);
 	$criteria = $ahp->criteria;
-	//	$m_pc = $ahp->npc;
-	$m_pc = $ahp->npc = $ahp->get_npc($n); // number of pair-wise comparison for n criteria
+	// number of pair-wise comparison for n criteria
+	$m_pc = $ahp->npc = $ahp->get_npc($n);
 
 	$new = get_url_newn($urlAct);
 	$act = $ahp->getUrlCode($urlAct, $n, $ahp->header, $criteria);	
@@ -119,8 +122,11 @@
 	echo "\n<!-- INTRO and GET NEW N -->\n";
 	echo $ahpPrioCalc->titles1['h1title'];
 	if(!(isset($_SESSION['lang'])  || isset($_COOKIE['lang'])))
-		echo "<p>Language: <a href='", $urlAct ,"?lang=en'>English</a>
-			&nbsp;&nbsp;<a href='",$urlAct, "?lang=de'>German</a></p>";
+		echo "<p>Language: <a href='",$urlAct, "?lang=en'>English</a>
+              &nbsp;&nbsp;<a href='", $urlAct, "?lang=de'>Deutsch</a>
+              &nbsp;&nbsp;<a href='", $urlAct, "?lang=es'>Español</a>
+              &nbsp;&nbsp;<a href='", $urlAct, "?lang=pt'>Português</a>
+              </p>";
 	echo $ahpPrioCalc->titles1['h2subTitle'];
 	echo "<p class='entry-content'>",$ahpPrioCalc->info['intro'],"</p>";
 	echo $ahpPrioCalc->info['selC'];
@@ -154,7 +160,8 @@
 		}
 		$data = urlencode(serialize($data));
 		// Graphic
-		echo "<div class='ofl'><div style='margin-left:auto;margin-right:auto;width:700px;'>";
+		echo "<div class='ofl'>
+				<div style='margin-left:auto;margin-right:auto;width:700px;'>";
 		echo "<img src='ahp-group-graph.php?dta=$data' alt='Ahp-dia'>";
 		echo "</div></div>";
 	} 

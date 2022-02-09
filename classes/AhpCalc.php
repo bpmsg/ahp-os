@@ -1,92 +1,73 @@
 <?php
 /* Analytic Hierarchy Process base AHP class 2014-01-02
+ * 
+ * Pairwise comparisons are submitted via the webform get_pair_comp()
+ * as an array of $pwc['A'] and $pwc['Intense']. $pwc['A'] can have 
+ * the values 1 or 0, meaning A preferred vs B ("0") or B preferred 
+ * vs A ("1"). $pwc['Intense'] gives the intensities (1 to 9) on the 
+ * fundamental AHP scale.
+ * 
+ * Once $pwc is submitted, it will be converted into a linear array $dms
+ * (decision matrix string)  of $npc (number of comparisons) values in 
+ * the range 1/9 ... 1 ... 9 using setDms($pwc).
+ * 
+ * From there the decision matrix $dm is filled with setDm().
+ * 
+ * With set_evm_evec() the dominant eigenvector $evm_evec_is calculated,
+ * using the power method. The eigenvector yields to the eigenvalue 
+ * $evm_eval using the function setEvmEval(). Errors are estimated with 
+ * setEvmErrors() and consistency $cr and $cr_alo with setSaatyCr() and 
+ * setAlonsoCr().
+ * 
+ * Final results are passed using get_evm() using an array with keys
+ * 'evm_evec', 'evm_err', 'evm_eval' and 'cr'.
  *
- * $LastChangedDate$
- * $Rev$
+ * $LastChangedDate: 2022-02-09 12:39:27 +0800 (Wed, 09 Feb 2022) $
+ * $Rev: 116 $
  *
  * Solves eigenvector of decision matrix based on pairwise
  * comparisons of n criteria
  *
- * @author Klaus D. Goepel
- * @copyright 2014 Klaus D. Goepel
- * @version 2014-01-09 
- * @version 2017-03-29 confirmation when default pwc added in get_pair_comp
- * @version 2017-06-02 added getPwcFromMatrix($dm)
- * @version 2017-07-13 removed scale function and scale parameter
- * @version 2017-09-30 reworked get pairw comp with formatting
- * @version 2018-08-29 line 587 added "&& $m_pc > 1" no confirm for 2 crit/alt
- * @version 2018-08-31 get_inconsistency exclude >9 and <1/9
- * @version 2019-05-08 get_criteria, get_pwc, get_emv_evec, get_emv_eval get_dm taken out
- *                     set_evm_evec private, code cleanup: remove function parameters
- * @version 2019-05-10 set_evm paramter $n removed
- * @version 2019-05-13 EVM error calculation setEvmErrors() added
- *
- * public function get_npc($n)
- * public function get_n($n)
- * public function setNamesFromGet( &$n, &$t, &$names, $nmax, $nameDef)
- * public function set_pwc($n)
- * public function set_pwc_def($n)
- * public function getMatrixFromPwc($pwc)
+ * Copyright (C) 2022  <Klaus D. Goepel>
  * 
- * public function set_evm($pwc)
- * public function get_evm()
- * public function getUrlCode($myUrl, $n, $title, $crit)
- * public function get_pair_comp($act, $submit, $errPost, $compTxt, $pwc)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * private function setDms($para)
- * private function setDm()
- * private function getVsqNorm($v1,$v2)
- * private function vScale($v,$s)
- * private function set_evm_evec()
- * private function setEvmEval()
- * private function get_inconsistency()
- * private function setEvmErrors()
- * private function setAlonsoCr()
- * private function setSaatyCr()
- * private function getPwcFromMatrix($dm)
- * private function mb_rawurlencode($url)
- * 
-    Copyright (C) 2022  <Klaus D. Goepel>
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
- 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>. 
  */
 
 class AhpCalc {
 /* Class Constants */
-	const ERR = 1.E-7;		/** accepted error for eigenvalue calculation */
-	const ITMAX = 20;		/** max. number of iterations for power method */
-	const CRTH = 0.1;		/** threshold for consistency ratio */
-	const NMIN = 2;		/** min number of criteria/alternatives */
+	const ERR = 1.E-7;  /* accepted error for eigenvalue calculation */
+	const ITMAX = 20;   /* max. number of iterations for power method */
+	const CRTH = 0.1;   /* threshold for consistency ratio */
+	const NMIN = 2;     /* min number of criteria/alternatives */
 
 /** AHP properties */
-	public $header;			/** header: e.g. goal */
-	public $n, $npc; 		/** number of criteria & pairwise comparisons */
-	public $criteria = array();	/** criteria names */
-	public $pwc = array(); 	/** pairwise comparison array */
-	public $dm = array();		/** decision matrix */
-	public $evm_evec, $evm_eval; 	/** eigenvector and eigenvalue (Saaty) */
-	public $evm_err, $evm_tol;	/** absolute error for eigenvector method */
-	public $evm_it, $evm_dt; 	/** no of iterations and delta for power method */
-	public $cr_ahp, $cr_alo; 	/** consistency ratio Saaty and Alonso */
+	public $header;			     /* header: e.g. goal */
+	public $n, $npc; 		     /* number of criteria & pairwise comparisons */
+	public $criteria = array();	 /* criteria names */
+	public $pwc = array(); 	     /* pairwise comparison array */
+	public $dm = array();        /* decision matrix */
+	public $evm_evec, $evm_eval; /* eigenvector and eigenvalue (Saaty) */
+	public $evm_err, $evm_tol;   /* absolute error for eigenvector method */
+	public $evm_it, $evm_dt;     /* no of iterations and delta for power method */
+	public $cr_ahp, $cr_alo;     /* consistency ratio Saaty and Alonso */
 
 	private $dm_string = array();
-	public $ahpCalcTxt;				// language class
+	public $ahpCalcTxt;     /* language class */
 
-/** Methods */
+/* Methods */
 
-/** Initialize: n, npc, default header and criteria names */
+/* Initialize: n, npc, default header and criteria names */
 public function __construct($n){
 	mb_internal_encoding('UTF-8');
 	global $lang;
@@ -102,33 +83,38 @@ public function __construct($n){
 }
 
 
-/** Calculation of number of pairwise comparisons as function of number of criteria */
+/* Number of pairwise comparisons as function of number of criteria */
 public function get_npc($n){
 	return $this->npc = ($n*$n-$n)/2;
 }
 
 
-/** Calculation of number of criteria as function of number of pairwise comparisons */
+/* Number of criteria as function of number of pairwise comparisons */
 public function get_n($n){
 	return( (int)(0.5+sqrt(2*$n+0.25)));
 }
 
 
-/** Read n, title and names from $_GET parameters or set to default if not given
+/* Read n, title and names from $_GET or set to default if not given
 * 
 * @param int $n              number of names
 * @param string $t           title
 * @param array string $names names
 * @param int $nmax           max. of n
 * @param strong $nameDef     default string for names
-* @return int 0 ok., bit 1: n reset to default, bit 2: number of alternatives does not match n
+* @return int 0 ok., bit 1: n reset to default, bit 2: number of 
+*                            alternatives does not match n
 * @uses const NMLEN          max length of names
 */
 public function setNamesFromGet( &$n, &$t, &$names, $nmax, $nameDef){
 	if(!defined("WLMAX")) 
 		define("WLMAX", 25);
 
-	$nOpt = array( 'options' => array('min_range' => self::NMIN, 'max_range' =>$nmax,));
+	$nOpt = array(
+	 'options' => array(
+		'min_range' => self::NMIN, 
+		'max_range' =>$nmax,)
+	);
 	$err=0;
 
 	// first set default n and alternative names
@@ -136,7 +122,9 @@ public function setNamesFromGet( &$n, &$t, &$names, $nmax, $nameDef){
 	for ( $i=0; $i < $n; $i++ )
 		$names[$i] = $nameDef . ($i+1);
 
-	if (filter_has_var(INPUT_GET, 'c') || filter_has_var(INPUT_GET, 'n') || filter_has_var(INPUT_GET, 't') ){
+	if (filter_has_var(INPUT_GET, 'c') 
+		|| filter_has_var(INPUT_GET, 'n') 
+		|| filter_has_var(INPUT_GET, 't') ){
 		// get complete parameter string
 		$para = filter_input_array(INPUT_GET,FILTER_SANITIZE_STRING);
 		// check for n
@@ -172,19 +160,19 @@ public function setNamesFromGet( &$n, &$t, &$names, $nmax, $nameDef){
 
 
 /* Set pairwise comparison input and from $_POST parameters 
- * @return array pwc (A, Intensity) or int 1 (start pwc), int 2 (error in parameters)
+ * @return array pwc (A, Intensity) or int 1 (start pwc), 
+ * int 2 (error in parameters)
  * called from ahp_calc, ahp_altcalc and ahp-hiercalc
- * @todo $n not in use
  */
-public function set_pwc($n) {
+public function set_pwc() {
 	$args = array(
-		'A'		=> array('filter' => FILTER_VALIDATE_INT,
-					  'flags' => FILTER_REQUIRE_ARRAY,
-					  'options'=> array('min_range' => 0, 'max_range' => 1,)
+		'A'	=> array('filter' => FILTER_VALIDATE_INT,
+			'flags' => FILTER_REQUIRE_ARRAY,
+			'options'=> array('min_range' => 0, 'max_range' => 1,)
 				   ),
-		'Intense'	=> array('filter' => FILTER_VALIDATE_INT,
-					  'flags' => FILTER_REQUIRE_ARRAY,
-					  'options'=> array('min_range' => 1, 'max_range' => 9,)
+			'Intense'=> array('filter' => FILTER_VALIDATE_INT,
+			'flags' => FILTER_REQUIRE_ARRAY,
+			'options'=> array('min_range' => 1, 'max_range' => 9,)
 				   )
 		);
 	$para = filter_input_array(INPUT_POST, $args);
@@ -192,7 +180,8 @@ public function set_pwc($n) {
 	if($para == NULL ){
 		// variables not set - start pairwise comparison
 		return 1;
-	} elseif ($para == false || count($para, COUNT_RECURSIVE) != 2* $this->npc + 2){
+	} elseif ($para == false 
+			|| count($para, COUNT_RECURSIVE) != 2* $this->npc + 2){
 		// variables not valid - error
 		return 2;
 	} else {
@@ -210,10 +199,8 @@ public function set_pwc($n) {
 public function set_pwc_def($n){
 	$this->n = $n;
 	$this->npc = $this->get_npc($n);
-	for($i=0; $i < $this->npc; $i++){
-		$this->pwc['A'][$i] = 0;
-		$this->pwc['Intense'][$i] =1;
-	}
+	$this->pwc['A'] =       array_fill(0, $this->npc, 0);
+	$this->pwc['Intense'] = array_fill(0, $this->npc, 1);
 	return $this->pwc;
 }
 
@@ -233,7 +220,8 @@ $dmstring = array();
 	$m = 0;
 	for($i = 0; $i < $n-1; $i++){
 		for ($j= $i+1; $j<$n; $j++)	{
-			$dmstring[$m] = ( $pwc['A'][$m] == 0 ? $pwc['Intense'][$m] : 1/$pwc['Intense'][$m]);
+			$dmstring[$m] = ( $pwc['A'][$m] == 0 ? $pwc['Intense'][$m] :
+			 1/$pwc['Intense'][$m]);
 			$m++;
 		}
 	}
@@ -273,7 +261,8 @@ private function getPwcFromMatrix($dm){
 
 /* Function to fill the npc pairwise comparisons with values
  * @param  array $para contains pairwise comparisons ['A'],['Intense']
- * $dm_string linear array with npc pairwise comparisons of values (1/9 ... 1 ... 9)
+ * $dm_string linear array with npc pairwise comparisons of values 
+ * (1/9 ... 1 ... 9)
  */
 private function setDms($para){ // Dms = decision matrix string
 	if ( $para != "" && is_array($para)){ 
@@ -281,7 +270,8 @@ private function setDms($para){ // Dms = decision matrix string
 		$m = 0;
 		for($i = 0; $i < $this->n-1 ; $i++){
 			for ($j= $i+1; $j<$this->n; $j++)	{
-				$this->dm_string[$m] = ($para['A'][$m]== 0 ? $para['Intense'][$m] : 1/$para['Intense'][$m]);
+				$this->dm_string[$m] = ($para['A'][$m]== 0 ? 
+					$para['Intense'][$m] : 1/$para['Intense'][$m]);
 				$m++;
 			}
 		}
@@ -317,7 +307,8 @@ private function setDm(){
  */
 private function getVsqNorm($v1,$v2){
 	if(count($v1) != count($v2))
-		echo "<span class='err'>error in v_norm - vectors have different dimensions</span>";
+		echo "<span class='err'>error in v_norm - 
+				vectors have different dimensions</span>";
 	$d = 0.0;
 	foreach ($v1 as $i => $val1){
 		$t = pow(($val1 - $v2[$i]),2);
@@ -386,7 +377,8 @@ private function setEvmEval(){
 
 
 /* Get proposal of consistent judgments for top 3 inconsistencies
- * @return array with top 3 inconsistencies, value A/B n as proposal for consistent judgment
+ * @return array with top 3 inconsistencies, value A/B n as proposal 
+ * for consistent judgment
  */
 private function get_inconsistency(){
 	$m = 0;
@@ -394,7 +386,8 @@ private function get_inconsistency(){
 		for ($j= $i+1; $j< $this->n; $j++){
 			$es = $this->evm_evec[$j]/$this->evm_evec[$i];
 			$cs = $this->dm[$i][$j] * $es;
-			$de_s[$m] = ($es>=1. ?  min(9, round($es,0)) . " (B)" : min(9,round(1/$es,0)) . " (A)" );
+			$de_s[$m] = ($es>=1. ?  min(9, round($es,0)) . " (B)" : 
+				min(9,round(1/$es,0)) . " (A)" );
 			$cm_s[$m] = ( $cs >=1. ? $cs : 1/$cs);
 			$m++;
 		}
@@ -417,7 +410,8 @@ private function setEvmErrors(){
 	$sqs = 0.;
 	for( $i=0; $i< $this->n; $i++){
 		for( $k=0; $k < $this->n; $k++){
-			$t = $this->dm[$i][$k] * $this->evm_evec[$k] * $nlm - $this->evm_evec[$i];
+			$t = $this->dm[$i][$k] * $this->evm_evec[$k] 
+				* $nlm - $this->evm_evec[$i];
 			$sqs += $t * $t;
 		}
 		$this->evm_err[$i] = sqrt($sqs/($this->n -1));
@@ -434,13 +428,22 @@ private function setEvmErrors(){
 
 /* Calculate Alonso CR */
 private function setAlonsoCr(){
-	$this->cr_alo = ($this->evm_eval - $this->n)/( (2.7699 * $this->n - 4.3513) - $this->n);
+	$this->cr_alo = ($this->evm_eval - $this->n)
+		/( (2.7699 * $this->n - 4.3513) - $this->n);
 }
 
 
 /* Calculate Saaty CR */
 private function setSaatyCr(){
-	$ri = array( 3 => 0.57, 4 => 0.9, 5 => 1.12 ,6 => 1.24, 7 => 1.32, 8=> 1.41, 9=> 1.45, 10=> 1.49);
+	$ri = array( 
+		3 => 0.57, 
+		4 => 0.9, 
+		5 => 1.12 ,
+		6 => 1.24, 
+		7 => 1.32, 
+		8=> 1.41, 
+		9=> 1.45, 
+		10=> 1.49);
 	if($this->n > 2 && $this->n <11){ // only valid for n = 3 to n = 10 
 		$ci = ($this->evm_eval-$this->n)/($this->n - 1);
 		$this->cr_ahp = $ci/$ri[$this->n];
@@ -458,13 +461,13 @@ private function setSaatyCr(){
  * @todo: parameter $n unnecessary
  */
 public function set_evm($pwc){
-	$this->setDms($pwc); // Convert pwc to float values
-	$this->setDm(); // Fill decision matrix
+	$this->setDms($pwc);   // Convert pwc to float values
+	$this->setDm();        // Fill decision matrix
 	$this->set_evm_evec(); // Solve dominant Eigenvector (normalized)
-	$this->setEvmEval(); // Calculation of eigenvalue and consistency ratio	
+	$this->setEvmEval();   // Calculation of eigenvalue and consistency ratio	
 	$this->setEvmErrors(); // calculate errors of weights
-	$this->setAlonsoCr(); // calculate CR using Alonso linear fit for RI
-	$this->setSaatyCr(); // calculate Saaty CR
+	$this->setAlonsoCr();  // calculate CR using Alonso linear fit for RI
+	$this->setSaatyCr();   // calculate Saaty CR
 }
 
 
@@ -506,9 +509,9 @@ public function getUrlCode($myUrl, $n, $title, $crit){
 }
 
 
-/** Webform and HTML display for pairwise comparisons 
-* Input: post parameter array, array of indices of pairwise comparisons with highest inconsistency
-* to mark the corresponding rows 
+/* Webform and HTML display for pairwise comparisons 
+* Input: post parameter array, array of indices of pairwise comparisons 
+* with highest inconsistency to mark the corresponding rows 
 *
 * @param string $act action for html form
 * @parma array $submit value = ['txt'] name = ['val'] submit button in form
@@ -540,7 +543,7 @@ public function get_pair_comp($act, $submit, $errPost, $compTxt, $pwc){
 		for ($j= $i+1; $j<$this->n; $j++){
 		$pa_rbs = ""; $pb_rbs = ""; $pi_rbs=""; $proposal="";
 			$mstyle=" ";
-		// if CR > threshold: mark rows with highest inconsistency
+			// if CR > threshold: mark rows with highest inconsistency
 			if( !$crok){
 				switch ($mRow){
 					case $cs_k[0]:
@@ -564,24 +567,28 @@ public function get_pair_comp($act, $submit, $errPost, $compTxt, $pwc){
 			echo "<td class='ca' $mstyle>", $mRow+1, "</td>";
 			// A
 			echo "<td>";
-			echo "<span $pa_rbs><input class='onclk1' type='radio' name='A[", $mRow, "]' value='0'", 
+			echo "<span $pa_rbs>
+				<input class='onclk1' type='radio' name='A[", $mRow, "]' value='0'", 
 					($pwc['A'][$mRow] == 0 ? " checked" : ""), "/>","</span>",
 					"<label> ", $this->criteria[$i], "</label></td>";
 			// B
 			echo	"<td>";
-			echo "<span $pb_rbs ><input class='onclk1' type='radio' name='A[", $mRow, "]' value='1'",
+			echo "<span $pb_rbs >
+				<input class='onclk1' type='radio' name='A[", $mRow, "]' value='1'",
 					($pwc['A'][$mRow] == 1 ? " checked" : ""), ">","</span>", 
 				  "<label>" . $this->criteria[$j] . "</label></td>";
 			// Intensity 1
 			echo "<td class='ac' style='font-size:smaller;'>",
 				"<span ",	($pi_rbs == 1 ? $rb_hl : ""), ">",
-				"<input type='radio' class='onclk1' name='Intense[".$mRow."]' value='1'",($pwc['Intense'][$mRow] == 1 ? ' checked' : ''), ">",
+				"<input type='radio' class='onclk1' name='Intense[".$mRow."]' 
+				value='1'", ($pwc['Intense'][$mRow] == 1 ? ' checked' : ''), ">",
 				"<label>1</label></span></td>";
 			echo "<td class='ca' style='min-width:250px;font-size:smaller;' >";
 			// Intensities 2 to 9
 				for ($rb=2; $rb<10; $rb++){
 					echo  "<span ",($pi_rbs == $rb ? $rb_hl : ""), ">",
-					"<input type='radio' class='onclk1' name='Intense[", $mRow, "]' value='$rb'",($pwc['Intense'][$mRow] == $rb ? ' checked' : ''), ">",
+					"<input type='radio' class='onclk1' name='Intense[", $mRow, "]' 
+				value='$rb'", ($pwc['Intense'][$mRow] == $rb ? ' checked' : ''), ">",
 					"<label>$rb</label></span>";
 				}
 			echo "</td>";
@@ -596,7 +603,8 @@ public function get_pair_comp($act, $submit, $errPost, $compTxt, $pwc){
 		}
 		echo "\n<tr><td colspan='5'></td></tr>";
 	}
-	echo "\n<tr><td class='sm' colspan='5'> CR = <span class='res'>", round($this->cr_alo * 100,1), "% </span>";
+	echo "\n<tr><td class='sm' colspan='5'> CR = <span class='res'>", 
+		round($this->cr_alo * 100,1), "% </span>";
 	// 	display result depending message
 	switch ($errPost) {
 		case 1:
@@ -627,7 +635,8 @@ public function get_pair_comp($act, $submit, $errPost, $compTxt, $pwc){
 			($crok ? " class='btnr'" : ""),($cfm ? " onclick='return cfmdef()'" : "") ); 
 		echo 	"<script src='js/cfmdef.js' ></script>";
 		if( $submit['var'] == "download")
-			echo "&nbsp;<input type='checkbox' name='csv' value='0' ><small>", $this->ahpCalcTxt->mnu['btnDl'], "</small>";
+			echo "&nbsp;<input type='checkbox' name='csv' value='0' ><small>",
+				$this->ahpCalcTxt->mnu['btnDl'], "</small>";
 	}
 	echo	"</td></tr>";
 	echo "\n</tbody>\n</table></div>\n</form>";

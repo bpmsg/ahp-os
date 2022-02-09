@@ -1,98 +1,101 @@
 <?php
 /**
-* Analytic Hierarchy Process group sessions 2014-01-06
-* functions to calculate group results and AHP consensus indicator
-*
-* $LastChangedDate$
-* $Rev$
-*
-* @author Klaus D. Goepel
-* @since 2014-01-06
-* @copyright 2014-2017 Klaus D. Goepel
-* @package AHP-OS
-* @version 2016-11-02
-* @version 2019-06-25 __construct($sc) last version w/o SVN
-*
-* @uses colorClass, ahpDbclass, ahpClass, ahpHierClass
-* @uses $_SESSION['ipart'] in function exportGroupResult (selected participants)
-* 
-    Copyright (C) 2022  <Klaus D. Goepel>
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*
-* public function getPrioHier($iScale)        - main method hierarchy
-* public function getPrioAlt ($iScale, $ahpH)	- main method alternatives
-* public function generateRandPwc($n ,$dj)		- Monte Carlo
-* public function uncertainty($pwcr, $ahpH, $iScale, $sdFlg=0, $hierMode)
-* public function getConsensus($node, $iScale)- AHP consensus
-*
-* HTML/CSV output
-* public  function printAhpGrpResult($node, $tflg)   - HTML output
-* public  function exportGroupResult($hierMode, $ds) - CSV output
-*
-* private function predecessor($node, $prio)
-* private function ahpConsolidate($iScale, $ahpH, $hierMode)
-* private function pwcGeoMean($pwcArray) calculates sd in pwc['SD']
-* private function relHomogeneity
-* private function getShannonBeta($node)
-* private function getConsensus($node, $iScale)
-* private function getGlbConsensus()
-* private function ahpShannonCor($nCrit, $mScale = 9, $kPart)
-* private function hamin($nCrit, $mScale = 9)
-* private function hgmax($nCrit, $mScale = 9, $kPart)
-* private function normd() 
-*/
+ * Analytic Hierarchy Process group sessions 2014-01-06
+ * functions to calculate group results and AHP consensus indicator
+ * 
+ * The actual result of AHP projects is calculated "on-the-fly", when
+ * the user calls the result page (ahp-group.php). In the database only
+ * the decision hierarchy definition and alternative names and the 
+ * pairwise comparisons are stored. The AhpGroup class has all methods
+ * to calculate and display the final results. 
+ *
+ * $LastChangedDate: 2022-02-09 12:39:27 +0800 (Wed, 09 Feb 2022) $
+ * $Rev: 116 $
+ *
+ * @author Klaus D. Goepel
+ * @since 2014-01-06
+ * @version 2019-06-25 __construct($sc) last version w/o SVN
+ * @uses colorClass, ahpDbclass, ahpClass, ahpHierClass
+ * @uses $_SESSION['ipart'] in function exportGroupResult 
+ * (selected participants)
+ * 
+ * Copyright (C) 2022  <Klaus D. Goepel>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * public function getPrioHier($iScale)        - main method hierarchy
+ * public function getPrioAlt ($iScale, $ahpH) - main method alternatives
+ * public function generateRandPwc($n ,$dj)	   - Monte Carlo
+ * public function uncertainty($pwcr, $ahpH, $iScale, $sdFlg=0, $hierMode)
+ * public function getConsensus($node, $iScale)- AHP consensus
+ *
+ * HTML/CSV output
+ * public  function printAhpGrpResult($node, $tflg)   - HTML output
+ * public  function exportGroupResult($hierMode, $ds) - CSV output
+ *
+ * private function predecessor($node, $prio)
+ * private function ahpConsolidate($iScale, $ahpH, $hierMode)
+ * private function pwcGeoMean($pwcArray) calculates sd in pwc['SD']
+ * private function relHomogeneity
+ * private function getShannonBeta($node)
+ * private function getConsensus($node, $iScale)
+ * private function getGlbConsensus()
+ * private function ahpShannonCor($nCrit, $mScale = 9, $kPart)
+ * private function hamin($nCrit, $mScale = 9)
+ * private function hgmax($nCrit, $mScale = 9, $kPart)
+ * private function normd() 
+ */
 
 class AhpGroup
 {
 /** Class constants */
-const MAXCOL = 10; // maximal numer of columns for result table
-const NEWL = "\n"; // for csv file export
+const MAXCOL = 10; 			// maximal numer of columns for result table
+const NEWL = "\n"; 			// for csv file export
 const ENCL = '"';
 const RGBBASE = "#50D27B";
 const RGBEND  = "#EBB5A2";
-const CRLMT = 0.25; // limit of cr for randomized pwcs
+const CRLMT = 0.25; 		// limit of cr for randomized pwcs
 
 /** Properties */
 
-public $sessionCode;	  		// Session code
-public $pj = array();   		// project data
-public $nodes;        			// hierarchy nodes
-public $leafs;        			// hierarchy leafs
+public $sessionCode;		// Session code
+public $pj = array();		// project data
+public $nodes;        		// hierarchy nodes
+public $leafs;        		// hierarchy leafs
 
-public $part = array();			// all participants
-public $pSel = array();			// selected participants; key not squential!
-public $pwcCnt = array();		// pwcCnt[$node] number of consolidated judgments for $node
+public $part = array();		// all participants
+public $pSel = array();		// selected participants; key not squential!
+public $pwcCnt = array();	// pwcCnt[$node] number of consolidated judgments for $node
 public $pwcEmpty = array(); // array[$node] contains names of participants w/o pwc
-public $pwcN = array();			// array[$node] contains names of part with pwc
+public $pwcN = array();		// array[$node] contains names of part with pwc
 
-public $prio = array();			// $prio[$partNo][$node][$branch] $partNo = 0 consolidated
+public $prio = array();		// $prio[$partNo][$node][$branch] $partNo = 0 consolidated
 public $prioVar = array();
-public $simCnt;         		// total number random simulations
+public $simCnt;         	// total number random simulations
 
-public $consens1;     			// beta diversity for global priorities
-public $consens;      			// consensus for global priorities/alternatives
+public $consens1;     		// beta diversity for global priorities
+public $consens;      		// consensus for global priorities/alternatives
 public $pwcCons = array();	// unscaled geomean of participants, includes sd
 
-public $dmCons = array();		// $dmCons[$node][$i][$j] consolidated matrices
-public $cr = array();				// consistency ratio cr[$partNo][$node] set in prioHier
+public $dmCons = array();	// $dmCons[$node][$i][$j] consolidated matrices
+public $cr = array();		// consistency ratio cr[$partNo][$node] set in prioHier
 
 public $err = array();
 public $wrn = array();
 
-public $ahpDb;         			// class for AHP database functions
-public $ahpGroupTxt;				// language class
+public $ahpDb;         		// class for AHP database functions
+public $ahpGroupTxt;		// language class
 private $lang;
 
 /* ahp scales and maximum m for x = 9 */
@@ -108,6 +111,22 @@ public $ahpScale = array(
 	8 => array( "8 - Power scale",81),
 	9 => array( "9 - Geometric scale",256)
 	);
+
+/* Interpretation of AHP consensus indicator */
+public function consensusWording($c){
+		if ($c<=50)
+			return " <span class='res'>very low</span>";
+		elseif ($c >50 && $c <= 65)
+			return " <span class='res'>low </span>";
+		elseif ($c >65 && $c <= 75)
+			return " <span class='res'>moderate </span>";
+		elseif ($c >75 && $c <= 85)
+			return " <span class='res'>high </span>";
+		elseif ($c >85 && $c <= 100)
+			return " <span class='res'>very high</span>";
+		else
+			return "";
+	}
 
 /** Methods */
 
@@ -144,9 +163,18 @@ public $ahpScale = array(
 	}
 
 
-/* Main method of the class:
- * calculate consolidated priorities of the hierarchy for participants
- * @return string $text hierarchy text
+/* Main method of the class for hierarchies:
+ * 
+ * Calculate consolidated priorities of the hierarchy 
+ * $this->prio is a numeric array containing results for each participant
+ * in keys [1] ... [pn]. 
+ * [0] contains the consolidated result (AIJ) of all participants. 
+ * The second key is is the node of the decision hierarchy. 
+ * Node ['pTot] gives the global priorities.
+ * The third key are the leafs belonging to each node.
+ * 
+ * @return string $text hierarchy text for the consolidated hierarchy
+ * with consolidated priorities set using "=0.xxxx" 
  */
  public function getPrioHier($iScale = 0){
 	$text = "";
@@ -181,8 +209,16 @@ public $ahpScale = array(
 }
 
 
-/* Main method of the class:
+/* Main method of the class for alternatives:
+ * 
  * Calculation of consolidated priorities for alternatives
+ * $this->prio is a numeric array containing results for each participant
+ * in keys [1] ... [pn]. 
+ * [0] contains the consolidated result from all participants.
+ * The second key is the name of each criterion. 
+ * The weighted sum/weighted product total result has the key [pTot]
+ * The third key is the name of each alternative.
+ *
  */
 public function getPrioAlt($iScale, $ahpH){
 	if ( isset($this->pj['project_alt'])) {
@@ -227,7 +263,8 @@ public function getPrioAlt($iScale, $ahpH){
 
 
 /* 
- * common part for hierarchy and alternative consolidation 
+ * Common part for hierarchy and alternative consolidation 
+ * calculates results and stores them in $this->prio
  */
 private function ahpConsolidate($iScale, $ahpH, $hierMode){
 //	global $ahpH;
@@ -269,6 +306,7 @@ private function ahpConsolidate($iScale, $ahpH, $hierMode){
 				$pwcs[$i] = $this->calcScale($pwc[$i], $iScale);
 				$ahp->set_evm($pwcs[$i]);
 				$resPrio = $ahp->get_evm();
+				// Set result and cr for participant i
 				$this->prio[$i+1][$node] = array_combine($branch,$resPrio['evm_evec']);
 				$this->cr[$i+1][$node] = $resPrio['cr'];
 				$this->cr[$i+1]['pTot'] = max( $resPrio['cr'],$this->cr[$i+1]['pTot'] );
@@ -283,7 +321,9 @@ private function ahpConsolidate($iScale, $ahpH, $hierMode){
 			} else { // no pwc for $name and $node
 					if($dbE){
 						$this->err[] = sprintf($this->ahpGroupTxt->err['dbE'],$name,$node);
-						trigger_error($this->sessionCode . " inconsistent PWC: " . $name . ", node: " . $node, E_USER_WARNING);
+						trigger_error(
+						$this->sessionCode . 
+							" inconsistent PWC: $name node: $node", E_USER_WARNING);
 					}
 					$this->pwcEmpty[$node][] = $name;
 					$this->pwcCnt[$node] -= 1;
@@ -298,25 +338,24 @@ private function ahpConsolidate($iScale, $ahpH, $hierMode){
 		}
 		// consolidate: calculate geometric mean (aggregation of individual judgments - index 0)
 		if($pwcs != NULL){
-			// calculate consolidated priorities in prio[0]
-			// @todo: need to check first geomean, then scaling?
-			// $pwc unscaled, pwcs scaled
+			// --- calculate consolidated priorities in prio[0]
+			// --- $pwc unscaled, pwcs scaled
 			$this->pwcCons[$node] = $this->pwcGeoMean($n, array_values($pwc));
 			$pwcsCons = $this->calcScale($this->pwcCons[$node], $iScale);
 			$ahp = new AhpCalc($n);
-			// Keep consolidated matrix for each node
+			// --- Keep consolidated matrix for each node
 			$this->dmCons[$node] = $ahp->getMatrixFromPwc($pwcsCons);
 			$ahp->set_evm($pwcsCons);
 			$resPrio = $ahp->get_evm();
 			$this->prio[0][$node] = array_combine($branch, $resPrio['evm_evec']);
 			$this->cr[0][$node] = $resPrio['cr'];
 			$this->cr[0]['pTot'] = max($resPrio['cr'],$this->cr[0]['pTot']);
-			// here we can set uncertainties based on measurement error theory
-			// $resmax[$node][$branch[$k]] and $resmin[$node][$branch[$k]]
+			// --- here we can set uncertainties based on measurement error theory
+			// --- $resmax[$node][$branch[$k]] and $resmin[$node][$branch[$k]]
 			unset($ahp);
 
 			if($hierMode){
-				// set priorities in hierarchy text - hierMode only
+				// --- set priorities in hierarchy text - hierMode only
 				$nodeTxt = $node . ": ";
 				for ($j = 0; $j<$n; $j++)
 					$nodeTxt .= $branch[$j] . "=" . round($resPrio['evm_evec'][$j],8) . ", ";
@@ -324,21 +363,20 @@ private function ahpConsolidate($iScale, $ahpH, $hierMode){
 				$txtNa = explode(":", $nodeTxt);
 				$text = $ahpH->setNewText($text, $node, $txtNa[1]);
 			}
-		} else { // no pwc for $name and $node
+		} else { // --- no pwc for $name and $node
 			if($hierMode){
 				for ($j = 0; $j<$n; $j++) {
 					$this->prio[0][$node][$branch[$j]]= $ahpH->priorities[$node][$branch[$j]];					
 				}
 				$this->cr[0][$node] = 0;
 			}
-//				$this->prio[0][$node] = array_combine($branch,array_fill(0, $n, 1/$n));
 		}
-		// clear pwc for next node
+		// --- clear pwc for next node
 		$pwc = array(); // reset
 		$pwcs = array();
-	} // end foreach $node
+	} // --- end foreach $node
 
-	// sort missing pwc inputs by nodes
+	// ---sort missing pwc inputs by nodes
 	$ndl = "";
 	foreach($nodes as $node)
 		if( isset($this->pwcEmpty[$node]) && $this->pwcCnt[$node] == 0) {
@@ -346,7 +384,7 @@ private function ahpConsolidate($iScale, $ahpH, $hierMode){
 		}
 	if($ndl <> "")
 		$this->wrn[] = sprintf($this->ahpGroupTxt->wrn['noPwc'],$ndl);
-	// $text will be empty for alternative mode
+	// --- $text will be empty for alternative mode
 	return $text;
 }
 
@@ -380,7 +418,8 @@ private function calcScale($pwc, $iScale){
 }
 
 
-/* calculates geometric mean for array of pairwise comparisons $pwcArray
+/* 
+ * Calculates geometric mean for array of pairwise comparisons $pwcArray
  * Instead of calculating the geo mean of the whole matrix array, it is
  * calculated for the pairwise comparisons. From there the consolidated 
  * decision matrix can easily be filled.
@@ -420,7 +459,8 @@ private function pwcGeoMean($n, $pwcArray){
 }
 
 
-/* Calculate relative homogeneity index 0 - 1 
+/* 
+ * Calculate relative homogeneity index 0 - 1 
  * This is the uncorrected AHP consensus indicator
  * shown for the global priorities
  */
@@ -432,7 +472,8 @@ private function relHomogeneity($dBeta, $dBetaMin){
 }
 
 
-/* calculates Shannon beta entropy as gamma - alpha entropy
+/* 
+ * Calculates Shannon beta entropy as gamma - alpha entropy
  * $ppal = alpha entropy, $pgam = gamma entropy, $pbet = beta entropy
  * @param float array $prio contains AHP priorities for participants [1] to [k]
  * $prio[participant][node][branch]=>priority
@@ -488,7 +529,8 @@ public function getConsensus($node, $iScale = 0){
 	$pbet = $this->getShannonBeta($node);
 	if (is_float($pbet)){
 		// calculate correction factor for AHP
-		$cor = $this->ahpShannonCor(count($this->prio[0][$node]), $m, $this->pwcCnt[$node]);
+		$cor = $this->ahpShannonCor(
+			count($this->prio[0][$node]), $m, $this->pwcCnt[$node]);
 		$consensus = ((1./exp($pbet) - 1./$cor))/(1. - 1./$cor);
 		return $consensus;
 	} else {
@@ -501,16 +543,16 @@ public function getConsensus($node, $iScale = 0){
  * checks whether $node has a predecessor. If yes, returns predecessor
  * node name and priority
  */
-	private function predecessor($node){
-		foreach($this->prio[0] as $key => $branch){
-			$tmp = array_keys($branch);
-			if(in_array($node, $tmp)){
-				$val = $this->prio[0][$key][$node];
-				return array( $key => $val);
-			} 
-		}
-		return array();
+private function predecessor($node){
+	foreach($this->prio[0] as $key => $branch){
+		$tmp = array_keys($branch);
+		if(in_array($node, $tmp)){
+			$val = $this->prio[0][$key][$node];
+			return array( $key => $val);
+		} 
 	}
+	return array();
+}
 
 
 /*
@@ -678,20 +720,26 @@ public function uncertainty($pwcr, $ahpH, $iScale, $sdFlg=0, $hierMode){
 			$ahp->set_evm($pwc);
 			$res = $ahp->get_evm();
 			unset($ahp);
-			// check for consistency
+			// check for consistency, if exceeding CRLMT don't use.
 			if($res['cr'] > self::CRLMT ){
 				for($i=0; $i< $n; $i++){
-					$resmax[$node][$branch[$i]] = $this->prio[0][$node][$branch[$i]];
-					$resmin[$node][$branch[$i]] = $this->prio[0][$node][$branch[$i]];
+					$resmax[$node][$branch[$i]] 
+						= $this->prio[0][$node][$branch[$i]];
+					$resmin[$node][$branch[$i]] 
+						= $this->prio[0][$node][$branch[$i]];
 				}
 				$pc -=1;
 			} else {
 				$this->simCnt +=1;
 				for($i=0; $i< $n; $i++){
-					$resmax[$node][$branch[$i]] = max($resmax[$node][$branch[$i]],$res["evm_evec"][$i]);
-					$resmin[$node][$branch[$i]] = min($resmin[$node][$branch[$i]],$res["evm_evec"][$i]);
-					$resex [$node][$branch[$i]] += $res["evm_evec"][$i];
-					$resex2[$node][$branch[$i]] += $res["evm_evec"][$i] * $res["evm_evec"][$i];
+					$resmax[$node][$branch[$i]] 
+						= max($resmax[$node][$branch[$i]],$res["evm_evec"][$i]);
+					$resmin[$node][$branch[$i]] 
+						= min($resmin[$node][$branch[$i]],$res["evm_evec"][$i]);
+					$resex [$node][$branch[$i]] 
+						+= $res["evm_evec"][$i];
+					$resex2[$node][$branch[$i]] 
+						+= $res["evm_evec"][$i] * $res["evm_evec"][$i];
 				}
 			}
 		}
@@ -703,13 +751,20 @@ public function uncertainty($pwcr, $ahpH, $iScale, $sdFlg=0, $hierMode){
 		if($sdFlg){
 			for($i=0; $i< $n; $i++){
 			// standard deviation
-				$resex2[$node][$branch[$i]] = sqrt(( $resex2[$node][$branch[$i]] 
-				- $resex[$node][$branch[$i]] * $resex[$node][$branch[$i]] / $pc)/($pc-1));
+				$resex2[$node][$branch[$i]] 
+					= sqrt(( $resex2[$node][$branch[$i]] 
+					- $resex[$node][$branch[$i]] 
+					* $resex[$node][$branch[$i]] / $pc)/($pc-1));
 				$resex[$node][$branch[$i]]  /= $pc;
 				// set res with +/- standard deviation
-				$resmax[$node][$branch[$i]] = $this->prio[0][$node][$branch[$i]] + $resex2[$node][$branch[$i]];
-				$resmin[$node][$branch[$i]] = $this->prio[0][$node][$branch[$i]] - $resex2[$node][$branch[$i]];
-				if($resmin[$node][$branch[$i]] < 0.) $resmin[$node][$branch[$i]] = 0.;
+				$resmax[$node][$branch[$i]] 
+					= $this->prio[0][$node][$branch[$i]] 
+					+ $resex2[$node][$branch[$i]];
+				$resmin[$node][$branch[$i]] 
+					= $this->prio[0][$node][$branch[$i]] 
+					- $resex2[$node][$branch[$i]];
+				if($resmin[$node][$branch[$i]] < 0.) 
+					$resmin[$node][$branch[$i]] = 0.;
 			}
 		}
 
@@ -726,7 +781,10 @@ public function uncertainty($pwcr, $ahpH, $iScale, $sdFlg=0, $hierMode){
 	} // loop through pwcr
 			
 	if(!empty($ta))
-		$this->wrn[] = sprintf($this->ahpGroupTxt->wrn['nUncEst2'],implode(", ",array_unique(array_keys($ta))));
+		$this->wrn[] = sprintf(
+			$this->ahpGroupTxt->wrn['nUncEst2'],
+			implode(", ",array_unique(array_keys($ta)))
+		);
 	if($hierMode){
 		// calculate consolidated global priorities
 		$ahpH->priorities = $resmax;
@@ -741,12 +799,14 @@ public function uncertainty($pwcr, $ahpH, $iScale, $sdFlg=0, $hierMode){
 			for($i=0; $i< $n; $i++)
 				$ahpH->prioAlt[$node][$i] = $resmax[$node][$branch[$i]]; // max
 		$ahpH->pLoc = array(); $ahpH->setPlocAll(); $ahpH->setPglb();
-		$resmax['pTot'] = array_combine(array_values($ahpH->alt),array_values($ahpH->setPrioTot()));
+		$resmax['pTot'] = array_combine(array_values($ahpH->alt),
+							array_values($ahpH->setPrioTot()));
 		foreach($ahpH->leafs as $node)
 			for($i=0; $i< $n; $i++)
 				$ahpH->prioAlt[$node][$i] = $resmin[$node][$branch[$i]]; // min
 		$ahpH->pLoc = array(); $ahpH->setPlocAll(); $ahpH->setPglb();
-		$resmin['pTot'] = array_combine(array_values($ahpH->alt),array_values($ahpH->setPrioTot()));
+		$resmin['pTot'] = array_combine(array_values($ahpH->alt),
+							array_values($ahpH->setPrioTot()));
 
 		// set back to nominal 
 		foreach($this->leafs as $node)
@@ -897,26 +957,37 @@ public function exportGroupResult($hierMode, $ds, $iScale = 0){
 // --- first line tells Excel the character used as field seperator
 	$textout[] = "sep=" . $fs . self::NEWL;
 // --- Title
-	$textout[] = self::ENCL . "Session Code" . self::ENCL .$fs . self::ENCL . $this->sessionCode . self::ENCL . self::NEWL;
-	$textout[] = self::ENCL . "Project" . self::ENCL .$fs . self::ENCL . $this->pj['project_name'] . self::ENCL . self::NEWL;
-	$textout[] = self::ENCL . "Description" . self::ENCL .$fs . self::ENCL . $this->pj['project_description'] . self::ENCL . self::NEWL;
-	$textout[] = self::ENCL . "Author" . self::ENCL . $fs . self::ENCL . $this->pj['project_author'] . self::ENCL . self::NEWL;
-	$textout[] = self::ENCL . "Created" . self::ENCL . $fs . self::ENCL . substr($this->pj['project_datetime'],0,10) . self::ENCL . self::NEWL;
-	$textout[] = self::ENCL . "Evaluation" . self::ENCL . $fs . self::ENCL . ($hierMode ? "Hiearchy" : "Alternatives") . self::ENCL . self::NEWL;
-	$textout[] = self::ENCL . "No of Participants" . self::ENCL . $fs . $partCnt . self::NEWL;
-	$textout[] = self::ENCL . "Scale: " . self::ENCL . $fs . self::ENCL . $this->ahpScale[$iScale][0] . self::ENCL . self::NEWL;
+	$textout[] = self::ENCL . "Session Code" . self::ENCL .$fs . self::ENCL 
+							. $this->sessionCode . self::ENCL . self::NEWL;
+	$textout[] = self::ENCL . "Project" . self::ENCL .$fs . self::ENCL 
+							. $this->pj['project_name'] . self::ENCL . self::NEWL;
+	$textout[] = self::ENCL . "Description" . self::ENCL .$fs . self::ENCL 
+							. $this->pj['project_description'] . self::ENCL . self::NEWL;
+	$textout[] = self::ENCL . "Author" . self::ENCL . $fs . self::ENCL 
+							. $this->pj['project_author'] . self::ENCL . self::NEWL;
+	$textout[] = self::ENCL . "Created" . self::ENCL . $fs . self::ENCL 
+							. substr($this->pj['project_datetime'],0,10) . self::ENCL . self::NEWL;
+	$textout[] = self::ENCL . "Evaluation" . self::ENCL . $fs . self::ENCL 
+							. ($hierMode ? "Hiearchy" : "Alternatives") . self::ENCL . self::NEWL;
+	$textout[] = self::ENCL . "No of Participants" . self::ENCL . $fs 
+							. $partCnt . self::NEWL;
+	$textout[] = self::ENCL . "Scale: " . self::ENCL . $fs . self::ENCL 
+							. $this->ahpScale[$iScale][0] . self::ENCL . self::NEWL;
 
 	if ($hierMode){
-		$textout[] = self::NEWL . self::ENCL . "Global weights by nodes and participants" . self::ENCL . self::NEWL;
+		$textout[] = self::NEWL . self::ENCL 
+					. "Global weights by nodes and participants" 
+					. self::ENCL . self::NEWL;
 		$nodes = array_keys($this->prio[0]);
 		$nodCnt = count($nodes)-1;
 		foreach( $nodes as $node ){
 			if($nodCnt>1 || $node != "pGlb"){
-				$textout[] = self::NEWL . self::ENCL . "Node" . self::ENCL . $fs . self::ENCL . $node . self::ENCL . self::NEWL 
-				. self::ENCL . "Weights" . self::ENCL . $fs . self::ENCL 
-				. implode( self::ENCL . $fs . self::ENCL, array_keys($this->prio[0][$node])) 
-				. self::ENCL . $fs . self::ENCL . "CR" . self::ENCL
-				. self::NEWL;
+				$textout[] = self::NEWL . self::ENCL . "Node" . self::ENCL 
+					. $fs . self::ENCL . $node . self::ENCL . self::NEWL 
+					. self::ENCL . "Weights" . self::ENCL . $fs . self::ENCL 
+					. implode( self::ENCL . $fs . self::ENCL, array_keys($this->prio[0][$node])) 
+					. self::ENCL . $fs . self::ENCL . "CR" . self::ENCL
+					. self::NEWL;
 				$line = self::ENCL . "Group result" . self::ENCL;
 				// consol. priorities
 				foreach ($this->prio[0][$node] as $k=>$val)
@@ -956,7 +1027,9 @@ public function exportGroupResult($hierMode, $ds, $iScale = 0){
 				for ($i=0; $i< $n; $i++){
 					$buf .= $fs; 
 					for($j=0; $j< $n; $j++){
-						$buf .= self::ENCL . number_format($this->dmCons[$node][$i][$j], ROUND, $ds, "") . self::ENCL . $fs;
+						$buf .= self::ENCL 
+						. number_format($this->dmCons[$node][$i][$j], ROUND, $ds, "") 
+						. self::ENCL . $fs;
 					}
 					$buf .= self::NEWL;
 				}
@@ -965,7 +1038,8 @@ public function exportGroupResult($hierMode, $ds, $iScale = 0){
 		}
 	} else { // Alternatives
 		if($partCnt > 1)
-			$textout[] = self::ENCL . "AHP Consensus" . self::ENCL . $fs . number_format( $this->consens, ROUND, $ds, "") . self::NEWL;
+			$textout[] = self::ENCL . "AHP Consensus" 
+			. self::ENCL . $fs . number_format( $this->consens, ROUND, $ds, "") . self::NEWL;
 		$textout[] = self::NEWL;
 		// complete alternative table
 		$textout = array_merge($textout, $ahpH->exportAltTable($ds));
@@ -974,8 +1048,9 @@ public function exportGroupResult($hierMode, $ds, $iScale = 0){
 		// alternatives by participants
 		$textout[] = self::NEWL;
 		$textout[] = self::ENCL . "2. Alternatives by participant" . self::ENCL . self::NEWL;
-		$textout[] = self::ENCL . "" . self::ENCL . $fs . self::ENCL . "Name" . self::ENCL . $fs . self::ENCL .
-		implode( self::ENCL . $fs . self::ENCL, $this->pj['project_alt']) . self::ENCL 
+		$textout[] = self::ENCL . "" . self::ENCL . $fs . self::ENCL 
+		. "Name" . self::ENCL . $fs . self::ENCL 
+		. implode( self::ENCL . $fs . self::ENCL, $this->pj['project_alt']) . self::ENCL 
 		. $fs . self::ENCL . "CR max" . self::ENCL . self::NEWL;
 
 		$line = self::ENCL . '' . self::ENCL . $fs . self::ENCL . "Group" . self::ENCL;
@@ -995,16 +1070,19 @@ public function exportGroupResult($hierMode, $ds, $iScale = 0){
 			$textout[] = $line . self::NEWL;
 		}
 		// decision matrix
-		$buf= self::NEWL . self::ENCL . "3. Consolidated Decision Matrix" . self::ENCL . self::NEWL;
+		$buf= self::NEWL . self::ENCL . "3. Consolidated Decision Matrix" 
+				. self::ENCL . self::NEWL;
 		foreach($this->dmCons as $lf => $dma){
 			$buf .= self::ENCL . $lf . self::ENCL 
 			. $fs . self::ENCL . "CR" . self::ENCL 
-			. $fs . self::ENCL . number_format($this->cr[0][$lf],ROUND, $ds, "") . self::ENCL . self::NEWL;
+			. $fs . self::ENCL . number_format($this->cr[0][$lf],ROUND, $ds, "") 
+			. self::ENCL . self::NEWL;
  			$n = count($dma);
 			for ($i=0; $i<$n; $i++){
 				$buf .= $fs; 
 				for($j=0; $j<$n; $j++){
-					$buf .= self::ENCL . number_format($dma[$i][$j], ROUND, $ds, "") . self::ENCL . $fs;
+					$buf .= self::ENCL . number_format($dma[$i][$j], ROUND, $ds, "") 
+					. self::ENCL . $fs;
 				}
 				$buf .= self::NEWL;
 			}
@@ -1024,8 +1102,12 @@ private function exportVarH($node, $ds){
 		$line[0] = self::ENCL . "(-)" . self::ENCL;
 		$line[1] = self::ENCL . "(+)" . self::ENCL;
 		foreach ($this->prioVar['min'][$node] as $k=>$val){
-			$line[0] .= $fs . number_format($this->prio[0][$node][$k]- $val, ROUND, $ds, "");
-			$line[1] .= $fs . number_format($this->prioVar['max'][$node][$k]-$this->prio[0][$node][$k] , ROUND, $ds, "");
+			$line[0] .=
+			 $fs . number_format($this->prio[0][$node][$k]- $val, 
+				ROUND, $ds, "");
+			$line[1] .= 
+			$fs . number_format($this->prioVar['max'][$node][$k]-$this->prio[0][$node][$k] ,
+				ROUND, $ds, "");
 		}
 		$line[0] = $line[0] . self::NEWL;
 		$line[1] = $line[1] . self::NEWL;
@@ -1044,8 +1126,12 @@ private function exportVarA($ds){
 		$line[0] =  self::ENCL . '' . self::ENCL . $fs . self::ENCL . "(-)" . self::ENCL;
 		$line[1] = self::ENCL . '' . self::ENCL . $fs . self::ENCL . "(+)" . self::ENCL;
 		foreach( $this->prio[0]['pTot'] as $k=>$val ){
-			$line[0] .= $fs . number_format($this->prio[0]['pTot'][$k]- $this->prioVar['min']['pTot'][$k], ROUND, $ds, "");
-			$line[1] .= $fs . number_format($this->prioVar['max']['pTot'][$k]- $this->prio[0]['pTot'][$k], ROUND, $ds, "");
+			$line[0] .= $fs 
+			. number_format($this->prio[0]['pTot'][$k]- $this->prioVar['min']['pTot'][$k],
+			 ROUND, $ds, "");
+			$line[1] .= $fs 
+			. number_format($this->prioVar['max']['pTot'][$k]- $this->prio[0]['pTot'][$k],
+			 ROUND, $ds, "");
 		}
 		$line[0] = $line[0] . self::NEWL;
 		$line[1] = $line[1] . self::NEWL;

@@ -22,8 +22,8 @@ require_once('../../PHPMailer/SMTP.php'); // Mailer
 require_once('../../PHPMailer/Exception.php'); // Mailer
 
 $title="User Registration";
-$version = substr('$LastChangedDate: 2022-02-08 15:35:30 +0800 (Tue, 08 Feb 2022) $',18,10);
-$rev = trim('$Rev: 115 $', "$");
+$version = substr('$LastChangedDate: 2022-02-09 12:39:27 +0800 (Wed, 09 Feb 2022) $',18,10);
+$rev = trim('$Rev: 116 $', "$");
 
 session_start();
 
@@ -66,7 +66,7 @@ $webHtml = new WebHtml($registration->rgTxt->titles['h1reg'], 600);
 		// Antispam measure
 		if ($reg_t != 0. && $reg_t < 3000){
 			echo "<p class='err'>You are very fast in filling out the form";
-			trigger_error("do-register.php: Probably Spam!", E_WARNING);
+			trigger_error("do-register.php: Probably Spam!", E_USER_WARNING);
 		}
 		// show potential errors / feedback (from registration object)
 		if (isset($registration) && $registration->errors)

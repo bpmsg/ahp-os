@@ -1,27 +1,33 @@
 <?php
 /* Page to view AHP group results
-* @author Klaus D. Goepel
-* @copyright 2014 Klaus D. Goepel
-* @package AHP-OS
-* @since 2014-04-11 
-* @version 2017-03-11 cleanup
-* @version 2019-02-06 last version w/o SVN
-* 
-    Copyright (C) 2022  <Klaus D. Goepel>
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+ * 
+ * @author Klaus D. Goepel
+ * @copyright 2014 Klaus D. Goepel
+ * @package AHP-OS
+ * @since 2014-04-11 
+ * @version 2017-03-11 cleanup
+ * @version 2019-02-06 last version w/o SVN
+ * 
+ * The actual result of AHP projects is calculated "on-the-fly", when
+ * the user calls the result page (ahp-group.php). In the database only
+ * the decision hierarchy definition and alternative names and the 
+ * pairwise comparisons are stored. 
+ * 
+ * Copyright (C) 2022  <Klaus D. Goepel>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 	include 'includes/config.php';
 
 	$login = new Login();
@@ -30,19 +36,20 @@
 	$class = 'AhpGroupRes' . $lang;
 	$ahpGroupRes = new $class;
 	$uid = (isset($_SESSION['user_id']) ? $_SESSION['user_id'] : "");
+
 	// reset in case back from edit form
 	if (isset($_SESSION['REFERER']))
 		unset($_SESSION['REFERER']);
 
 	$loggedIn = $login->isUserLoggedIn();
 
-	$version = substr('$LastChangedDate$',18,10);
-	$rev = trim('$Rev$', "$");
+	$version = substr('$LastChangedDate: 2022-02-09 12:39:27 +0800 (Wed, 09 Feb 2022) $',18,10);
+	$rev = trim('$Rev: 116 $', "$");
 
 	// --- START ---
 	$errMsg = "";
 	$partCnt = 0;		// number of participants
-	$pSelCnt = 0;   // number of selected participants
+	$pSelCnt = 0;   	// number of selected participants
 	$nodes = array();	// hierarchy nodes (priority vectors)
 	$pwcCons = array(); // consolidated pwcs for uncertainty analysis
 	$altNum = 0;
@@ -54,43 +61,28 @@
 	$sd = false;
 	$iScale = 0;
 
-	// todo: move to ahpGroupClass
-	function consensusWording($c){
-		if ($c<=50)
-			return " <span class='res'>very low</span>";
-		elseif ($c >50 && $c <= 65)
-			return " <span class='res'>low </span>";
-		elseif ($c >65 && $c <= 75)
-			return " <span class='res'>moderate </span>";
-		elseif ($c >75 && $c <= 85)
-			return " <span class='res'>high </span>";
-		elseif ($c >85 && $c <= 100)
-			return " <span class='res'>very high</span>";
-		else
-			return "";
+
+	$ahpH = new AhpHierAlt();
+
+	$sessCode = $ahpH->getSessionCode(); // reads session code from url
+	if($sessCode == "" && isset($_SESSION['sessionCode']))
+		$sessCode = $_SESSION['sessionCode'];
+
+	$ahpG = new AhpGroup($sessCode);
+	if (empty($ahpG->err)){
+		$pSelCnt = count($ahpG->pSel);
+		$partCnt = count($ahpG->part);
+	} else {
+		$errMsg = implode(",",$ahpG->err);
 	}
 
-$ahpH = new AhpHierAlt();
-
-$sessCode = $ahpH->getSessionCode(); // reads session code from url
-if($sessCode == "" && isset($_SESSION['sessionCode']))
-	$sessCode = $_SESSION['sessionCode'];
-
-$ahpG = new AhpGroup($sessCode);
-if (empty($ahpG->err)){
-	$pSelCnt = count($ahpG->pSel);
-	$partCnt = count($ahpG->part);
-} else {
-	$errMsg = implode(",",$ahpG->err);
-}
-
-// ---  Here we know that session code is valid and participants exist
+	// ---  Here we know that session code is valid and participants exist
 	$urlAct = $urlAct . "?sc=" . urlencode($sessCode);
 
 	$altNum = (isset($ahpG->pj['project_alt']) ? count($ahpG->pj['project_alt']) : 0);
 	if($altNum > 1) $hierMode = false;
 
-// --- Scale selection
+	// --- Scale selection
 	$scCnt = count($ahpG->ahpScale);
 	foreach($ahpG->ahpScale as $i => $sn)
 		$scaleName[$i] = $sn[0];
@@ -118,7 +110,7 @@ if (empty($ahpG->err)){
 	$ahpG->wpm = $wpm;
 	$ahpH->wpm = $wpm;
 
-// --- DONE ---
+	// --- DONE ---
 	if(isset($_POST['DONE'])){
 		$ahpH->closeHier();
 		unset($_SESSION['ipart']);
@@ -189,7 +181,6 @@ if($errMsg == ""){
 	// prepare graphic
 	$dta = $ahpG->prio[0]['pTot'];
 	foreach($dta as $k=>$val){
-//		$data['nom'][$k] = round(100*$val,1);
 		$data['nom'][$k] = sprintf("%.1f",100*$val);
 	}
 	if(strlen(serialize($data['nom']))>1600){
@@ -198,7 +189,7 @@ if($errMsg == ""){
 	}
 	$data = urlencode(serialize($data));
 
-// Show detailed input data
+	// Show detailed input data
 	if(isset($_POST['vinput'])){
 		$url = $urlGinput . "?sc=" . urlencode($sessCode);
 		header("Location: " . $url );
@@ -206,12 +197,14 @@ if($errMsg == ""){
 	}
 } // end $errMsg == ""
 
+
 // --- GROUP RESULT MENU SWITCH ---
 
-// return to ahp hierarchy when logged in and project owner
-	$owner = true;
+	// return to ahp hierarchy when logged in and project owner
+	$owner = false;
 	if( isset($ahpG->pj['project_author']) 
-		&& $loggedIn && $_SESSION['user_name'] == $ahpG->pj['project_author']){
+		&& $loggedIn 
+		&& $_SESSION['user_name'] == $ahpG->pj['project_author']){
 		$owner = true;
 		$url = $urlAhpH . "?sc=" . urlencode($sessCode);
 		// use consolidated priorities - redirect to ahpHierarchy
@@ -229,7 +222,7 @@ if($errMsg == ""){
 		die();
 	}
 
-// export/download result in csv
+	// export/download result in csv
 	// We have $ahpG->pj, $ahpG->part, $ahpG->prio,$ahpG->cr, $ahpG->consens
 	if(isset($_POST['download'])){
 		$ds = ( isset($_POST['csv']) ? ',' : '.'); 
@@ -243,9 +236,8 @@ if($errMsg == ""){
 		die();
 	}
 
-/* 
- * --- Web Page HTML OUTPUT --- 
- */
+
+/* --- Web Page HTML OUTPUT ---  */
 $webHtml =  new WebHtml($ahpGroupRes->titles['pageTitle1']);
 
 // toggle hide/show
@@ -270,11 +262,14 @@ if ($errMsg !="") {
 	if($owner || in_array($uid, $admin ))
 		$ahpG->ahpDb->displayProjectDetails($sessCode);
 	if(!empty($ahpH->err))
-		echo "<p>Error: <span class='err'>", implode(", ",$ahpH->err), "</span></p>";
+		echo "<p>Error: <span class='err'>", 
+			implode(", ",$ahpH->err), "</span></p>";
 	if(!empty($ahpG->err))
-		echo "<p>Error: <span class='err'>", implode(", ",$ahpG->err), "</span></p>";
+		echo "<p>Error: <span class='err'>", 
+			implode(", ",$ahpG->err), "</span></p>";
 	if(!empty($ahpG->wrn))
-		printf($ahpGroupRes->msg['noPwc4'],implode(", ",$ahpG->wrn));
+		printf($ahpGroupRes->msg['noPwc4'],
+			implode(", ",$ahpG->wrn));
 	if($incmplt)
 			echo $ahpGroupRes->err['incompl'];
 
@@ -306,10 +301,12 @@ if ($errMsg !="") {
 		$i=1; $j=1 ; $olInfo = ""; $olInfo1 = "";
 		foreach($ol as $k => $criteria){
 			if ($criteria != "" && count($criteria) > 1){
-				$olInfo .= $i++ . ": <span class='res'>" . implode(", ", $criteria) . "</span><br>";
+				$olInfo .= $i++ . ": <span class='res'>" 
+				. implode(", ", $criteria) . "</span><br>";
 			} else {
 				if ($criteria != "")
-					$olInfo1 .= $j++ .": <span class='res'>" . implode(", ", $criteria)  . "</span><br>";
+					$olInfo1 .= $j++ .": <span class='res'>" 
+					. implode(", ", $criteria)  . "</span><br>";
 			}
 		}
 		echo $ahpGroupRes->titles["h3wUncrt"];
@@ -357,7 +354,7 @@ if ($errMsg !="") {
 					echo $ahpGroupRes->err["consens0"];
 				else 
 					printf($ahpGroupRes->res['gCons'],	$cdta[$node] );
-					echo consensusWording($cdta[$node]);
+					echo $ahpG->consensusWording($cdta[$node]);
 			}
 			if( empty($ahpG->dmCons[$node]))
 				echo $ahpGroupRes->msg['noPwc1'];
@@ -372,11 +369,12 @@ if ($errMsg !="") {
 			printf( $ahpGroupRes->res['cr'], 100* $ahpG->cr[0][$node]);
 			if($rflg && isset($ahpG->prioVar['min'][$node])){
 				$tol = array( "min"=>array_values($ahpG->prioVar['min'][$node]),
-										  "max"=>array_values($ahpG->prioVar['max'][$node]));
+							  "max"=>array_values($ahpG->prioVar['max'][$node]));
 			} else {
 				$tol= array();
 			}
-			$ahp->printVector(array_keys($ahpG->prio[0][$node]),array_values($ahpG->prio[0][$node]),1,$tol);
+			$ahp->printVector(array_keys($ahpG->prio[0][$node]),
+				array_values($ahpG->prio[0][$node]),1,$tol);
 			echo "</div>";
 
 			// RIGHT COLUMN
@@ -392,7 +390,8 @@ if ($errMsg !="") {
 			echo "<div style='clear:both;'></div>";
 
 			// GROUP RESULT
-			if( $pPwc > 1  && 	count($ahpG->nodes) > 1 && 	($owner || in_array($uid, $admin ))){
+			if( $pPwc > 1  && 	count($ahpG->nodes) > 1 
+				&& 	($owner || in_array($uid, $admin ))){
 				// Priorities by participant
 				echo $ahpGroupRes->titles["h4part"];
 				$ahpG->printAhpGrpResult($node, false);
@@ -406,7 +405,7 @@ if ($errMsg !="") {
 					printf($ahpGroupRes->res['consens1'], 100*$ahpG->consens);
 				else
 					echo $ahpGroupRes->res['consens0'];
-				echo consensusWording(100*$ahpG->consens) . "</p>";
+				echo $ahpG->consensusWording(100*$ahpG->consens) . "</p>";
 			}
 			if($owner || in_array($uid, $admin ))
 				$ahpG->printAhpGrpResult('pTot', true);
@@ -431,7 +430,8 @@ if ($errMsg !="") {
 					$ata = key($rt1[0]);  // key of first element (smallest) 
 					$atv = $rt1[0][$ata]; // value of first element, percentage top
 					$ai = explode('~', $ata); // Ai and Aj
-					printf($ahpGroupRes->res['rt10'], $ai[2], round(100 * $ahpH->pGlb[$ai[2]],1),
+					printf($ahpGroupRes->res['rt10'], $ai[2], 
+						round(100 * $ahpH->pGlb[$ai[2]],1),
 						round(-100 * ($ahpH->pGlb[$ai[2]] * $atv), 1), 
 		 			$ahpH->alt[$ai[0]], $ahpH->alt[$ai[1]]);
 				}
@@ -444,7 +444,8 @@ if ($errMsg !="") {
 					if ($aaa == $ata && $aav == $atv){
 						echo $ahpGroupRes->res['rt11s'];
 					} else {
-						printf($ahpGroupRes->res['rt11'], $ai[2],round(100 * $ahpH->pGlb[$ai[2]],1),
+						printf($ahpGroupRes->res['rt11'], $ai[2],
+							round(100 * $ahpH->pGlb[$ai[2]],1),
 							round(-100 * ($aav * $ahpH->pGlb[$ai[2]]), 1),
 						$ahpH->alt[$ai[0]],$ahpH->alt[$ai[1]]);
 					}
@@ -455,16 +456,23 @@ if ($errMsg !="") {
 					$aiv = $rt2[0][$rtk]; // value
 					$ai = explode("~", $rtk); // Ai, Ak, crit
 					$uc = -$aiv * $ahpG->prio[0][$ai[2]][$ahpH->alt[$ai[0]]];
-					// todo
-					// ( $uc > 0 ? $ahpG->prio[0][$ai[2]][$ai[0]] - $ahpG->prioVar['min'][$ai[2]][$ai[0]] : 
-					// $ahpG->prioVar['max'][$ai[2]][$ai[0]] - $ahpG->prio[0][$ai[2]][$ai[0]]); 
+					/* todo something like
+					 *	( $uc > 0 ? $ahpG->prio[0][$ai[2]][$ai[0]] 
+					 *  - $ahpG->prioVar['min'][$ai[2]][$ai[0]] : 
+					 *	$ahpG->prioVar['max'][$ai[2]][$ai[0]] 
+					 * - $ahpG->prio[0][$ai[2]][$ai[0]]); 
+					 */
 					printf($ahpGroupRes->res['rt20'], $ahpH->alt[$ai[0]],$ai[2],
-						round(100 * $ahpG->prio[0][$ai[2]][$ahpH->alt[$ai[0]]],1),round(100 * $uc, 1),
+						round(100 * $ahpG->prio[0][$ai[2]][$ahpH->alt[$ai[0]]],1),
+						round(100 * $uc, 1),
 					$ahpH->alt[$ai[0]],$ahpH->alt[$ai[1]]);
-					// todo
-					// if( abs($aiv * $ahpG->prio[0][$ai[2]][$ai[0]]) <= abs($uc) )
-					// echo "<span class='hl'>This is within the estimated uncertainty of ", round($uc*100,1), "%</span>";
-					echo "</p>";
+					/* todo something like
+					 * if( abs($aiv * $ahpG->prio[0][$ai[2]][$ai[0]]) 
+					 * <= abs($uc) )
+					 * echo "<span class='hl'>
+					 * This is within the estimated uncertainty of ",
+					 * round($uc*100,1), "%</span>";
+					 * echo "</p>"; */
 				}
 			}
 		} // robustness test
@@ -484,7 +492,7 @@ if ($errMsg !="") {
 					echo "<p>AHP group consensus: <span class='err'>n/a</span>";
 				else 
 					printf($ahpGroupRes->res['consens1'], 100*$ahpG->consens);
-				echo consensusWording(100*$ahpG->consens) . "</p>";
+				echo $ahpG->consensusWording(100*$ahpG->consens) . "</p>";
 			}
 			echo "<div style='margin-left:auto;margin-right:auto;'>";
 			$ahpG->printAhpGrpResult('pTot', true);
@@ -496,14 +504,15 @@ if ($errMsg !="") {
 				$collapse = "collapse" . ++$i;
 				printf($ahpGroupRes->mnu['btnNdD'],$collapse);
 				if(isset($ahpG->cr[0][$leaf]))
-					printf($ahpGroupRes->res['consens2'], $leaf, round(100 * $ahpG->cr[0][$leaf],1));
+					printf($ahpGroupRes->res['consens2'], $leaf, 
+						round(100 * $ahpG->cr[0][$leaf],1));
 				if($pPwc>1){
 					$consens = $ahpG->getConsensus($leaf, $iScale);
 					if($consens < 0)
 						printf($ahpGroupRes->err['consens1']);
 					else 
 						printf($ahpGroupRes->res['gCons'], 100 * $consens);
-					echo consensusWording( 100 * $consens),"</small>";
+					echo $ahpG->consensusWording( 100 * $consens),"</small>";
 				}
 				if( empty($ahpG->dmCons[$leaf]))
 					echo $ahpGroupRes->msg['noPwc3'];
@@ -523,7 +532,8 @@ if ($errMsg !="") {
 					$tol= array();
 				}
 				if(isset($ahpG->prio[0][$leaf]))
-					$ahp->printVector(array_keys($ahpG->prio[0]['pTot']), array_values($ahpG->prio[0][$leaf]), 1, $tol);
+					$ahp->printVector(array_keys($ahpG->prio[0]['pTot']), 
+						array_values($ahpG->prio[0][$leaf]), 1, $tol);
 				else
 					echo $ahpGroupRes->msg['noPwc2'];
 				echo "</div>";
@@ -544,8 +554,10 @@ if ($errMsg !="") {
 					if($consens < 0)
 						echo $ahpGroupRes->err['consens2'];
 					else {
-						printf($ahpGroupRes->res['consens4'], $leaf, 100 * $consens);
-						echo consensusWording( 100 * $consens),"</small></p>";
+						printf($ahpGroupRes->res['consens4'], $leaf,
+							100 * $consens);
+						echo $ahpG->consensusWording( 100 * $consens),
+							"</small></p>";
 					}
 					// Priorities by participant
 					echo $ahpGroupRes->titles["h4group"];
