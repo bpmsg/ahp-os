@@ -40,6 +40,8 @@
 	// --- ini_set('error_reporting', E_ERROR | E_WARNING);
 	ini_set('error_reporting', E_ALL & ~E_NOTICE);
 	ini_set('display_errors',1); // --- Set to 0 for productive env!
+	ini_set('log_errors', 1 );
+
 	define('DEBUG', false);      // --- Debug on/off
 
 /*  Mail settings */
@@ -86,9 +88,12 @@
 	define('REGISTRATION_EMAIL', true);
 
 
-/*  Spam honeypot - set to '' or modify footer.html if not used 
+/*  Spam honeypot - set to '' if not used. Please see
+ *  https://www.projecthoneypot.org/ for details
  */
-	define('HONEYPOT', "");
+	define('HONEYPOT', '');
+	define('HPAPIKEY', '');
+
 
 /*  enable additional functions for user donations
  */
@@ -109,6 +114,10 @@
 	define('BASE',
  		substr($_SERVER['SCRIPT_NAME'],0,
 			1+strpos($_SERVER['SCRIPT_NAME'],'/',1)));
+
+	// --- error log for php in BASE directory
+	ini_set('error_log', ABS_PATH . BASE . 'err_log');
+
 
 	// --- DOMAIN
 	if(isset($_SERVER['HTTP_HOST']))

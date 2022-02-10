@@ -43,8 +43,8 @@
 
 	$loggedIn = $login->isUserLoggedIn();
 
-	$version = substr('$LastChangedDate: 2022-02-09 12:39:27 +0800 (Wed, 09 Feb 2022) $',18,10);
-	$rev = trim('$Rev: 116 $', "$");
+	$version = substr('$LastChangedDate: 2022-02-10 09:39:44 +0800 (Thu, 10 Feb 2022) $',18,10);
+	$rev = trim('$Rev: 118 $', "$");
 
 	// --- START ---
 	$errMsg = "";
@@ -280,7 +280,7 @@ if ($errMsg !="") {
 		printf($ahpGroupRes->msg['pSel'], implode(", ",$ahpG->pSel));
 
 	//	$ahpH->prioAlt = $ahpG->prio[0]; is set in ahpG already
-	$ahpH->displayHierarchyTable($altNum, 0, 0);
+	$ahpH->displayHierarchyTable($altNum, false, false);
 	echo ($hierMode ? $ahpGroupRes->titles["h2consP"] : $ahpGroupRes->titles["h2consA"]);
 
 	// --- Diagram ---

@@ -139,6 +139,7 @@ ahp-\
      |            footer.html
      |            header.html
      |            showCaptcha.php
+     |            showCaptchaTxt.php
      |            style.css (style sheet)
      |            fonts --- times_new_yorker.ttf
      |            |
@@ -159,7 +160,7 @@ ahp-\
      |        lvecfm                   do-donor-admin
      |        sh-part                  do-edit
      |        webFont                  do-log
-     |                                 do-register
+     |        letmein                  do-register
      |                                 do-reset-pw
      |                                 do-user-admin (user administr.)
      |

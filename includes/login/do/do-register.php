@@ -21,12 +21,62 @@ require_once('../../PHPMailer/PHPMailer.php'); // Mailer
 require_once('../../PHPMailer/SMTP.php'); // Mailer
 require_once('../../PHPMailer/Exception.php'); // Mailer
 
+/* --- Functions added to fight spam. 
+ *     Please see https://www.projecthoneypot.org
+ */
+ 
+ 
+/* Spam query function project honeypot */
+function my_httpbl_check($ip) {	
+	$request = HPAPIKEY . "." 
+	. implode( ".", array_reverse( explode(".",$ip)) ) 
+	. ".dnsbl.httpbl.org";
+	$result = explode( ".", gethostbyname($request) );
+	return($result[0] == 127 ? $result : "ok");
+}	
+
+/* Get clients IP address */
+function get_client_ip() {
+    $ipaddress = '';
+    if ($_SERVER['HTTP_CLIENT_IP'])
+        $ipaddress = $_SERVER['HTTP_CLIENT_IP'];
+    else if($_SERVER['HTTP_X_FORWARDED_FOR'])
+        $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
+    else if($_SERVER['HTTP_X_FORWARDED'])
+        $ipaddress = $_SERVER['HTTP_X_FORWARDED'];
+    else if($_SERVER['HTTP_FORWARDED_FOR'])
+        $ipaddress = $_SERVER['HTTP_FORWARDED_FOR'];
+    else if($_SERVER['HTTP_FORWARDED'])
+        $ipaddress = $_SERVER['HTTP_FORWARDED'];
+    else if($_SERVER['REMOTE_ADDR'])
+        $ipaddress = $_SERVER['REMOTE_ADDR'];
+    else
+        $ipaddress = '';
+    return $ipaddress;
+}
+
+
 $title="User Registration";
-$version = substr('$LastChangedDate: 2022-02-09 12:39:27 +0800 (Wed, 09 Feb 2022) $',18,10);
-$rev = trim('$Rev: 116 $', "$");
+$version = substr('$LastChangedDate: 2022-02-10 09:39:44 +0800 (Thu, 10 Feb 2022) $',18,10);
+$rev = trim('$Rev: 118 $', "$");
 
 session_start();
 
+// --- First check for suspicious IP
+$block = false;
+if(defined('HPAPIKEY') && !empty('HPAPIKEY')){
+	$ip = get_client_ip();
+	$res = my_httpbl_check($ip);
+	if ( !($res == "ok" || isset($_COOKIE['notabot'])) 
+			&& $res[0] == 127 && $res[2] >20){
+		$block = true;
+		trigger_error(
+			"do-register.php: block of suspicious IP $ip",E_USER_NOTICE
+		);
+	}
+}
+
+// --- start timer to measure time needed to fill form
 if(isset($_SESSION['reg_s'])){
 	$reg_s = $_SESSION['reg_s'];
 	$reg_e = microtime(true);
@@ -49,8 +99,10 @@ $registration = new Registration();
 		$url = $_SESSION['REFERER'];
 	} else 
 		$url = SITE_URL;
+
 	if(!empty($_POST['website']))
 		die();
+
 
 // --- MAIN
 $webHtml = new WebHtml($registration->rgTxt->titles['h1reg'], 600);
@@ -59,11 +111,11 @@ $webHtml = new WebHtml($registration->rgTxt->titles['h1reg'], 600);
 	echo '<div style="padding:2px;float:right;"><a href="',$url,'">back</a></div>';
 	echo '<div style="clear:both;"></div>';
 	echo "<h1>",$registration->rgTxt->titles['h1reg'],"</h1>";
-	if( SELFREG ){
+	if( SELFREG && !$block){
 		$formToken = $_SESSION['formToken'] = uniqid();
 		if( DEBUG )
 			echo "<p class='msg'>Execution time $reg_t mS</p>";
-		// Antispam measure
+		// Antispam measure: time needed to fill up form
 		if ($reg_t != 0. && $reg_t < 3000){
 			echo "<p class='err'>You are very fast in filling out the form";
 			trigger_error("do-register.php: Probably Spam!", E_USER_WARNING);
@@ -79,7 +131,15 @@ $webHtml = new WebHtml($registration->rgTxt->titles['h1reg'], 600);
 		else
 			echo "<div class='ca'><p><a href='" . SITE_URL .  "'>" 
 			. $registration->rgTxt->wrd['cont'] . "</a></p></div>";
-	} else {
+	} elseif(! SELFREG) {
  		echo "<p class='msg'>",$registration->rgTxt->info['nReg'],"</p>";
+	} else {
+		echo "<script src='../../../js/letmein.js'></script><p class='err'>Sorry!</p>";
+		echo "<p>You are using a suspicious IP. If you <strong>ARE NOT</strong> 
+			a bot of any kind, please <a href='javascript:letmein()'>click here</a> 
+		    to access the page (Java needs to be enabled!).</p>";
+		if( !empty('HONEYPOT'))
+			echo "<p>Otherwise, please have fun  
+			<a href='" . HONEYPOT . "'</a>here.</p>";
 	}
 $webHtml->webHtmlFooter($version);
