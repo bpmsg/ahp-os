@@ -1,73 +1,45 @@
 <?php
 /*
-* Analytic Hierarchy Process Hierarchy base class 2014-01-06
-*
-* $LastChangedDate$
-* $Rev$
-*
-* @package AHP online
-* @author Klaus D. Goepel
-* @copyright 2014 Klaus D. Goepel
-* @since   2014-02-11
-* @version 2017-10-07 total rework of displayHierarchyTable last version w/o SVN
-*
-* @uses $_SESSION['hText', 'project', 'alt', 'pwc', 'nodPd']
-*
-    Copyright (C) 2022  <Klaus D. Goepel>
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*
-* public function __construct()
-* public function setHierarchy($text)
-*
-* public function setPlocAll()
-* public function setPglb()
-* public function getPglbFromPloc()
-* public function getTreeNode(&$array, $nd)
-* public function setNewText( $text, $node, $txtNode)
-* public function clearTextPrio( $text)
-* public function getSessionCode()
-*
-* --- HTML display
-* public  function displayHierarchyTable($altNum, $altButton, $ahp = true, $pflag = true)
-* public  function displayHierarchyInfo()
-*
-* --- CSV output
-* public function exportHierarchyTable($ds)
-* public function showAllMat($ds)
-* 
-* --- Reset SESSION parameters
-* public  function newHsession()
-* public  function closeHier()
-* public  function clearPwc()
-*
-* protected function setFlatArray(&$array, $prefix = '')
-* private function getLeafs()
-* private function getTreeSpan($array)
-* private function getTreeNodes(&$array)
-* private function getArrayDepth(&$array)
-* private function mergeBranch(&$arr, $el, $br)
-* private function textCleanup(&$text)
-* private function checkPriorities()
-* private function getPrioritiesFromPloc()
-* private function checkHierarchyLimits()
-* private function pwcDone()
-* private function setSessionParaHier() used?
-* private function getNodeSpan(&$array, $node)
-* private function setDefPriorities()
-*
-*/
+ * Analytic Hierarchy Process Hierarchy base class 2014-01-06
+ * Includes the parser setHierarchy($text) to convert users text 
+ * input $hText for the decision hierarchy into a hierarchical array 
+ * $hierarchy (tree). In order to get the tree elements and parameters 
+ * like nodes, leafs, span etc., $hierarchy is converted to a
+ * $flatarray.
+ * 
+ * The class also contains HTML table output displayHierarchyTable(...)
+ * and displayHierarchyInfo() to display the hierarchy and output 
+ * hierarchy information.
+ * 
+ * With exportHierarchyTable($ds)csv output is generated for download.
+ *
+ * $LastChangedDate: 2022-02-10 17:51:59 +0800 (Thu, 10 Feb 2022) $
+ * $Rev: 119 $
+ *
+ * @package AHP online
+ * @author Klaus D. Goepel
+ * @copyright 2014 Klaus D. Goepel
+ * @since   2014-02-11
+ * @version 2017-10-07 total rework of displayHierarchyTable last version w/o SVN
+ *
+ * @uses $_SESSION['hText', 'project', 'alt', 'pwc', 'nodPd']
+ *
+ *  Copyright (C) 2022  <Klaus D. Goepel>
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
 class AhpHier {
 
 /** Class Constants */
@@ -77,10 +49,10 @@ const TRIM_CHAR = " \t\n\r\0\x0B";
 const NEWL = "\n";      // for csv file export
 const ENCL = '"';
 
-const TXTMAX = 6000;
-const NODE_CNT = 50;
-const LEAF_MAX = 100;
-const LEVEL_MAX = 6;
+const TXTMAX = 6000;    // max number of chars defining the hierarchy
+const NODE_CNT = 50;    // max number of nodes
+const LEAF_MAX = 100;   // max number of leafs
+const LEVEL_MAX = 6;    // max number of hierarchy levels
 const CALC_TOL = 1.E-4; // calculation tolerance for sum of priorities
 
 /** Class Properties */
@@ -94,16 +66,17 @@ protected $flatarray = array();	// flat hiearchy
 public $hText = ""; 			// Text string defining the hierarchy
 public $hierarchy = array();	// Hierarchy as array
 
-public $level; 					// number of hierarchy levels (depth of the hierarchy)
+public $level; 					// number of hierarchy levels (depth)
 
 public $nodes = array();		// text array of hierarchy nodes
-public $leafs = array();		// leafs (end points) of the heararchy (key does not start awith 0)
+public $leafs = array();		// leafs (end points) of the heararchy
 
 public $nodeCnt;				// number of nodes (categories) of the heararchy
 public $leafCnt; 				// number of leafs (end points) of the heararchy
 
 public $nodPd = array();		// nodes with pre-defined priorities
-public $pLoc = array();			// local priorities for leafs in each node, keys are name of leafs
+public $pLoc = array();			// local priorities for leafs in each node, 
+								// keys are name of leafs
 
 public $defLeafs = array();		// array with pre-defined priorities (float)
 
@@ -115,7 +88,7 @@ public $err = array();			// error messages
 public $wrn = array();			// warnings
 
 /* flag to indicate completion of pairwise comparisons */
-public $pwcDoneFlg = false;   	// pairwise comparison complete
+public $pwcDoneFlg = false;   	// pairwise comparison done
 public $pwcaDoneFlg  = false; 	// alternative evaluation done
 
 private $pwcDone = array();
@@ -131,8 +104,10 @@ public function __construct(){
 	$this->ahpHierTxt = new $class;
 	$this->colors = new AhpColors();
 
-	if( !defined( "WLMAX" )) define ("WLMAX", 45);// max word lenght for hierarchy elements
-	if (!defined("ROUND"))   define ("ROUND", 6); // rounding for csv export
+	if( !defined( 'WLMAX' )) 
+		define ('WLMAX', 45);// max word lenght for hierarchy elements
+	if (!defined('ROUND'))   
+		define ('ROUND', 6); // rounding for csv export
 
 	if( isset($this->hText) && $this->hText !=""){
 		$this->hierarchy = $this->setHierarchy($this->hText);
@@ -140,20 +115,6 @@ public function __construct(){
 	}
 	$this->altNum = 2;
 	return;
-}
-
-
-/* sets session parameter for hierarchy from class variables 
- * hText, project, leafCnt, nodeCnt
- * @todo in use?
- */
-private function setSessionParaHier(){
-	if (isset($_SESSION)){
-		$_SESSION['hText'] = $this->hText;
-		$_SESSION['project'] = $this->project;
-		return true;
-	} else
-		return false;
 }
 
 
@@ -177,7 +138,9 @@ public function newHsession(){
 }
 
 
-// called from ahp-hierarchy when reset all
+/* Reset all session parameters
+ * called from ahp-hierarchy when reset all
+ */
 public function closeHier(){
 	$this->pwcDoneFlg = false;
 	$this->pwcaDoneFlg = false;
@@ -201,7 +164,9 @@ public function closeHier(){
 }
 
 
-// called from ahp-hierarchy when reset priorities
+/* Clear pairwise comparison session parameters
+ * called from ahp-hierarchy when reset priorities
+ */
 public function clearPwc(){
 	unset($_SESSION['pwc']);
 	unset($_SESSION['prioTot']);
@@ -216,7 +181,9 @@ public function clearPwc(){
 } 
 
 
-// called from ahp-hierarchy when reset priorities
+/* Clear alternative session parameters
+ * called from ahp-hierarchy when reset priorities
+ */
 public function clearAlternatives(){
 			unset($_SESSION['altNum']);
 			unset($_SESSION['alt']);
@@ -227,8 +194,9 @@ public function clearAlternatives(){
 }
 
 
-/* array_depth returns  - level (depth) of a hierarchy recursive
- * sets level
+/* Calculates the depth (levels) of a hierarchical array
+ * recursive
+ * sets number of levels $this->level
  * @return int $max_depth level (depth) of a hierarchy 
  */
 private function getArrayDepth(&$array){
@@ -244,7 +212,7 @@ private function getArrayDepth(&$array){
 }
 
 
-/* getNodeSpan returns the span (total number of leafs) for $node - recursive
+/* Returns the span (total number of leafs) for a $node (recursive)
  * used to calculate row_span in hierarchy table
  * @param array $array Hierarchy
  * @param string $node requested node in Hierarchy
@@ -268,9 +236,10 @@ private function getNodeSpan(&$array, $node){
 }
 
 
-/* getTreeSpan returns the span (total number of leafs) of the hierarchy - recursive
- * used in getNodeSpan and to display number of leafs
- * @param array $arrray
+/* getTreeSpan returns the span (total number of leafs) 
+ * of the hierarchy (recursive)
+ * Used in getNodeSpan and to display number of leafs
+ * @param array $array
  * @return int $count total number of leafs, or FALSE on error
  */
 private function getTreeSpan($array){
@@ -307,10 +276,11 @@ protected function setFlatArray(&$array, $prefix = ''){
 }
 
 
-/* getTreeNodes returns all nodes of the tree (recursive)
+/* Returns all nodes of a tree (recursive)
  * Used to calculate default priorities
  * @param array $array hierarchy
  * @return array of all nodes in the hierarchy
+ * @uses $this->getTreeNode
  */
 private function getTreeNodes(&$array) {
 	static $nodes="";
@@ -325,11 +295,13 @@ private function getTreeNodes(&$array) {
 }
 
 
-/* returns array of leafs for node $nd - Used to calculate default priorities
+/* Returns array of leafs for node $nd
+ * Used to calculate default priorities
+ * called from ahpGroup
  * @param array $array hierarchy
  * @param string $nd node
  * @return array $nods array of leafs under node
- * called from ahpGroup
+ * @uses $this->getTreeNode
  */
 public function getTreeNode(&$array, $nd) {
 	if (is_array($array)){
@@ -348,7 +320,8 @@ public function getTreeNode(&$array, $nd) {
 }
 
 
-/* getLeafs returns array of leafs in the hierarchy
+/* Returns array of leafs in the hierarchy
+ * @uses $this->flatarray
  * @return array of all leafs in the hierarchy
  */
 private function getLeafs() {
@@ -365,10 +338,11 @@ private function getLeafs() {
 }
 
 
-/* Sets local priorities - fills pLoc from priority vector, does not overwrite pLocs
+/* Sets local priorities $this->pLoc
+ * fills pLoc from priority vector, does not overwrite pLocs
  * as defined in the hierarchy text string
  * used in ahp-group class
- * @uses priorities
+ * @uses $this->priorities
  */
 public function setPlocAll(){
 	foreach($this->priorities as $k => $v)
@@ -378,7 +352,10 @@ public function setPlocAll(){
 }
 
 
-/* Check all priority vectors to sum-up to 100% */
+/* Check all priority vectors to sum-up to 1.
+ * Warning, if not.
+ * @return true if passes, false otherwise
+ */
 private function checkPriorities(){
 	$error="";
 	foreach($this->priorities as $category => $vector){
@@ -389,14 +366,16 @@ private function checkPriorities(){
 	if ($error == ""){
 		return true;
 	}
-	$this->wrn[] = $this->ahpHierTxt->wrn['prioSum'] . " <i>" . $error . "</i>";
+	$this->wrn[] = $this->ahpHierTxt->wrn['prioSum'] 
+		. " <i>" . $error . "</i>";
 	return false;	
 }
 
 
-/* getPrioritiesFromPloc fills priority vector from $pLoc
+/* Fills priority vector from $this->pLoc
  * priority vector needs to be defined!
- * @return NULL ok, error string if sum priorities not eq 1
+ * @return true if ok
+ * @uses checkPriorities()
  */
 private function getPrioritiesFromPloc(){
 	foreach($this->pLoc as $k1 => $v1){
@@ -410,7 +389,7 @@ private function getPrioritiesFromPloc(){
 }
 
 
-/* setPglb calculates global priorities for tree leafs
+/* Calculates global priorities for tree leafs
  * @uses hierarchy, flatarray, pLoc and priorities
  * @return true when ok, false for outside 0 to 1
  */
@@ -434,9 +413,9 @@ public function setPglb(){
 }
 
 
-/* mergeBranch merges branch $br under element $el (recursive)
+/* Merges branch $br under element $el (recursive)
  * used in get_hierarchy
- * @return coid
+ * @return void
  */
 private function mergeBranch(&$arr, $el, $br){
 	if (is_array($arr)){
@@ -457,7 +436,7 @@ private function mergeBranch(&$arr, $el, $br){
 }
 
 
-/* basic check and cleanup of hierarchy text string
+/* Basic check and cleanup of hierarchy text input string
  * uses multibyte functions for text
  * @return true ok
  */
@@ -489,9 +468,11 @@ private function textCleanup(&$text){
 }
 
 
-/* setHierarchy($text) reads $text and returns array with hierarchy
+/* Reads $text and returns array with hierarchy
+ * This is the "parse" to convert the hiierarchy text into a 
+ * hierarchical array.
  * Set class properties project, hierarchy, nodeCnt, leafCnt, level, ploc
- * sets pwcDoneFlg if all local priorities are set in $text
+ * sets pwcDoneFlg if all local priorities are set in $text ("=")
  * calls methods
  * textCleanup($text)
  * setDefPriorities()
@@ -510,14 +491,12 @@ public function setHierarchy($text){
 	$k1 = array();
 	$v1 = array();
 
-
 	// --- Cleanup and check
 	$text = $this->textCleanup($text);
 	if($text == false)
 		return array();
 
-
-	// --	get nodes and leafs 
+	// --- get nodes and leafs 
 	$tk1 = strtok($text,":;");
 	$sq = 1;
 
@@ -569,7 +548,7 @@ public function setHierarchy($text){
 		$sq++;
 	}
 
-	// --	Check for duplication of nodes and leafs
+	// --- Check for duplication of nodes and leafs
 	$temp_arr = array_diff_key($this->leafs,array_unique($this->leafs));
 	if($temp_arr){
 		$this->err[] = $this->ahpHierTxt->err['hSubDup'] . implode(", ",$temp_arr);
@@ -581,7 +560,7 @@ public function setHierarchy($text){
 		return array();
 	}
 
-	// --	merge subcategories under categories
+	// --- merge subcategories under categories
 	$temp_arr = array_intersect( $this->nodes, $this->leafs);
 	if(is_array($temp_arr) && !empty($temp_arr)){
 		foreach ($temp_arr as $k0 => $v0){
@@ -592,19 +571,20 @@ public function setHierarchy($text){
 	}
 	reset($res);
 
-	// --	Error check: more than one node
+	// --- Error check: more than one node
 	if( is_numeric( key($res)) ){
 		$this->err[] = $this->ahpHierTxt->err['hHier'];
 		return array();
 	}
 
-	// --	Error check: hierarchy has to starts with one main node
+	// --- Error check: hierarchy has to starts with one main node
 	$cnt0 = count($res);
 	$errTxt = "";
 	if($cnt0 > 1){
 		foreach($res as $k => $v){
 			if($v == NULL) {
-				$this->err[] = $this->ahpHierTxt->err['hNoSub'] . "<span class='res'>" . $k . "</span>";
+				$this->err[] = $this->ahpHierTxt->err['hNoSub'] 
+					. "<span class='res'>" . $k . "</span>";
 				return array();
 			}
 			$errTxt .= "<span class='res'>".(is_numeric($k) ? "$v, " : "$k, ")."</span>";
@@ -614,7 +594,7 @@ public function setHierarchy($text){
 		return array();
 	}
 	reset($res);
-	// leafs contains ALL leafs, not just end nodes
+	// --- leafs contains ALL leafs, not just end nodes
 	$this->leafs = array_diff($this->leafs, $this->nodes);
 	$this->hText = $text;
 	$this->hierarchy = $res;		// hierarchy
@@ -622,16 +602,16 @@ public function setHierarchy($text){
 	$this->leafCnt = $this->getTreeSpan($res);
 	$this->nodeCnt = count($this->nodes);
 	$this->pLoc = $pLoc;			// local priorities
-	if (abs(array_sum($pLoc)- $this->nodeCnt) <= self::CALC_TOL){
+	if (abs(array_sum($pLoc)- $this->nodeCnt) <= self::CALC_TOL)
 		$this->pwcDoneFlg = true;
-	}
 	$this->level = $this->getArrayDepth($res); // sets level
 	if (!$this->checkHierarchyLimits())
 		return array();
-	$this->defLeafs = array_keys($this->pLoc); //List of leafs with already defined priorities
+	// --- List of leafs with already defined priorities
+	$this->defLeafs = array_keys($this->pLoc);
 	$this->setDefPriorities();
 	$this->setPlocAll();
-	// here we have local default priorities to be used to calculate gamma entropy
+	// --- here we have local default priorities used to calculate gamma entropy
 	$this->getPrioritiesFromPloc();
 	return $res;
 }
@@ -662,7 +642,6 @@ private function checkHierarchyLimits(){
  * called after setHierarchy
  */
 private function setDefPriorities(){
-//	$hNodes = $this->getTreeNodes($this->hierarchy);
 	foreach($this->nodes as $nd){
 		$p_temp = $this->getTreeNode($this->hierarchy, $nd);
 		$val = 1./count($p_temp);
@@ -710,6 +689,7 @@ private function pwcDone(){
 
 /*
  * New version of Hierarchy Table 2017-10-07
+ * HTML output of the hierarchy in table form
  * 
  * @param int     $altNum Number of alternatives, 0: no alternatives shown
  * @param boolean $altButton  when true: show alternative button
@@ -725,7 +705,9 @@ public function displayHierarchyTable($altNum, $altButton, $ahp = true, $pflag =
 	$rgbEndColor =  "#EBB5A2";
 	if($altNum != count($this->alt)){
 		$altnum = count($this->alt);
-		trigger_error( "altNum = " . $altNum . "this->alt = " . count($this->alt), E_USER_NOTICE);
+		trigger_error( "displayHierarchyTable(): altNum = " 
+			. $altNum . "this->alt = " 
+			. count($this->alt), E_USER_NOTICE);
 	}
 	$cols=$this->level;	// columns
 	$r_sp = array();		// rowspan for columns
@@ -755,11 +737,11 @@ public function displayHierarchyTable($altNum, $altButton, $ahp = true, $pflag =
 	echo "</tr><tbody>"; 
 	$row=0;
 	foreach($this->flatarray as $faKey => $val){
-		// flatarray has leafCnt elements
+		// --- flatarray has leafCnt elements
 		$k1 = explode(self::FLAT_DELIM, $faKey);
 		foreach($k1 as $k=>$nod)
 			if(is_numeric($nod)) unset($k1[$k]);
-		// we have $k1 as array of nodes + $val as leaf
+		// --- we have $k1 as array of nodes + $val as leaf
 		$colCnt = count($k1)+1;
 		$c_sp = $cols-$colCnt+1;
 		echo "<tr>";
@@ -769,36 +751,42 @@ public function displayHierarchyTable($altNum, $altButton, $ahp = true, $pflag =
 			if( !isset($k0[$j]) || $k1[$j] <> $k0[$j] ){ // new node
 				$k0[$j] = $k1[$j];
 				echo "<td class='hier' rowspan='", $r_sp[$j], "'>$k1[$j] "; // nodes
-				// show priorities for nodes
+				// --- show priorities for nodes
 				if( $pflag){
 					$inpfmt = ( ($this->pwcDone && in_array($k1[$j],$this->pwcDone) 
 						|| (in_array($k1[$j],$this->defLeafs))) ? 
 						"class='resbox done'" 
 						: "class='resbox'");
 				if($j) 
-						printf("<span " . $inpfmt . ">%01.3f</span>", round($this->pLoc[$k1[$j]],3));
+						printf("<span " . $inpfmt . ">%01.3f</span>", 
+							round($this->pLoc[$k1[$j]],3));
 				}
 				$tmp = $this->getTreeNode($this->hierarchy, $k1[$j]);
-				// AHP button - mark completed green, uncompleted red
+				// --- AHP button - mark completed green, uncompleted red
 				if( $ahp ){
 					if (isset($_SESSION['nodPd']) && in_array($k1[$j],$_SESSION['nodPd']))
 						echo	"<input class='btng' disabled='disabled' ";
-					elseif (isset($_SESSION['pwc']) && in_array($k1[$j],array_keys($_SESSION['pwc'])) || in_array($tmp[0],$this->defLeafs))
+					elseif (isset($_SESSION['pwc']) 
+						&& in_array( $k1[$j],array_keys($_SESSION['pwc'])) 
+						|| in_array($tmp[0],$this->defLeafs))
 						echo	"<input class='btng' ";
 					else
 						echo	"<input class='btnr' ";
 					echo "type='submit' value='AHP' name='AHP[".$k1[$j]."]' >";
 				}
 				echo "</td>";
-			} // if new node
-		} // nodes
+			} // --- if new node
+		} // --- nodes
 		// --- Leafs
 		echo "<td class='hier' colspan='", $c_sp, "'>$val ";
-		// show priorities for leafs
+		// --- show priorities for leafs
 		if( $pflag){
-			$inpfmt = ( in_array($val,$this->defLeafs) ? "class='resbox done'" : "class='resbox'");
+			$inpfmt = (
+				in_array($val,$this->defLeafs) ? 
+				"class='resbox done'" : "class='resbox'");
 			if($j) 
-				printf("<span " . $inpfmt . ">%01.3f</span>", round($this->pLoc[$val],3));
+				printf("<span " . $inpfmt . ">%01.3f</span>", 
+					round($this->pLoc[$val],3));
 		}
 		echo "</td>";
 		// ---	Global priorities
@@ -811,23 +799,23 @@ public function displayHierarchyTable($altNum, $altButton, $ahp = true, $pflag =
 		}
 		$pst = ($this->pwcDoneFlg ? "style='background-color:" . $csc[$row++] . "'" : "");
 		if($pflag)
-			printf( "<td class='ac sm' $pst>%02.1f%%</td>", 100*$this->pGlb[$val]);
+			printf("<td class='ac sm' $pst>%02.1f%%</td>", 100*$this->pGlb[$val]);
 
 		// ---	Alternatives
 		for($j=0; $j<$altNum; $j++){
 			echo "<td class=" . ($pflag ? 'ca' : 'hier') . ">";
 			if (isset($this->prioAlt[$val][$j])){
 				$pa = $this->prioAlt[$val][$j];
-//				$pa = $this->pGlb[$val] * $this->prioAlt[$val][$j];
 				if($pflag)
 					printf("<span class='resbox done'>%01.3f</span>", round($pa,3));
 			} else {
 				$pa = 1./$altNum; // default: indifferent
-// Todo: we set alternative priorities to default, because no judgment available
-// need to rework partial judgment calculation 
+				/* Todo: we set alternative priorities to default,
+				 * because no judgment available need to rework 
+				 * partial judgment calculation */
 				$this->prioAlt[$val][$j] = $pa;
 				if($pflag)
-					printf(" <span class='resbox'>%01.3f</span>", round($pa,3));
+				printf(" <span class='resbox'>%01.3f</span>", round($pa,3));
 			}
 			echo "</td>";
 		}
@@ -841,7 +829,8 @@ public function displayHierarchyTable($altNum, $altButton, $ahp = true, $pflag =
 			echo $this->ahpHierTxt->msg['sbmPwc1'];
 		} else {
 			echo $this->ahpHierTxt->msg['sbmPwc2'];
-			echo "&nbsp; <input type='submit' value='", $this->ahpHierTxt->wrd['alt'], "' name='eval' >";
+			echo "&nbsp; <input type='submit' value='",
+				$this->ahpHierTxt->wrd['alt'], "' name='eval' >";
 		}
 	}
 	echo "</td>";
@@ -868,10 +857,14 @@ public function displayHierarchyTable($altNum, $altButton, $ahp = true, $pflag =
 public function displayHierarchyInfo(){
 global $webHtml, $myUrl, $urlGroupInit, $urlAhpH;
 	echo "<p>";
-	echo "<span class='var'>" ,$this->level-1,"</span> (" . self::LEVEL_MAX . ") " . $this->ahpHierTxt->wrd['lvls'] . ",  ";
-	echo "<span class='var'>", $this->leafCnt, "</span> (" . self::LEAF_MAX .   ") " . $this->ahpHierTxt->wrd['lfs'] . ", ";
-	echo "<span class='var'>", $this->nodeCnt, "</span> (" . self::NODE_CNT .   ") " . $this->ahpHierTxt->wrd['nds'] . ", ";
-	echo "<span class='var'>", mb_strlen($this->hText),"</span> (" . self::TXTMAX . ") " . $this->ahpHierTxt->wrd['chr'] . ". ";
+	echo "<span class='var'>" ,$this->level-1,"</span> (" . self::LEVEL_MAX . ") " 
+		. $this->ahpHierTxt->wrd['lvls'] . ",  ";
+	echo "<span class='var'>", $this->leafCnt, "</span> (" . self::LEAF_MAX .   ") " 
+		. $this->ahpHierTxt->wrd['lfs'] . ", ";
+	echo "<span class='var'>", $this->nodeCnt, "</span> (" . self::NODE_CNT .   ") " 
+		. $this->ahpHierTxt->wrd['nds'] . ", ";
+	echo "<span class='var'>", mb_strlen($this->hText),"</span> (" . self::TXTMAX . ") " 
+		. $this->ahpHierTxt->wrd['chr'] . ". ";
 	echo "</p>";
 return;
 }
@@ -892,10 +885,12 @@ public function exportHierarchyTable($ds){
 	$textout[] ="sep=" . $fs . self::NEWL;
 	// --- Title
 	$row = 1;
-	$textout[] = $line . self::ENCL . "Project: " . $this->project . self::ENCL . self::NEWL;
+	$textout[] = $line . self::ENCL . "Project: " . $this->project 
+		. self::ENCL . self::NEWL;
 	// ---	Table Headers
 	for ($i =1; $i< $this->level; $i++)
-		$line .= self::ENCL . "Level " . $i . self::ENCL . $fs . self::ENCL . "p (L" . $i . ")" . self::ENCL . $fs;
+		$line .= self::ENCL . "Level " . $i . self::ENCL . $fs . self::ENCL 
+			. "p (L" . $i . ")" . self::ENCL . $fs;
 	$line .= self::ENCL . "Glb. Pr." . self::ENCL;
 	// --- Table Header for alternatives
 	if( isset($this->alt) && !empty($this->alt)){
@@ -991,7 +986,8 @@ public function showAllMat($ds){
 			$i = 0;
 			foreach ($mtrx as $row){
 				$txtbuf .= self::ENCL . $nameArr[$i++] . self::ENCL . $fs;				
-				foreach ($row as $el) $txtbuf .=  number_format($el, ROUND, $ds, "") . $fs;
+				foreach ($row as $el) $txtbuf 
+					.=  number_format($el, ROUND, $ds, "") . $fs;
 				$txtbuf .= rtrim( $fs, $txtbuf) . self::NEWL;
 			}
 		}

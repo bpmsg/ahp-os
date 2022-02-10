@@ -32,8 +32,8 @@ require_once('../../PHPMailer/Exception.php'); // Mailer
 session_start();
 
 $title= "User Administration";
-$version = substr('$LastChangedDate: 2022-02-06 15:41:25 +0800 (Sun, 06 Feb 2022) $',18,10);
-$rev = trim('$Rev: 109 $', "$");
+$version = substr('$LastChangedDate: 2022-02-10 17:51:59 +0800 (Thu, 10 Feb 2022) $',18,10);
+$rev = trim('$Rev: 119 $', "$");
 
 $lang = (isset($_SESSION['lang']) ? $_SESSION['lang'] : "EN");
 
@@ -98,8 +98,8 @@ if ( isset($_POST['DEL']) || isset($_POST['DELALL'])
 	}
 	
 	if (isset($_POST['DEL'])){    // Delete selected user 
-		if( $userDb->deleteUser($userName) == false){
-			$msg = "User could not be deleted. " . $userDb->getErrors();
+		if($userDb->deleteUser($userName) == false){
+			$msg = "User could not be deleted.";
 		}
 	} 
 	if (isset($_POST['DELALL'])){ // Delete all inactive users
