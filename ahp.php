@@ -28,8 +28,8 @@ include 'includes/config.php';
 
 session_start();
 
-$version = substr('$LastChangedDate: 2022-02-11 08:19:55 +0800 (Fri, 11 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 120 $', "$");
+$version = substr('$LastChangedDate: 2022-02-11 12:08:47 +0800 (Fr, 11 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 125 $', "$");
 
 // sets the session variable for language
 $lang = filter_input(INPUT_GET, 'lang', FILTER_SANITIZE_STRING);
@@ -37,12 +37,12 @@ $lang = filter_input(INPUT_GET, 'lang', FILTER_SANITIZE_STRING);
         $lang = strtoupper($lang);
         setcookie('lang', $lang, time() + COOKIE_RUNTIME, "/", COOKIE_DOMAIN);
         $_SESSION['lang'] = $lang;
-    } elseif (isset($_COOKIE['lang'])  
-		&& in_array(strtolower($_COOKIE['lang']), $languages)) {
+    } elseif (isset($_COOKIE['lang'])
+        && in_array(strtolower($_COOKIE['lang']), $languages)) {
         $lang = $_COOKIE['lang'];
         $_SESSION['lang'] = $lang;
-    } elseif (isset($_SESSION['lang']) 
-		&& in_array(strtolower($_SESSION['lang']), $languages)) {
+    } elseif (isset($_SESSION['lang'])
+        && in_array(strtolower($_SESSION['lang']), $languages)) {
         $lang = $_SESSION['lang'];
     } else {
         $lang ='EN';

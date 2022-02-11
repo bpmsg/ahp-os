@@ -5,7 +5,7 @@
 * @since 2013-12-01 release first version ahp hierarchy
 * @version 2019-06-26 using SVN
 *
-* Last Change: $LastChangedDate: 2022-02-11 08:19:55 +0800 (Fri, 11 Feb 2022) $
+* Last Change: $LastChangedDate: 2022-02-11 08:19:55 +0800 (Fr, 11 Feb 2022) $
 *
     Copyright (C) 2022  <Klaus D. Goepel>
 
@@ -27,7 +27,7 @@ include 'includes/config.php';
 
 $pageTitle = "AHP Examples";
 $title = "AHP Examples";
-$version = substr('$LastChangedDate: 2022-02-11 08:19:55 +0800 (Fri, 11 Feb 2022) $', 18, 10);
+$version = substr('$LastChangedDate: 2022-02-11 08:19:55 +0800 (Fr, 11 Feb 2022) $', 18, 10);
 $rev = trim('$Rev: 120 $', "$");
 
 $login = new Login();

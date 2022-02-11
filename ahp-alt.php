@@ -40,7 +40,7 @@ $loggedIn = $login->isUserLoggedIn();
 $ahpH =    new AhpHierAlt();
 $ahp =     new AhpCalcIo(2);
 
-$version = substr('$LastChangedDate: 2022-02-11 08:19:55 +0800 (Fri, 11 Feb 2022) $', 18, 10);
+$version = substr('$LastChangedDate: 2022-02-11 08:19:55 +0800 (Fr, 11 Feb 2022) $', 18, 10);
 $rev = trim('$Rev: 120 $', "$");
 
 // function to set url string for form action to get new n and alternative names

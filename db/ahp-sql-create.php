@@ -1,9 +1,9 @@
 <?php
-/* Program to create all necessary tables for the login package
+/* Program to create all necessary tables for the login package 
  * @version since  2015-11-03
  * @version 2017-09-15 modified pwc node varchar(64) last version w/o SVN
  * @version 2022-01-23 pwc_id key field added, set db_type in config!
- *
+ * 
     Copyright (C) 2022  <Klaus D. Goepel>
 
     This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-
+ 
 define('DROP_DB_FIRST', false);
 define('CREATE_TABLES', true);
 define('DROP_DONATION_FIRST', false);
@@ -130,7 +130,7 @@ $sqliteUpdtTrigger = "CREATE TRIGGER after_update_users AFTER UPDATE ON users
 	  );
 	END;";
 
-/* --- INSERT TRIGGER after_insert_users ---
+/* --- INSERT TRIGGER after_insert_users --- 
  * requires DELIMITER $$ when executed in phpMyAdmin
  */
 $mysqlInsTrigger = "CREATE TRIGGER after_insert_users 
@@ -147,7 +147,7 @@ $sqliteInsTrigger = "CREATE TRIGGER after_insert_users
 		VALUES ('I', NEW.user_id, NEW.user_name,'New user registration');
 	  END;";
 
-/* --- DELETE TRIGGER after_delete_users ---
+/* --- DELETE TRIGGER after_delete_users --- 
  * requires DELIMITER $$ when executed in phpMyAdmin
  */
 $mysqlDelTrigger = "CREATE TRIGGER after_delete_users AFTER DELETE ON users FOR EACH ROW
@@ -205,7 +205,7 @@ $sqliteAlternativesTable = "CREATE TABLE IF NOT EXISTS `alternatives` (
  `project_sc` char(6) REFERENCES projects(project_sc) ON DELETE CASCADE ON UPDATE CASCADE,
  `alt` varchar(64) DEFAULT NULL)";
 
- /*
+ /* 
   * Modified 2017-09-15 pwc varchar(64)
   * Modified 2022-01-22 pwc_id autoincrement
   */
@@ -233,7 +233,7 @@ $sqlitePwcTable = "CREATE TABLE IF NOT EXISTS `pwc` (
  `pwc_intense` varchar(255) NOT NULL,
  `pwc_id` INTEGER PRIMARY KEY
 )";
- /*
+ /* 
   * Added 2017-05-11 Table with donations for bpmsg
   */
 $mysqlDonationsTable = "CREATE TABLE IF NOT EXISTS `donations` (
@@ -265,54 +265,51 @@ $sqliteDonationsTable = "CREATE TABLE IF NOT EXISTS `donations` (
 );";
 
 /* Database Connection */
-  function databaseConnection()
-  {
-      global $dbConnection;
-      if ($dbConnection != null) { // if connection already exists
-          return true;
-      } else {
-          // create a database connection, using the constants from config/config.php
-          try {
-              if (DB_TYPE == 'sqlite') {
-                  $dbConnection = new PDO(DB_TYPE . ':' . DB_PATH . DBNAME . ".db");
-                  return true;
-              } elseif (DB_TYPE == 'mysql') {
-                  $dsn = 'mysql:host=' . DBHOST . ';dbname=' . DBNAME . ';charset=utf8';
-                  $dbConnection = new PDO($dsn, DBUSER, DBPASS);
-                  return true;
-              } else {
-                  $err[] = "SQL Database type not included";
-                  return false;
-              }
-              // If an error is catched, database connection failed
-          } catch (PDOException $e) {
-              $err[] = "Database connection error " . $e->getMessage();
-          }
-      }
-      // default return
-      return false;
+  function databaseConnection(){
+  	global $dbConnection;
+  	if ($dbConnection != null) { // if connection already exists
+    	return true;
+  	} else {
+      // create a database connection, using the constants from config/config.php
+    	try {
+				if (DB_TYPE == 'sqlite'){
+	      	                        $dbConnection = new PDO( DB_TYPE . ':' . DB_PATH . DBNAME . ".db");
+					return true;
+ 				} elseif (DB_TYPE == 'mysql'){
+					$dsn = 'mysql:host=' . DBHOST . ';dbname=' . DBNAME . ';charset=utf8';
+                                        $dbConnection = new PDO($dsn, DBUSER, DBPASS);
+					return true;
+	 			} else {
+ 					$err[] = "SQL Database type not included";
+ 					return false;
+ 				}
+   		// If an error is catched, database connection failed
+    	} catch (PDOException $e) {
+      	$err[] = "Database connection error " . $e->getMessage();
+    	}
+  	}	
+    // default return
+  return false;
   }
 
 
 #$login = new Login();
 // reset in case back from edit form
-if (isset($_SESSION['REFERER'])) {
-    unset($_SESSION['REFERER']);
-}
+if (isset($_SESSION['REFERER']))
+	unset($_SESSION['REFERER']);
 
 $pageTitle ='AHP database creation';
 $title = "AHP database creation";
 $subTitle = "Create AHP-OS database tables";
-$version = substr('$LastChangedDate: 2022-01-19 16:23:09 +0800 (Wed, 19 Jan 2022) $', 18, 10);
+$version = substr('$LastChangedDate: 2022-01-19 16:23:09 +0800 (Wed, 19 Jan 2022) $',18,10);
 $rev = trim('$Rev: 35 $', "$");
 
 
 /* --- Web Page HTML OUTPUT --- */
 $webHtml = new WebHtml($pageTitle);
 #include '../includes/login/form.login-hl.php';
-if (!empty($login->errors)) {
-    echo $login->getErrors();
-}
+if (!empty($login->errors)) 
+	echo $login->getErrors();
 echo "<h1>$title</h1>";
 echo "<h2>$subTitle</h2>";
 
@@ -320,217 +317,193 @@ echo "<h2>AHP-OS database, table and trigger creation</h2>";
 echo "<p>Database type: <span class='msg'>", DB_TYPE, "</span></p>";
 
 /* --- Create empty file for SQLite DB --- */
-if (DB_TYPE == "sqlite") {
-    if (file_exists(DB_PATH . DBNAME . ".db")) {
-        echo "<p class='err'>Warning: SQLITE database $dbName already exists!<br>"
+if( DB_TYPE == "sqlite"){
+        if (file_exists(DB_PATH . DBNAME . ".db" ))
+                echo "<p class='err'>Warning: SQLITE database $dbName already exists!<br>"
                 . DB_PATH . DBNAME . ".db</p>";
-    } else {
-        touch(DB_PATH . DBNAME . ".db");
-        echo "<p class='msg'>SQLITE database file created. <br>"
+        else {
+                touch(DB_PATH . DBNAME . ".db");
+                echo "<p class='msg'>SQLITE database file created. <br>"
                 . DB_PATH . DBNAME . ".db</p>";
-    }
+        }        
 }
 
 /* --- Exit when no DB connection can be established --- */
-if ($flag = databaseConnection()) {
-    echo "<p span='msg'>Database connection established</p>";
+if($flag = databaseConnection()){
+	echo "<p span='msg'>Database connection established</p>";
 } else {
-    echo "<p span='err'>Database connection could not be established</p>";
-    echo "<p>";
-    echo implode($err);
-    echo "</p>";
-    $webHtml->webHtmlFooter($version);
-    exit();
+	echo "<p span='err'>Database connection could not be established</p>";
+	echo "<p>";
+	echo implode($err);
+	echo "</p>";
+	$webHtml->webHtmlFooter($version);
+	exit();
 }
 echo '<p></p>';
 
-if (DROP_DB_FIRST && DB_TYPE == "mysql") {
-    /* --- Drop existing and create new AHP Database --- */
-    $sql = $mysqlDBdrop;
-    $query = $dbConnection->prepare($sql);
-    if ($query) {
-        echo "<br>SQL prepare Drop DB successful";
-        $query->execute();
-        if ($query) {
-            echo "<br>SQL Drop DB successful";
-        }
-    } else {
-        echo "<br>SQL drop DB <span class='err'>NOT successful</span>";
-    }
-    echo '<p></p>';
-    /* --- create new one --- */
-    $sql = $mysqlDbcreate;
-    $query = $dbConnection->prepare($sql);
-    if ($query) {
-        echo "<br>SQL prepare create DB successful";
-        $query->execute();
-        if ($query) {
-            echo "<br>SQL create DB successful";
-        }
-    } else {
-        echo "<br>SQL create DB <span class='err'>NOT successful</span>";
-    }
-    echo '<p></p>';
+if(DROP_DB_FIRST && DB_TYPE == "mysql"){
+	/* --- Drop existing and create new AHP Database --- */
+	$sql = $mysqlDBdrop;
+	$query = $dbConnection->prepare($sql);
+	if($query) {
+		echo "<br>SQL prepare Drop DB successful";
+		$query->execute();
+		if($query)   
+			echo "<br>SQL Drop DB successful";
+	} else
+		echo "<br>SQL drop DB <span class='err'>NOT successful</span>";
+	echo '<p></p>';
+	/* --- create new one --- */
+	$sql = $mysqlDbcreate;
+	$query = $dbConnection->prepare($sql);
+	if($query) {
+		echo "<br>SQL prepare create DB successful";
+		$query->execute();
+		if($query)   
+			echo "<br>SQL create DB successful";
+	} else
+		echo "<br>SQL create DB <span class='err'>NOT successful</span>";
+		echo '<p></p>';
 }
-/*
- * --- create all AHP Database tables ---
- *     users, audit, projects, alternatives,
+/* 
+ * --- create all AHP Database tables --- 
+ *     users, audit, projects, alternatives, 
  *     pwc,table, donations
  */
-if (CREATE_TABLES) {
+if(CREATE_TABLES){
 
-    // --- CREATE USER TABLE ---//
-    echo '<h3>Create User Tables</h3>';
-    $sql = (DB_TYPE == 'sqlite' ? $sqliteUserTable : $mysqlUserTable);
-    $query = $dbConnection->prepare($sql);
-    if ($query) {
-        echo "<br>SQL prepare create user table successful";
-        $query->execute();
-        if ($query) {
-            echo "<br>SQL create table successful";
-        }
-    } else {
-        echo "<br>SQL prepare create table <span class='err'>NOT successful</span>";
-    }
+	// --- CREATE USER TABLE ---//
+	echo '<h3>Create User Tables</h3>';
+	$sql = ( DB_TYPE == 'sqlite' ? $sqliteUserTable : $mysqlUserTable);
+	$query = $dbConnection->prepare($sql);
+	if($query) {
+		echo "<br>SQL prepare create user table successful";
+		$query->execute();
+		if($query)   
+			echo "<br>SQL create table successful";
+	} else
+	echo "<br>SQL prepare create table <span class='err'>NOT successful</span>";
 
-    // --- CREATE AUDIT TABLE ---//
-    echo '<h3>Create Audit Table</h3>';
-    $sql = (DB_TYPE == 'sqlite' ? $sqliteAuditTable : $mysqlAuditTable);
-    $query = $dbConnection->prepare($sql);
-    if ($query) {
-        echo "<br>SQL prepare create audit table successful";
-        $query->execute();
-        if ($query) {
-            echo "<br>SQL create table successful";
-        }
-    } else {
-        echo "<br>SQL prepare create audit table <span class='err'>NOT successful</span>";
-    }
+	// --- CREATE AUDIT TABLE ---//
+	echo '<h3>Create Audit Table</h3>';
+	$sql = ( DB_TYPE == 'sqlite' ? $sqliteAuditTable : $mysqlAuditTable);
+	$query = $dbConnection->prepare($sql);
+	if($query) {
+		echo "<br>SQL prepare create audit table successful";
+		$query->execute();
+		if($query)   
+			echo "<br>SQL create table successful";
+	} else
+		echo "<br>SQL prepare create audit table <span class='err'>NOT successful</span>";
 
-    // --- CREATE PROJECT TABLE ---//
-    echo '<h3>Create Project Table</h3>';
-    $sql = (DB_TYPE == 'sqlite' ? $sqliteProjectTable : $mysqlProjectTable);
-    $query = $dbConnection->prepare($sql);
-    if ($query) {
-        echo "<br>SQL prepare create project table successful";
-        $query->execute();
-        if ($query) {
-            echo "<br>SQL create project table successful";
-        }
-    } else {
-        echo "<br>SQL prepare create project table <span class='err'>NOT successful</span>";
-    }
+	// --- CREATE PROJECT TABLE ---//
+	echo '<h3>Create Project Table</h3>';
+	$sql = ( DB_TYPE == 'sqlite' ? $sqliteProjectTable : $mysqlProjectTable);
+	$query = $dbConnection->prepare($sql);
+	if($query) {
+		echo "<br>SQL prepare create project table successful";
+		$query->execute();
+		if($query)   
+			echo "<br>SQL create project table successful";
+	} else
+		echo "<br>SQL prepare create project table <span class='err'>NOT successful</span>";
 
-    // --- CREATE ALTERNATIVE TABLE ---//
-    echo '<h3>Create AlternativesTable</h3>';
-    $sql = (DB_TYPE == 'sqlite' ? $sqliteAlternativesTable : $mysqlAlternativesTable);
-    $query = $dbConnection->prepare($sql);
-    if ($query) {
-        echo "<br>SQL prepare create alternatives table successful";
-        $query->execute();
-        if ($query) {
-            echo "<br>SQL create alternatives table successful";
-        }
-    } else {
-        echo "<br>SQL prepare create alternatives table <span class='err'>NOT successful</span>";
-    }
+	// --- CREATE ALTERNATIVE TABLE ---//
+	echo '<h3>Create AlternativesTable</h3>';
+	$sql = ( DB_TYPE == 'sqlite' ? $sqliteAlternativesTable : $mysqlAlternativesTable);
+	$query = $dbConnection->prepare($sql);
+	if($query) {
+		echo "<br>SQL prepare create alternatives table successful";
+		$query->execute();
+		if($query)   
+			echo "<br>SQL create alternatives table successful";
+	} else
+		echo "<br>SQL prepare create alternatives table <span class='err'>NOT successful</span>";
 
-    // --- CREATE PWC TABLE ---//
-    echo '<h3>Create PWC Table</h3>';
-    $sql = (DB_TYPE == 'sqlite' ? $sqlitePwcTable : $mysqlPwcTable);
-    $query = $dbConnection->prepare($sql);
-    if ($query) {
-        echo "<br>SQL prepare create pwc table successful";
-        $query->execute();
-        if ($query) {
-            echo "<br>SQL create pwc table successful";
-        }
-    } else {
-        echo "<br>SQL prepare create pwc table <span class='err'>NOT successful</span>";
-    }
+	// --- CREATE PWC TABLE ---//
+	echo '<h3>Create PWC Table</h3>';
+	$sql = ( DB_TYPE == 'sqlite' ? $sqlitePwcTable : $mysqlPwcTable);
+	$query = $dbConnection->prepare($sql);
+	if($query) {
+		echo "<br>SQL prepare create pwc table successful";
+		$query->execute();
+		if($query)   
+			echo "<br>SQL create pwc table successful";
+	} else
+		echo "<br>SQL prepare create pwc table <span class='err'>NOT successful</span>";
 
-    // --- CREATE DONATIONS TABLE ---//
-    echo '<h3>Create Donations Table</h3>';
+	// --- CREATE DONATIONS TABLE ---//
+	echo '<h3>Create Donations Table</h3>';
 
-    // DROP FIRST EXISTING TABLE
-    if (DROP_DONATION_FIRST) {
-        $sql = 'DROP TABLE IF EXISTS `donations`;';
-        $query = $dbConnection->prepare($sql);
-        if ($query) {
-            echo "<br>prepare drop donation successful";
-            $query->execute();
-            if ($query) {
-                echo "<br>Drop donations successful";
-            }
-        } else {
-            echo "<br>SQL drop donations <span class='err'>NOT successful</span>";
-        }
-    }
+	// DROP FIRST EXISTING TABLE
+	if(DROP_DONATION_FIRST){
+		$sql = 'DROP TABLE IF EXISTS `donations`;';
+		$query = $dbConnection->prepare($sql);
+		if($query) {
+				echo "<br>prepare drop donation successful";
+				$query->execute();
+				if($query)   
+					echo "<br>Drop donations successful";
+		} else
+				echo "<br>SQL drop donations <span class='err'>NOT successful</span>";
+	}
 
-    $sql = (DB_TYPE == 'sqlite' ? $sqliteDonationsTable : $mysqlDonationsTable);
-    $query = $dbConnection->prepare($sql);
-    if ($query) {
-        echo "<br>SQL prepare create Donations table successful";
-        $query->execute();
-        if ($query) {
-            echo "<br>SQL create Donations table successful";
-        }
-    } else {
-        echo "<br>SQL prepare create donations table <span class='err'>NOT successful</span>";
-    }
+	$sql = ( DB_TYPE == 'sqlite' ? $sqliteDonationsTable : $mysqlDonationsTable);
+	$query = $dbConnection->prepare($sql);
+	if($query) {
+		echo "<br>SQL prepare create Donations table successful";
+		$query->execute();
+		if($query)   
+			echo "<br>SQL create Donations table successful";
+	} else
+		echo "<br>SQL prepare create donations table <span class='err'>NOT successful</span>";
 }
 
 /* --- Create Triggers --- */
-if (CREATE_TRIGGERS) {
-    if (DROP_TRIGGER_FIRST) {
-        $query = $dbConnection->prepare('DROP TRIGGER IF EXISTS after_delete_users;');
-        $query->execute();
-        $query = $dbConnection->prepare('DROP TRIGGER IF EXISTS after_insert_users;');
-        $query->execute();
-        $query = $dbConnection->prepare('DROP TRIGGER IF EXISTS after_update_users;');
-        $query->execute();
-    }
-    // --- CREATE UPDATE TRIGGER ---//
-    echo '<h3>Create Update Trigger</h3>';
-    $sql = (DB_TYPE == 'sqlite' ? $sqliteUpdtTrigger : $mysqlUpdtTrigger);
-    $query = $dbConnection->prepare($sql);
-    if ($query) {
-        echo "<br>SQL prepare create upate trigger successful";
-        $query->execute();
-        if ($query) {
-            echo "<br>SQL create update trigger successful";
-        }
-    } else {
-        echo "<br>SQL prepare create update trigger <span class='err'>NOT successful</span>";
-    }
+if(CREATE_TRIGGERS){
+	if(DROP_TRIGGER_FIRST){
+		$query = $dbConnection->prepare('DROP TRIGGER IF EXISTS after_delete_users;');	
+		$query->execute();
+		$query = $dbConnection->prepare('DROP TRIGGER IF EXISTS after_insert_users;');	
+		$query->execute();
+		$query = $dbConnection->prepare('DROP TRIGGER IF EXISTS after_update_users;');	
+		$query->execute();
+	}
+	// --- CREATE UPDATE TRIGGER ---//
+	echo '<h3>Create Update Trigger</h3>';
+	$sql = ( DB_TYPE == 'sqlite' ? $sqliteUpdtTrigger : $mysqlUpdtTrigger);
+	$query = $dbConnection->prepare($sql);
+	  if($query) {
+		echo "<br>SQL prepare create upate trigger successful";
+		$query->execute();
+		if($query)   
+			echo "<br>SQL create update trigger successful";
+	  } else
+		echo "<br>SQL prepare create update trigger <span class='err'>NOT successful</span>";
 
-    //--- CREATE INSERT TRIGGER ---//
-    echo '<h3>Create Insert Trigger</h3>';
-    $sql = (DB_TYPE == 'sqlite' ? $sqliteInsTrigger : $mysqlInsTrigger);
-    $query = $dbConnection->prepare($sql);
-    if ($query) {
-        echo "<br>SQL prepare create insert trigger successful";
-        $query->execute();
-        if ($query) {
-            echo "<br>SQL create insert trigger successful";
-        }
-    } else {
-        echo "<br>SQL prepare create insert trigger NOT successful";
-    }
+	//--- CREATE INSERT TRIGGER ---//
+	echo '<h3>Create Insert Trigger</h3>';
+	$sql = ( DB_TYPE == 'sqlite' ? $sqliteInsTrigger : $mysqlInsTrigger);
+	$query = $dbConnection->prepare($sql);
+	  if($query) {
+		echo "<br>SQL prepare create insert trigger successful";
+		$query->execute();
+		if($query)   
+			echo "<br>SQL create insert trigger successful";
+	  } else
+		echo "<br>SQL prepare create insert trigger NOT successful";
 
-    //--- CREATE DELETE TRIGGER ---//
-    echo '<h3>Create Delete Trigger</h3>';
-    $sql = (DB_TYPE == 'sqlite' ? $sqliteDelTrigger : $mysqlDelTrigger);
-    $query = $dbConnection->prepare($sql);
-    if ($query) {
-        echo "<br>SQL prepare create delete trigger successful";
-        $query->execute();
-        if ($query) {
-            echo "<br>SQL create delete trigger successful";
-        }
-    } else {
-        echo "<br>SQL prepare create delete trigger NOT successful";
-    }
+	//--- CREATE DELETE TRIGGER ---//
+	echo '<h3>Create Delete Trigger</h3>';
+	$sql = ( DB_TYPE == 'sqlite' ? $sqliteDelTrigger : $mysqlDelTrigger);
+	$query = $dbConnection->prepare($sql);
+	  if($query) {
+		echo "<br>SQL prepare create delete trigger successful";
+		$query->execute();
+		if($query)   
+			echo "<br>SQL create delete trigger successful";
+	  } else
+		echo "<br>SQL prepare create delete trigger NOT successful";
 }
 
 echo '<p>Done!</p>';

@@ -48,8 +48,8 @@ if (isset($_SESSION['REFERER'])) {
 }
 $loggedIn = $login->isUserLoggedIn();
 
-$version = substr('$LastChangedDate: 2022-02-11 08:19:55 +0800 (Fri, 11 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 120 $', "$");
+$version = substr('$LastChangedDate: 2022-02-11 12:08:47 +0800 (Fr, 11 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 125 $', "$");
 
 $defaultHierarchy = "AHP-Project:Crit-1,Crit-2,Crit-3;";
 
@@ -293,8 +293,8 @@ $leave = false;
                         $leave = false;
                     }
                 } else {
-                    if ($ahpH->pwcDoneFlg || $ahpH->pwcaDoneFlg) { 
-						// pairwise comparison done
+                    if ($ahpH->pwcDoneFlg || $ahpH->pwcaDoneFlg) {
+                        // pairwise comparison done
                         $leave = true;
                     } else {
                         $checkWarn2 = $ahpHier->msg['giNds'] . implode(", ", $ahpDb->err);

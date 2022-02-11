@@ -9,7 +9,7 @@
  * pairwise comparisons are stored. The AhpGroup class has all methods
  * to calculate and display the final results.
  *
- * $LastChangedDate: 2022-02-11 08:19:55 +0800 (Fri, 11 Feb 2022) $
+ * $LastChangedDate: 2022-02-11 08:19:55 +0800 (Fr, 11 Feb 2022) $
  * $Rev: 120 $
  *
  * @author Klaus D. Goepel

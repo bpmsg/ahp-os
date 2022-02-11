@@ -6,7 +6,7 @@
 * @version 2014-03-13
 * @version 2016-06-03 last version w/o SVN
 *
-* Last Change: $LastChangedDate: 2022-02-11 08:19:55 +0800 (Fri, 11 Feb 2022) $
+* Last Change: $LastChangedDate: 2022-02-11 08:19:55 +0800 (Fr, 11 Feb 2022) $
 * Revision: $Rev: 120 $
 *
     Copyright (C) 2022  <Klaus D. Goepel>
