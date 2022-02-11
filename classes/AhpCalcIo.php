@@ -4,8 +4,8 @@
  * Contains functions for html and file i/o
  * Extends AHP base class
  *
- * $LastChangedDate: 2022-02-11 08:19:55 +0800 (Fr, 11 Feb 2022) $
- * $Rev: 120 $
+ * $LastChangedDate: 2022-02-11 16:19:15 +0800 (Fr, 11 Feb 2022) $
+ * $Rev: 126 $
  *
  * Main methods:
  * set_txtbuf(), txtDownload($fname, $txt)
@@ -19,25 +19,25 @@
  * @copyright 2014 Klaus D. Goepel
  * @uses colorClass.php
  *
- *  Copyright (C) 2022  <Klaus D. Goepel>
+ * Copyright (C) 2022  <Klaus D. Goepel>
  *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 class AhpCalcIo extends AhpCalc
 {
-/** Class Constants */
+    /** Class Constants */
 
     public const NEWL = "\n";      // for csv file export
     public const ENCL = '"';
@@ -114,7 +114,7 @@ class AhpCalcIo extends AhpCalc
         $txtbuf ="sep=" . $fs . self::NEWL;
         // --- Title
         $txtbuf .= $this->header . $fs . self::ENCL . date("Y.m.d H:i:s")
-				. self::ENCL.self::NEWL;
+                . self::ENCL.self::NEWL;
         $txtbuf .= $n;
         $txtbuf .= self::NEWL;
 
@@ -131,7 +131,7 @@ class AhpCalcIo extends AhpCalc
             $ebuf .= number_format($this->evm_evec[$i], ROUND, $ds, $ts) . $fs;
             $mbuf .= self::NEWL;
         }
-        $txtbuf .= rtrim($cbuf, $fs) . self::NEWL . $mbuf . rtrim($ebuf, $fs) 
+        $txtbuf .= rtrim($cbuf, $fs) . self::NEWL . $mbuf . rtrim($ebuf, $fs)
         . self::NEWL;
         $txtbuf .= number_format($this->evm_eval, ROUND, $ds, $ts) . $fs
         . number_format($this->cr_alo, ROUND, $ds, $ts) . self::NEWL;
@@ -361,24 +361,24 @@ class AhpCalcIo extends AhpCalc
             $titleField = '';
         }
         echo "<form method='GET' action='$act' ><input type='hidden' name ='n' value='$n' >
-		<table>";
+                <table>";
         echo "<tr><td></td>";
         echo "<td>
-		<input type='text' maxlength='" . WLMAX . "' size='" . WLMAX
-		. "' name ='t' value='$title' $titleField ></td></tr>";
+            <input type='text' maxlength='" . WLMAX . "' size='" . WLMAX
+            . "' name ='t' value='$title' $titleField ></td></tr>";
         printf($this->ahpCalcTxt->tbl['gcTblTh'], $typ);
         for ($i = 0; $i < $n; $i++) {
             echo "<tr>";
             echo "<td>" . ($i+1) . "</td>";
             echo "<td><input type='text' maxlength='" . WLMAX . "'  
-			size='". WLMAX . "' name ='c[$i]' value='" . $c[$i] . "' ></td>";
+                size='". WLMAX . "' name ='c[$i]' value='" . $c[$i] . "' ></td>";
             echo "</tr>";
         }
         echo "<tr><td colspan='2' class='ca' >";
         printf($this->ahpCalcTxt->info['wlMax'], WLMAX);
         echo "</td></tr>";
         echo "<tr><td colspan='2' style='text-align:center;' >
-			 <input type='submit' value='OK'></td></tr>";
+            <input type='submit' value='OK'></td></tr>";
         echo "</table></form>";
         return;
     }

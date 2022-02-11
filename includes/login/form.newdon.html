@@ -6,7 +6,7 @@
 <?php	
 	if(!empty($trNumbers) && $para['trNo'] == 0 ){
 		echo "<select name='trNo' maxlength='10' style='width: 50px;' >";
-		echo '<option value="',$para['trNo'], '">',$para['trNo'],'</option>';
+		echo "<option value='",$para['trNo'], "'>",$para['trNo'],"</option>";
 		foreach($trNumbers as $val){
 			if($val != $para['trNo'])
 				echo "<option value='$val'>$val</option>";
@@ -72,7 +72,6 @@
 	<label for="trUser" >AHP User: </label>
 <?php	
 	if(!empty($storedUsers)){
-//		$cnt = count($storedUsers);
 		echo "<select name='trUser' style='width: 150px;'>";
 		if ($para['trUser'] !="")
 			echo '<option value="',$para['trUser'], '">',$para['trUser'],'</option>';
@@ -114,9 +113,9 @@
 	}
 ?>
 	&nbsp;&nbsp;
-  <input id="clear" type='submit' value='Clear' name='CLR'>
+  <input id='clear' type='submit' value='Clear' name='CLR'>
 	&nbsp;&nbsp;
-  <input id="cancel" type='submit' value='Cancel' name='CANC'>
+  <input id='cancel' type='submit' value='Cancel' name='CANC'>
 </div>
 </fieldset>
 </div>

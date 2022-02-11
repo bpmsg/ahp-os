@@ -36,8 +36,8 @@ if ($lang != null && $lang != false && in_array($lang, $languages)) {
 $class = 'AhpNews' . $lang;
 $ahpOs = new $class();
 
-$version = substr('$LastChangedDate: 2022-02-11 08:19:55 +0800 (Fr, 11 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 120 $', "$");
+$version = substr('$LastChangedDate: 2022-02-11 16:19:15 +0800 (Fr, 11 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 126 $', "$");
 
 /*
  * --- Web Page HTML OUTPUT ---
@@ -45,11 +45,11 @@ $rev = trim('$Rev: 120 $', "$");
 $webHtml = new WebHtml($ahpOs->titles1['pageTitle']);
 include('includes/login/form.login-hl.php');
 echo $ahpOs->titles1['h1title'];
-echo "<p>Language: <a href='", $urlAct ,"?lang=en'>English</a>
-	&nbsp;&nbsp;<a href='",$urlAct, "?lang=de'>German</a>
-	&nbsp;&nbsp;<a href='",$urlAct, "?lang=es'>Español</a>
-        &nbsp;&nbsp;<a href='",$urlAct, "?lang=pt'>Português</a>
-	</p>";
+echo "<p>Language: <a href='$urlAct?lang=en'>English</a>
+       &nbsp;&nbsp;<a href='$urlAct?lang=de'>German</a>
+       &nbsp;&nbsp;<a href='$urlAct?lang=es'>Español</a>
+       &nbsp;&nbsp;<a href='$urlAct?lang=pt'>Português</a>
+      </p>";
 echo "<div class='entry-content'>";
 printf($ahpOs->titles1['h2welc'], (isset($_SESSION['user_name']) ? $_SESSION['user_name'] : ""));
 printf($ahpOs->titles1['h3release'], $version, $rev);
@@ -59,15 +59,16 @@ echo $ahpOs->info['news2'];
 if (DONATIONS) {
     echo $ahpOs->titles1['h3don'];
     echo $ahpOs->info['don'];
-    include "views/paypal-don.html";
+    // include "views/paypal-don.html";
 }
 echo "<div style='clear:both;text-align:justify;'>";
 if (DONATIONS) {
     echo "<p><a href='https://paypal.me/ahpDonation' target='_blank'>Paypal.me/ahpDonation</a></p>";
 }
 echo $ahpOs->msg['tu'];
-echo '<br><img src="images/Klaus.png" alt="Klaus" width="103" height="44" />';
-echo "<div style='text-align:center;'><a href='" . SITE_URL . "'>",$ahpOs->msg['cont'],"</a></p></div>";
+echo "<br><img src='images/Klaus.png' alt='Klaus' width='103' height='44' />";
+echo "<div style='text-align:center;'><a href='" . SITE_URL . "'>",$ahpOs->msg['cont'],
+     "</a></p></div>";
 echo "</div>";
 
 $webHtml->webHtmlFooter($version);

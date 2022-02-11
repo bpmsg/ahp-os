@@ -3,8 +3,8 @@
 * Analytic Hierarchy Process Alternative Evaluation class 2014-01-06
 * extends ahpHierClass
 *
-* $LastChangedDate: 2022-02-11 08:19:55 +0800 (Fr, 11 Feb 2022) $
-* $Rev: 120 $
+* $LastChangedDate: 2022-02-11 16:19:15 +0800 (Fr, 11 Feb 2022) $
+* $Rev: 126 $
 *
 *
 * @package AHP-OS
@@ -16,20 +16,20 @@
 *
 * @uses array $_SESSION['prioAlt']) priorities for alternatives
 *
-    Copyright (C) 2022  <Klaus D. Goepel>
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+* Copyright (C) 2022  <Klaus D. Goepel>
+*
+*   This program is free software: you can redistribute it and/or modify
+*   it under the terms of the GNU General Public License as published by
+*   the Free Software Foundation, either version 3 of the License, or
+*   (at your option) any later version.
+*
+*   This program is distributed in the hope that it will be useful,
+*   but WITHOUT ANY WARRANTY; without even the implied warranty of
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*   GNU General Public License for more details.
+*
+*   You should have received a copy of the GNU General Public License
+*   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 *
 * public function calcPrioTotal($k, $pGlb)
 * public function setPrioTot()
@@ -52,17 +52,18 @@
 
 class AhpHierAlt extends AhpHier
 {
-/** Properties */
+    /** Properties */
+
     public $altNum = 2;
     public $alt = array();
-    public $prioAlt = array(); // priority of alternatives, index = criteria
-public $prioTot = array(); // total priority of alternatives
-public $pwcaDone;
-    //public $pwcaDoneFlg = false; is defined in ahpHierClass
-public $wpm = false; // weighted product method
+    public $prioAlt = array();  // priority of alternatives, index = criteria
+    public $prioTot = array();  // total priority of alternatives
+    public $pwcaDone;
+    // public $pwcaDoneFlg = false; is defined in ahpHierClass
+    public $wpm = false;        // weighted product method
 
 
-/** Methods */
+    /** Methods */
 
     public function __construct()
     {
@@ -124,7 +125,8 @@ public $wpm = false; // weighted product method
 
 
     /* set pairwise comparison input and scale from $_POST parameters
-     * @return array pwc (A, Intensity, scale) or int 1 (start pwc), int 2 (error in parameters)
+     * @return array pwc (A, Intensity, scale) or int 1 (start pwc),
+     * int 2 (error in parameters)
      */
     private function getPostParameter()
     {
@@ -147,7 +149,8 @@ public $wpm = false; // weighted product method
 
     /* checks for completion of pairwise comparisons for alternatives
      * @uses $_SESSION['prioAlt']
-     * @return array $pwcA contains leafs (criteria) for which alternative evaluation was done
+     * @return array $pwcA contains leafs (criteria) for which
+     * alternative evaluation was done
      */
     private function pwcADone()
     {
@@ -167,7 +170,8 @@ public $wpm = false; // weighted product method
     public function displayAlternativesTable($ahp = true)
     {
         $cellFmt =  "style='background-color:White;'";
-        $tblColWdth = round(70/($this->level), 0); //width in percent for level columns
+        //width in percent for level columns
+        $tblColWdth = round(70/($this->level), 0);
         $pwcA = $this->pwcADone();
         $pwcCnt = 0;
         $errMsg = "";
@@ -192,7 +196,7 @@ public $wpm = false; // weighted product method
         // --- Rows
         $row=0;
         $l=0; // index fur r_sp array
-    $k=0;
+        $k=0;
         foreach ($this->flatarray as $node=>$el) {
             if (in_array($el, $pwcA)) {
                 $inpfmt = "<td class='resbox done ca sm'>%01.3f</td>";
@@ -204,18 +208,20 @@ public $wpm = false; // weighted product method
             echo "<td class='ca var' >", ++$row, ". </td>";
             if ($k == 0) {
                 $k = $r_sp[$l];
-                echo "<td class='hier sm' rowspan='", $k, "'>",$nda[$l++], "</td>";
+                echo "<td class='hier sm' rowspan='", $k, "'>",
+                        $nda[$l++], "</td>";
             }
             $k--;
             echo "<td class='hier var'>", $el, "</td>";
-            echo "<td class='ca sm res'>", round(100 *$this->pGlb[$el], 1), "% </td>";
+            echo "<td class='ca sm res'>", round(100 *$this->pGlb[$el], 1),
+                    "% </td>";
             echo "\n<td class='ca'>";
             // AHP button
             if ($ahp) {
                 if (isset($_SESSION['pwc']) && in_array($el, array_keys($_SESSION['pwc']))) {
-                    echo "<input class='btng' type='submit' value='AHP' lenght='3' name='AHP[",$el, "]' />\n";
+                    echo "<input class='btng' type='submit' value='AHP' lenght='3' name='AHP[$el]' />\n";
                 } else {
-                    echo "<input class='btnr' type='submit' value='AHP' lenght='3' name='AHP[",$el, "]' />\n";
+                    echo "<input class='btnr' type='submit' value='AHP' lenght='3' name='AHP[$el]' />\n";
                 }
             }
 
@@ -234,8 +240,10 @@ public $wpm = false; // weighted product method
             }
         } // next row
 
-        echo "<tr><td colspan='5' align='right' >" , $this->ahpHierTxt->tbl['aTblTd1'], "</td>";
-        $inpfmt = ($pwcCnt < $pwcTot ? "class='ca resbox sm'" : "class='ca resbox sm done' style='font-weight:bold;'");
+        echo "<tr><td colspan='5' align='right' >" ,
+            $this->ahpHierTxt->tbl['aTblTd1'], "</td>";
+        $inpfmt = ($pwcCnt < $pwcTot ? "class='ca resbox sm'" :
+            "class='ca resbox sm done' style='font-weight:bold;'");
         for ($j=0; $j<$this->altNum; $j++) {
             $prioTot = $this->calcPrioTotal($j, $this->pGlb, 0);
             echo "<td $inpfmt >", round($prioTot, 3), "</td>";
@@ -308,7 +316,8 @@ public $wpm = false; // weighted product method
         // compare each alternative with all others
         for ($i=0; $i< $this->altNum; $i++) {
             for ($j=$i+1; $j< $this->altNum; $j++) {
-                $rb1[2][$k][] = "A" . ($i+1) . ($i == $top ? "*" : "") . " - A" . ($j+1) . ($j == $top ? "*" : "");
+                $rb1[2][$k][] = "A" . ($i+1) . ($i == $top ? "*" : "")
+                . " - A" . ($j+1) . ($j == $top ? "*" : "");
                 foreach ($this->leafs as $crit) {
                     $key = ($i) . "~" . ($j) . "~" . $crit;
                     if ($this->wpm) {
@@ -427,18 +436,24 @@ public $wpm = false; // weighted product method
         $fs = ($ds == ',' ? ';' : ',');
         $altnum = $this->altNum;
         $textout[] = self::ENCL . "1. Alternatives with local weights "
-            . ($this->wpm ? "(Weighted product method) " : "(Weighted sum method) ") . self::ENCL . self::NEWL;
-        $textout[] = self::ENCL . 'Crit/Alt' . self::ENCL . $fs . self::ENCL . "pGlb" . self::ENCL . $fs . self::ENCL .
+            . ($this->wpm ? "(Weighted product method) " : "(Weighted sum method) ")
+            . self::ENCL . self::NEWL;
+        $textout[] = self::ENCL . 'Crit/Alt' . self::ENCL . $fs
+            . self::ENCL . "pGlb" . self::ENCL . $fs . self::ENCL .
         implode(self::ENCL . $fs . self::ENCL, $this->alt) . self::ENCL . self::NEWL ;
         foreach ($this->leafs as $crit) {
-            $line = self::ENCL . $crit . self::ENCL . $fs . self::ENCL . number_format($this->pGlb[$crit], ROUND, $ds, "")
-         . self::ENCL . $fs;
+            $line = self::ENCL . $crit . self::ENCL . $fs
+            . self::ENCL . number_format($this->pGlb[$crit], ROUND, $ds, "")
+            . self::ENCL . $fs;
             for ($i=0; $i< $altnum; $i++) {
-                $line .= self::ENCL . number_format($this->prioAlt[$crit][$i], ROUND, $ds, "") . self::ENCL . $fs;
+                $line .= self::ENCL
+                    . number_format($this->prioAlt[$crit][$i], ROUND, $ds, "")
+                    . self::ENCL . $fs;
             }
             $textout[] = $line . self::NEWL;
         }
-        $line = self::ENCL . "Group Result" . self::ENCL . $fs . self::ENCL . '' . self::ENCL;
+        $line = self::ENCL . "Group Result" . self::ENCL . $fs
+                . self::ENCL . '' . self::ENCL;
         foreach ($this->prioTot as $alternative=>$val) {
             $line .= $fs . number_format($val, ROUND, $ds, "");
         }
@@ -459,7 +474,8 @@ public $wpm = false; // weighted product method
         $textout[] = self::NEWL . self::ENCL . "4. Robustness (sensitivity analysis, "
     . ($this->wpm ? "WPM" : "WSM") . ")" . self::ENCL . self::NEWL;
         // table 1: critical criteria
-        $textout[] = self::ENCL . "4.1 Absolute critical criteria" . self::ENCL . self::NEWL;
+        $textout[] = self::ENCL . "4.1 Absolute critical criteria"
+                    . self::ENCL . self::NEWL;
 
         if (is_array($rt1[2])) {
             foreach ($rt1[2] as $row) {
@@ -474,7 +490,8 @@ public $wpm = false; // weighted product method
         }
 
         // table 2: critical alternatives
-        $textout[] = self::NEWL . self::ENCL . "4.2 Absolute critical alternatives" . self::ENCL . self::NEWL;
+        $textout[] = self::NEWL . self::ENCL
+        . "4.2 Absolute critical alternatives" . self::ENCL . self::NEWL;
         if (is_array($rt2[2])) {
             foreach ($rt2[2] as $row) {
                 $line = "";

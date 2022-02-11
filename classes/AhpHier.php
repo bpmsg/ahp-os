@@ -13,8 +13,8 @@
  *
  * With exportHierarchyTable($ds)csv output is generated for download.
  *
- * $LastChangedDate: 2022-02-11 08:19:55 +0800 (Fr, 11 Feb 2022) $
- * $Rev: 120 $
+ * $LastChangedDate: 2022-02-11 16:19:15 +0800 (Fr, 11 Feb 2022) $
+ * $Rev: 126 $
  *
  * @package AHP online
  * @author Klaus D. Goepel
@@ -40,60 +40,60 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
+
 class AhpHier
 {
-/** Class Constants */
-
+    /** Class Constants */
     public const FLAT_DELIM = '~'; // delimiter for flat hierarchy
     public const TRIM_CHAR = " \t\n\r\0\x0B";
     public const NEWL = "\n";      // for csv file export
     public const ENCL = '"';
 
     public const TXTMAX = 6000;    // max number of chars defining the hierarchy
-public const NODE_CNT = 50;    // max number of nodes
-public const LEAF_MAX = 100;   // max number of leafs
-public const LEVEL_MAX = 6;    // max number of hierarchy levels
-public const CALC_TOL = 1.E-4; // calculation tolerance for sum of priorities
+    public const NODE_CNT = 50;    // max number of nodes
+    public const LEAF_MAX = 100;   // max number of leafs
+    public const LEVEL_MAX = 6;    // max number of hierarchy levels
+    public const CALC_TOL = 1.E-4; // calculation tolerance for sum of priorities
 
-/** Class Properties */
+    /** Class Properties */
 
     /* Main node of the hierarchy is taken as project name */
-    public $project;	   			// Project name
+    public $project;                // Project name
 
     /* A flat array describing the hierarchy */
-    protected $flatarray = array();	// flat hiearchy
+    protected $flatarray = array(); // flat hiearchy
 
-    public $hText = ""; 			// Text string defining the hierarchy
-public $hierarchy = array();	// Hierarchy as array
+    public $hText = "";             // Text string defining the hierarchy
+    public $hierarchy = array();    // Hierarchy as array
 
-public $level; 					// number of hierarchy levels (depth)
+    public $level;                  // number of hierarchy levels (depth)
 
-    public $nodes = array();		// text array of hierarchy nodes
-public $leafs = array();		// leafs (end points) of the heararchy
+    public $nodes = array();        // text array of hierarchy nodes
+    public $leafs = array();        // leafs (end points) of the heararchy
 
-public $nodeCnt;				// number of nodes (categories) of the heararchy
-public $leafCnt; 				// number of leafs (end points) of the heararchy
+    public $nodeCnt;                // number of nodes (categories) of the heararchy
+    public $leafCnt;                // number of leafs (end points) of the heararchy
 
-public $nodPd = array();		// nodes with pre-defined priorities
-public $pLoc = array();			// local priorities for leafs in each node,
-                                // keys are name of leafs
+    public $nodPd = array();        // nodes with pre-defined priorities
+    public $pLoc = array();         // local priorities for leafs in each node,
+                                    // keys are name of leafs
 
-public $defLeafs = array();		// array with pre-defined priorities (float)
+    public $defLeafs = array();     // array with pre-defined priorities (float)
 
-    public $priorities = array();	// Priority vectors, keys are node/leaf names
-public $pGlb = array();			// global priorities for leafs, key is leaf name
+    public $priorities = array();   // Priority vectors, keys are node/leaf names
+    public $pGlb = array();         // global priorities for leafs, key is leaf name
 
-/* Handling of errors and warninigs */
-    public $err = array();			// error messages
-public $wrn = array();			// warnings
+    /* Handling of errors and warninigs */
+    public $err = array();          // error messages
+    public $wrn = array();          // warnings
 
-/* flag to indicate completion of pairwise comparisons */
-    public $pwcDoneFlg = false;   	// pairwise comparison done
-public $pwcaDoneFlg  = false; 	// alternative evaluation done
+    /* flag to indicate completion of pairwise comparisons */
+    public $pwcDoneFlg = false;     // pairwise comparison done
+    public $pwcaDoneFlg  = false;   // alternative evaluation done
 
-private $pwcDone = array();
+    private $pwcDone = array();
     private $colors;
-    public $ahpHierTxt;				// language class
+    public $ahpHierTxt;             // language class
 
     /** Methods */
 
@@ -640,8 +640,8 @@ private $pwcDone = array();
         $this->leafs = array_diff($this->leafs, $this->nodes);
         $this->hText = $text;
         $this->hierarchy = $res;		// hierarchy
-    $this->project = key($res);		// project name
-    $this->leafCnt = $this->getTreeSpan($res);
+        $this->project = key($res);		// project name
+        $this->leafCnt = $this->getTreeSpan($res);
         $this->nodeCnt = count($this->nodes);
         $this->pLoc = $pLoc;			// local priorities
         if (abs(array_sum($pLoc)- $this->nodeCnt) <= self::CALC_TOL) {
@@ -759,9 +759,9 @@ private $pwcDone = array();
             . $altNum . "this->alt = "
             . count($this->alt), E_USER_NOTICE);
         }
-        $cols=$this->level;	// columns
-    $r_sp = array();		// rowspan for columns
-    $k0 = array();			// previous node
+        $cols=$this->level; // columns
+        $r_sp = array();    // rowspan for columns
+        $k0 = array();      // previous node
 
     // --- Get array of pairwise comparisons (leafs) already done
         $pwcCnt = ($this->pwcDone ? count($this->pwcDone) : 0);
@@ -863,7 +863,7 @@ private $pwcDone = array();
             }
             $pst = ($this->pwcDoneFlg ? "style='background-color:" . $csc[$row++] . "'" : "");
             if ($pflag) {
-                printf("<td class='ac sm' $pst>%02.1f%%</td>", 100*$this->pGlb[$val]);
+                printf("<td class='ac sm' $pst>%02.1f%%</td>", 100 * $this->pGlb[$val]);
             }
 
             // ---	Alternatives
@@ -908,7 +908,7 @@ private $pwcDone = array();
         for ($j=0; $j<$altNum; $j++) {
             $alt_sum = $this->calcPrioTotal($j, $this->pGlb);
             if ($pflag) {
-                printf($percBldFmt, 100*$alt_sum);
+                printf($percBldFmt, 100 * $alt_sum);
             }
         }
         echo "</tr>";
@@ -1133,8 +1133,8 @@ private $pwcDone = array();
      */
     public function getSessionCode()
     {
-        if (!defined("SCLEN")) {
-            define("SCLEN", 6);
+        if (!defined('SCLEN')) {
+            define('SCLEN', 6);
         }
         $ret = "";
         // if session code is given as url parameter

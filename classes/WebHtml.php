@@ -17,20 +17,20 @@
 *   but WITHOUT ANY WARRANTY; without even the implied warranty of
 *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 *   GNU General Public License for more details.
-* 
+*
 *   You should have received a copy of the GNU General Public License
 *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 class WebHtml
 {
-/*
-* @param string $pageUrl Url of the page to build up
-* @param boolean $pwk Tracking with Piwik. Includes pwl_klaus.php if set
-* @param boolean $share Social networks Facebook, Trigger
-* @return void
-* @todo merge webHtmlHeader()
-*/
+    /*
+    * @param string $pageUrl Url of the page to build up
+    * @param boolean $pwk Tracking with Piwik. Includes pwl_klaus.php if set
+    * @param boolean $share Social networks Facebook, Trigger
+    * @return void
+    * @todo merge webHtmlHeader()
+    */
     public function __construct($pageTitle="", $width=900)
     {
         global $lang;
@@ -38,7 +38,7 @@ class WebHtml
         include ABS_PATH . BASE . "includes" . DIRECTORY_SEPARATOR . "header.html";
         echo "\n<!-- Content -->\n";
         echo "<div class='hentry' id='content' style='background-color:white;margin-left:auto;
-		margin-right:auto;max-width:{$width}px;padding:15px;'>";
+            margin-right:auto;max-width:{$width}px;padding:15px;'>";
         return;
     }
 

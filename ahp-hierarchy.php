@@ -48,8 +48,8 @@ if (isset($_SESSION['REFERER'])) {
 }
 $loggedIn = $login->isUserLoggedIn();
 
-$version = substr('$LastChangedDate: 2022-02-11 12:08:47 +0800 (Fr, 11 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 125 $', "$");
+$version = substr('$LastChangedDate: 2022-02-11 16:19:15 +0800 (Fr, 11 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 126 $', "$");
 
 $defaultHierarchy = "AHP-Project:Crit-1,Crit-2,Crit-3;";
 
@@ -319,9 +319,9 @@ $webHtml =  new WebHtml($ahpHier->titles['pageTitle']);
     if (!$groupMode) {
         include('includes/login/form.login-hl.php');
     } else { // no login field
-        echo '<div style="display:block;float:left">',
-            $loginHeaderText,'</div>
-			<div style="clear:both;"></div>';
+        echo "<div style='display:block;float:left'>
+            $loginHeaderText</div>
+            <div style='clear:both;'></div>";
     }
 
     echo "<form method='POST' action='$urlAct'>";

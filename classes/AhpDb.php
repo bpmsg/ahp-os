@@ -2,8 +2,8 @@
 /**
 * Analytic Hierarchy Process database functions for ahp
 *
-* $LastChangedDate: 2022-02-11 08:19:55 +0800 (Fr, 11 Feb 2022) $
-* $Rev: 120 $
+* $LastChangedDate: 2022-02-11 16:19:15 +0800 (Fr, 11 Feb 2022) $
+* $Rev: 126 $
 *
 * @author Klaus D. Goepel
 * @copyright 2014-2017 Klaus D. Goepel
@@ -87,7 +87,7 @@ define("MESSAGE_DATABASE_ERROR", "Database error ");
 
 class AhpDb
 {
-/** Class constants */
+    /** Class constants */
     public const NEWL = "\n";      // for csv file export
     public const ENCL = '"';
 
@@ -234,7 +234,7 @@ class AhpDb
         $result = array();
         if ($this->dataBaseConnection()) {
             $sql = "SELECT project_sc FROM projects 
-					WHERE project_author = :name ORDER BY project_sc";
+                    WHERE project_author = :name ORDER BY project_sc";
             $sql .= (DB_TYPE == "sqlite" ? " COLLATE NOCASE ASC;" : ";") ;
             $query = $this->db_connection->prepare($sql);
             $query->bindValue(':name', $name, PDO::PARAM_STR);
@@ -297,14 +297,14 @@ class AhpDb
     {
         $this->databaseConnection();
         $sql = "SELECT `project_status` from `projects` 
-					WHERE `project_sc` = :sc";
+                WHERE `project_sc` = :sc";
         $query = $this->db_connection->prepare($sql);
         $query->bindValue(':sc', $sc, PDO::PARAM_STR);
         $query->execute();
         $status = $query->fetch(PDO::FETCH_NUM);
         $stnew = ($status[0] == 1 ? 0 : 1);
         $sql = "UPDATE `projects` SET `project_status` = :stnew
-					WHERE `project_sc` = :sc;";
+                WHERE `project_sc` = :sc;";
         $query = $this->db_connection->prepare($sql);
         $query->bindValue(':sc', $sc, PDO::PARAM_STR);
         $query->bindValue(':stnew', $stnew, PDO::PARAM_STR);
@@ -335,7 +335,7 @@ class AhpDb
         if ($this->dataBaseConnection()) {
             if ($this->checkSessionCode($sc)) {
                 $sql = "SELECT DISTINCT pwc_part FROM pwc 
-					WHERE project_sc = :sc ORDER BY pwc_timestamp DESC;";
+                        WHERE project_sc = :sc ORDER BY pwc_timestamp DESC;";
                 $query = $this->db_connection->prepare($sql);
                 $query->bindValue(':sc', $sc, PDO::PARAM_STR);
                 $query->execute();
@@ -356,8 +356,8 @@ class AhpDb
     {
         if ($this->dataBaseConnection()) {
             $sql = "SELECT pwc_part, max(pwc_timestamp) AS 'pwcDate' 
-				FROM pwc WHERE project_sc = :sc
-				GROUP BY pwc_part ORDER BY pwcDate DESC;";
+                    FROM pwc WHERE project_sc = :sc
+                    GROUP BY pwc_part ORDER BY pwcDate DESC;";
             $query = $this->db_connection->prepare($sql);
             $query->bindValue(':sc', $sc, PDO::PARAM_STR);
             $query->execute();
@@ -375,7 +375,7 @@ class AhpDb
     {
         if ($this->dataBaseConnection()) {
             $sql = "DELETE FROM `pwc` WHERE `project_sc` = :sc 
-				AND `pwc_part` = :pn;";
+                    AND `pwc_part` = :pn;";
             $query = $this->db_connection->prepare($sql);
             $query->bindValue(':sc', $sc, PDO::PARAM_STR);
             $query->bindValue(':pn', $pn, PDO::PARAM_STR);
@@ -406,7 +406,7 @@ class AhpDb
         $pwcA = array();
         if ($nod=="") {
             $sql = "SELECT pwc_node FROM pwc WHERE project_sc = :sc 
-				AND pwc_part = :name;";
+                    AND pwc_part = :name;";
             $query = $this->db_connection->prepare($sql);
             $query->bindValue(':sc', $sc, PDO::PARAM_STR);
             $query->bindValue(':name', $name, PDO::PARAM_STR);
@@ -438,8 +438,8 @@ class AhpDb
     {
         if ($this->checkSessionCode($sc)) {
             $sql = "SELECT `pwc_ab`, `pwc_intense` FROM `pwc` 
-				WHERE `project_sc` = :sc AND `pwc_part` = :participant 
-					AND `pwc_node` LIKE :nod";
+                    WHERE `project_sc` = :sc AND `pwc_part` = :participant 
+                    AND `pwc_node` LIKE :nod";
             $query = $this->db_connection->prepare($sql);
             $query->bindValue(':sc', $sc, PDO::PARAM_STR);
             $query->bindValue(':participant', $participant, PDO::PARAM_STR);
@@ -642,8 +642,7 @@ class AhpDb
         $hText,
         $author,
         $alt=array()
-    )
-    {
+    ) {
         if ($this->checkSessionCode($sc)) {
             $this->err[] = $this->ahpDbTxt->err['scInUse'];
             return false;
@@ -651,12 +650,12 @@ class AhpDb
         // write project data
         try {
             $sql = "INSERT INTO projects (
-			project_sc, project_name, project_description, project_hText, 
-			project_datetime, project_author) 
-			VALUES (
-			 :project_sc, :project_name, :project_description,
-			 :project_hText, :project_datetime, :project_author
-			);";
+                    project_sc, project_name, project_description, project_hText, 
+                    project_datetime, project_author) 
+                    VALUES (
+                     :project_sc, :project_name, :project_description,
+                     :project_hText, :project_datetime, :project_author
+                    );";
             $queryInsert = $this->db_connection->prepare($sql);
             $queryInsert->bindValue(':project_sc', $sc, PDO::PARAM_STR);
             $queryInsert->bindValue(':project_name', $project, PDO::PARAM_STR);
@@ -673,7 +672,7 @@ class AhpDb
             if (!empty($alt)) {
                 $this->db_connection->exec("PRAGMA foreign_keys = ON;");
                 $sql = "INSERT INTO alternatives (project_sc, alt) 
-					VALUES (:project_sc, :alt);";
+                        VALUES (:project_sc, :alt);";
                 $queryIns = $this->db_connection->prepare($sql);
                 $queryIns->bindValue(':project_sc', $sc, PDO::PARAM_STR);
                 foreach ($alt as $altName) {
@@ -702,8 +701,7 @@ class AhpDb
         $description,
         $hText,
         $alt=array()
-    )
-    {
+    ) {
         if (!$this->checkSessionCode($sc)) {
             $this->err[] = $this->ahpDbTxt->err['scInv'];
             return false;
@@ -722,9 +720,9 @@ class AhpDb
         $this->db_connection->exec("PRAGMA foreign_keys = ON;");
         try {
             $sql = "UPDATE projects SET project_name = :project_name, 
-						project_description = :project_description , 
-						project_hText = :project_hText 
-					WHERE project_sc = :project_sc;";
+                    project_description = :project_description , 
+                    project_hText = :project_hText 
+                    WHERE project_sc = :project_sc;";
             $query = $this->db_connection->prepare($sql);
             $query->bindValue(':project_sc', $sc, PDO::PARAM_STR);
             $query->bindValue(':project_name', $project, PDO::PARAM_STR);
@@ -740,7 +738,7 @@ class AhpDb
         }
         // check, whether project has alternatives
         $sql = "select count(project_sc) FROM alternatives 
-					WHERE `project_sc` = :project_sc;";
+                WHERE `project_sc` = :project_sc;";
         $query = $this->db_connection->prepare($sql);
         $query->bindValue(':project_sc', $sc, PDO::PARAM_STR);
         $query->execute();
@@ -762,7 +760,7 @@ class AhpDb
             $this->db_connection->exec("PRAGMA foreign_keys = ON;");
             try {
                 $sql = "INSERT INTO alternatives (project_sc, alt) 
-						VALUES (:project_sc, :alt)";
+                        VALUES (:project_sc, :alt)";
                 $queryIns = $this->db_connection->prepare($sql);
                 $queryIns->bindValue(':project_sc', $sc, PDO::PARAM_STR);
                 foreach ($alt as $altName) {
@@ -793,7 +791,7 @@ class AhpDb
         $timestamp = time();
         if ($this->dataBaseConnection()) {
             $sql = "SELECT pwc_node FROM pwc WHERE project_sc = :sc 
-					AND pwc_part = :part;";
+                    AND pwc_part = :part;";
             $query = $this->db_connection->prepare($sql);
             $query->bindValue(':sc', $sc, PDO::PARAM_STR);
             $query->bindValue(':part', $name, PDO::PARAM_STR);
@@ -809,8 +807,8 @@ class AhpDb
                     foreach ($pwcUpdNod as $node) {
                         $this->db_connection->exec("PRAGMA foreign_keys = ON;");
                         $sql = "SELECT pwc_ab, pwc_intense FROM pwc 
-							WHERE project_sc = :sc AND pwc_part = :part 
-							AND pwc_node = :nod;";
+                                WHERE project_sc = :sc AND pwc_part = :part 
+                                AND pwc_node = :nod;";
                         $query = $this->db_connection->prepare($sql);
                         $query->bindValue(':sc', $sc, PDO::PARAM_STR);
                         $query->bindValue(':part', $name, PDO::PARAM_STR);
@@ -820,7 +818,7 @@ class AhpDb
                         if (is_array($pwcConv[$node]) && !empty(array_diff($pwcConv[$node], $pwcOld))) {
                             // Update pwc
                             $sql = "UPDATE pwc SET pwc_timestamp = :ts, pwc_ab = :ab, pwc_intense = :it
-							WHERE project_sc = :sc AND pwc_part = :part AND pwc_node = :nod;";
+                                    WHERE project_sc = :sc AND pwc_part = :part AND pwc_node = :nod;";
                             $query = $this->db_connection->prepare($sql);
                             $query->bindValue(':ts', $timestamp, PDO::PARAM_INT);
                             $query->bindValue(':ab', $pwcConv[$node]['pwc_ab'], PDO::PARAM_STR);
@@ -847,10 +845,10 @@ class AhpDb
                 try {
                     $this->db_connection->exec("PRAGMA foreign_keys = ON;");
                     $sql = "INSERT INTO `pwc` (
-					 `project_sc`, `pwc_part`, `pwc_timestamp`, `pwc_node`, 
-					 `pwc_ab`, `pwc_intense`)
-					VALUES ( :project_sc, :pwc_part, :pwc_timestamp, 
-							 :pwc_node, :pwc_ab, :pwc_intense);";
+                            `project_sc`, `pwc_part`, `pwc_timestamp`, `pwc_node`, 
+                            `pwc_ab`, `pwc_intense`)
+                            VALUES ( :project_sc, :pwc_part, :pwc_timestamp, 
+                            :pwc_node, :pwc_ab, :pwc_intense);";
                     $queryIns = $this->db_connection->prepare($sql);
                     $queryIns->bindValue(':project_sc', $sc, PDO::PARAM_STR);
                     $queryIns->bindValue(':pwc_part', $name, PDO::PARAM_STR);
@@ -886,17 +884,17 @@ class AhpDb
     {
         if ($this->dataBaseConnection()) {
             $sql = "SELECT projects.project_sc, projects.project_name, altcnt, 
-			projects.project_description, projects.project_author, 
-			count(pwpart), date(projects.project_datetime), 
-			projects.project_status FROM projects
-			LEFT JOIN (SELECT DISTINCT pwc.project_sc AS pwsc, 
-				pwc.pwc_part AS pwpart FROM pwc) AS t1 ON projects.project_sc = pwsc 
-			LEFT JOIN (SELECT alternatives.project_sc AS altsc, 
-				count(projects.project_sc) AS altcnt FROM projects, alternatives 
-			WHERE projects.project_sc = alternatives.project_sc 
-    		GROUP BY alternatives.project_sc) AS t2 ON projects.project_sc = altsc 
-		WHERE projects.project_author = :name 
-		GROUP BY project_sc ORDER BY projects.project_datetime DESC;";
+                    projects.project_description, projects.project_author, 
+                    count(pwpart), date(projects.project_datetime), 
+                    projects.project_status FROM projects
+                    LEFT JOIN (SELECT DISTINCT pwc.project_sc AS pwsc, 
+                    pwc.pwc_part AS pwpart FROM pwc) AS t1 ON projects.project_sc = pwsc 
+                    LEFT JOIN (SELECT alternatives.project_sc AS altsc, 
+                    count(projects.project_sc) AS altcnt FROM projects, alternatives 
+                    WHERE projects.project_sc = alternatives.project_sc 
+                    GROUP BY alternatives.project_sc) AS t2 ON projects.project_sc = altsc 
+                    WHERE projects.project_author = :name 
+                    GROUP BY project_sc ORDER BY projects.project_datetime DESC;";
             $query = $this->db_connection->prepare($sql);
             $query->bindValue(':name', $name, PDO::PARAM_STR);
             $query->execute();
@@ -944,7 +942,7 @@ class AhpDb
             $dn = array();
             $rslt = array();
             $sql = "SELECT project_author, project_hText from projects 
-			WHERE project_sc = :sc;";
+                    WHERE project_sc = :sc;";
             /* for each project get author and hierarchy text */
             foreach ($prjSc as $sc) {
                 $query = $this->db_connection->prepare($sql);
@@ -958,7 +956,7 @@ class AhpDb
                     $ahpH->setHierarchy($hText);
                     $query = $this->db_connection->prepare(
                         "SELECT DISTINCT pwc.pwc_node FROM pwc 
-						WHERE project_sc = :sc;"
+                         WHERE project_sc = :sc;"
                     );
                     $query->bindValue(':sc', $sc, PDO::PARAM_STR);
                     $query->execute();
@@ -1014,62 +1012,62 @@ class AhpDb
 
 // View for number of audit Login entries per user
             $sql = "CREATE VIEW IF NOT EXISTS acntv AS
-    SELECT audit.a_un as user, count(audit.a_ts) as aCnt FROM audit
-    JOIN users ON users.user_name = audit.a_un
-    WHERE audit.a_act LIKE 'Login'
-    GROUP BY audit.a_un
-    ORDER BY aCnt DESC;";
+            SELECT audit.a_un as user, count(audit.a_ts) as aCnt FROM audit
+            JOIN users ON users.user_name = audit.a_un
+            WHERE audit.a_act LIKE 'Login'
+            GROUP BY audit.a_un
+            ORDER BY aCnt DESC;";
             $query = $this->db_connection->prepare($sql);
             $query->execute();
 
             // View for number of participants in users's projects
             $sql = "CREATE VIEW IF NOT EXISTS dmcntv AS
-    SELECT projects.project_author, count(pwpart) as dmCnt FROM projects
-    LEFT JOIN (SELECT DISTINCT pwc.project_sc AS pwsc, pwc.pwc_part AS pwpart 
-		FROM pwc) AS t 
-		ON projects.project_sc = pwsc
-    GROUP BY projects.project_author
-    ORDER BY dmCnt DESC;";
+            SELECT projects.project_author, count(pwpart) as dmCnt FROM projects
+            LEFT JOIN (SELECT DISTINCT pwc.project_sc AS pwsc, pwc.pwc_part AS pwpart 
+            FROM pwc) AS t 
+            ON projects.project_sc = pwsc
+            GROUP BY projects.project_author
+            ORDER BY dmCnt DESC;";
             $query = $this->db_connection->prepare($sql);
             $query->execute();
 
             // View for number of projects and chars in hierarchy text
             $sql = "CREATE VIEW IF NOT EXISTS pcntv AS
-    SELECT projects.project_author, count(projects.project_sc) as pCnt, 
-	sum(length(projects.project_hText)) as hCnt FROM projects 
-	GROUP BY projects.project_author 
-	ORDER BY pCnt DESC;";
+            SELECT projects.project_author, count(projects.project_sc) as pCnt, 
+            sum(length(projects.project_hText)) as hCnt FROM projects 
+            GROUP BY projects.project_author 
+            ORDER BY pCnt DESC;";
             $query = $this->db_connection->prepare($sql);
             $query->execute();
 
             // View for combined index for all users, limited to $lmt +1
             $sqlite = "CREATE VIEW IF NOT EXISTS alv AS
-    SELECT pcntv.project_author,
-    ROUND(min(20,pcntv.pCnt) + 0.05 * min(300,acntv.aCnt) 
-		+ 0.003 * min(10000,pcntv.hCnt) 
-		+ 0.175 * min(200,dmcntv.dmCnt)) as actlv,
-    users.user_last_login  
-    FROM pcntv
-    JOIN dmcntv ON pcntv.project_author = dmcntv.project_author
-    JOIN acntv ON pcntv.project_author = acntv.user
-    JOIN users ON pcntv.project_author = users.user_name
-    ORDER BY min(20,pcntv.pCnt) + 0.05 * min(300,acntv.aCnt) 
-		+ 0.003 * min(10000,pcntv.hCnt) 
-		+ 0.175 * min(200,dmcntv.dmCnt) DESC
-    LIMIT " . ($lmt+1) . ";";
+            SELECT pcntv.project_author,
+            ROUND(min(20,pcntv.pCnt) + 0.05 * min(300,acntv.aCnt) 
+            + 0.003 * min(10000,pcntv.hCnt) 
+            + 0.175 * min(200,dmcntv.dmCnt)) as actlv,
+            users.user_last_login  
+            FROM pcntv
+            JOIN dmcntv ON pcntv.project_author = dmcntv.project_author
+            JOIN acntv ON pcntv.project_author = acntv.user
+            JOIN users ON pcntv.project_author = users.user_name
+            ORDER BY min(20,pcntv.pCnt) + 0.05 * min(300,acntv.aCnt) 
+            + 0.003 * min(10000,pcntv.hCnt) 
+            + 0.175 * min(200,dmcntv.dmCnt) DESC
+            LIMIT " . ($lmt+1) . ";";
 
             $mysql ="CREATE VIEW IF NOT EXISTS alv AS
-    SELECT pcntv.project_author,
-    ROUND(LEAST(20,pcntv.pCnt) + 0.05 * LEAST(300,acntv.aCnt) 
-		+ 0.003 * LEAST(10000,pcntv.hCnt) 
-		+ 0.175 * LEAST(200,dmcntv.dmCnt)) as actlv,
-    users.user_last_login  
-    FROM pcntv
-    JOIN dmcntv ON pcntv.project_author = dmcntv.project_author
-    JOIN acntv ON pcntv.project_author = acntv.user
-    JOIN users ON pcntv.project_author = users.user_name
-    ORDER BY actlv DESC
-    LIMIT " . ($lmt+1) . ";";
+            SELECT pcntv.project_author,
+            ROUND(LEAST(20,pcntv.pCnt) + 0.05 * LEAST(300,acntv.aCnt) 
+                + 0.003 * LEAST(10000,pcntv.hCnt) 
+                + 0.175 * LEAST(200,dmcntv.dmCnt)) as actlv,
+            users.user_last_login  
+            FROM pcntv
+            JOIN dmcntv ON pcntv.project_author = dmcntv.project_author
+            JOIN acntv ON pcntv.project_author = acntv.user
+            JOIN users ON pcntv.project_author = users.user_name
+            ORDER BY actlv DESC
+            LIMIT " . ($lmt+1) . ";";
 
             $sql = (DB_TYPE == 'sqlite' ? $sqlite : $mysql);
             $query = $this->db_connection->prepare($sql);
@@ -1097,27 +1095,27 @@ class AhpDb
             $act = array();
             // --- aCnt
             $sql = "SELECT count(audit.a_ts) as 'aCnt' FROM audit 
-			JOIN users ON users.user_name = audit.a_un
-			WHERE audit.a_un =:name AND audit.a_act LIKE 'Login';";
+                    JOIN users ON users.user_name = audit.a_un
+                    WHERE audit.a_un =:name AND audit.a_act LIKE 'Login';";
             $query = $this->db_connection->prepare($sql);
             $query->bindValue(':name', $name, PDO::PARAM_STR);
             $query->execute();
             $act = $query->fetch(PDO::FETCH_ASSOC);
             // --- pCnt, hCnt
             $sql = "SELECT count(projects.project_sc) as 'pCnt', 
-		sum(length(projects.project_hText)) as 'hCnt' from projects 
-		WHERE projects.project_author =:name;";
+                    sum(length(projects.project_hText)) as 'hCnt' from projects 
+                    WHERE projects.project_author =:name;";
             $query = $this->db_connection->prepare($sql);
             $query->bindValue(':name', $name, PDO::PARAM_STR);
             $query->execute();
             $act = array_merge($act, $query->fetch(PDO::FETCH_ASSOC));
             // --- dmCnt
             $sql = "SELECT count(pwpart) as 'dmCnt' FROM projects
-				LEFT JOIN (SELECT DISTINCT pwc.project_sc AS pwsc, 
-					pwc.pwc_part AS 'pwpart' FROM pwc) AS t1
-				ON projects.project_sc = pwsc
-				WHERE projects.project_author=:name
-				GROUP BY projects.project_author;";
+                    LEFT JOIN (SELECT DISTINCT pwc.project_sc AS pwsc, 
+                    pwc.pwc_part AS 'pwpart' FROM pwc) AS t1
+                    ON projects.project_sc = pwsc
+                    WHERE projects.project_author=:name
+                    GROUP BY projects.project_author;";
             $query = $this->db_connection->prepare($sql);
             $query->bindValue(':name', $name, PDO::PARAM_STR);
             $query->execute();

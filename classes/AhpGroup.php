@@ -9,8 +9,8 @@
  * pairwise comparisons are stored. The AhpGroup class has all methods
  * to calculate and display the final results.
  *
- * $LastChangedDate: 2022-02-11 08:19:55 +0800 (Fr, 11 Feb 2022) $
- * $Rev: 120 $
+ * $LastChangedDate: 2022-02-11 16:19:15 +0800 (Fr, 11 Feb 2022) $
+ * $Rev: 126 $
  *
  * @author Klaus D. Goepel
  * @since 2014-01-06
@@ -60,43 +60,43 @@
 class AhpGroup
 {
     /** Class constants */
-    public const MAXCOL = 10; 			// maximal numer of columns for result table
-public const NEWL = "\n"; 			// for csv file export
-public const ENCL = '"';
+    public const MAXCOL = 10;           // maximal numer of columns for result table
+    public const NEWL = "\n";           // for csv file export
+    public const ENCL = '"';
     public const RGBBASE = "#50D27B";
     public const RGBEND  = "#EBB5A2";
-    public const CRLMT = 0.25; 		// limit of cr for randomized pwcs
+    public const CRLMT = 0.25;          // limit of cr for randomized pwcs
 
     /** Properties */
 
-    public $sessionCode;		// Session code
-public $pj = array();		// project data
-public $nodes;        		// hierarchy nodes
-public $leafs;        		// hierarchy leafs
+    public $sessionCode;        // Session code
+    public $pj = array();       // project data
+    public $nodes;              // hierarchy nodes
+    public $leafs;              // hierarchy leafs
 
-public $part = array();		// all participants
-public $pSel = array();		// selected participants; key not squential!
-public $pwcCnt = array();	// pwcCnt[$node] number of consolidated judgments for $node
-public $pwcEmpty = array(); // array[$node] contains names of participants w/o pwc
-public $pwcN = array();		// array[$node] contains names of part with pwc
+    public $part = array();     // all participants
+    public $pSel = array();     // selected participants; key not squential!
+    public $pwcCnt = array();   // pwcCnt[$node] number of consolidated judgments for $node
+    public $pwcEmpty = array(); // array[$node] contains names of participants w/o pwc
+    public $pwcN = array();     // array[$node] contains names of part with pwc
 
-public $prio = array();		// $prio[$partNo][$node][$branch] $partNo = 0 consolidated
+    public $prio = array();     // $prio[$partNo][$node][$branch] $partNo = 0 consolidated
     public $prioVar = array();
-    public $simCnt;         	// total number random simulations
+    public $simCnt;             // total number random simulations
 
-    public $consens1;     		// beta diversity for global priorities
-public $consens;      		// consensus for global priorities/alternatives
-public $pwcCons = array();	// unscaled geomean of participants, includes sd
+    public $consens1;           // beta diversity for global priorities
+    public $consens;            // consensus for global priorities/alternatives
+    public $pwcCons = array();  // unscaled geomean of participants, includes sd
 
-public $dmCons = array();	// $dmCons[$node][$i][$j] consolidated matrices
-public $cr = array();		// consistency ratio cr[$partNo][$node] set in prioHier
+    public $dmCons = array();   // $dmCons[$node][$i][$j] consolidated matrices
+    public $cr = array();       // consistency ratio cr[$partNo][$node] set in prioHier
 
-public $err = array();
+    public $err = array();
     public $wrn = array();
 
-    public $ahpDb;         		// class for AHP database functions
-public $ahpGroupTxt;		// language class
-private $lang;
+    public $ahpDb;              // class for AHP database functions
+    public $ahpGroupTxt;        // language class
+    private $lang;
 
     /* ahp scales and maximum m for x = 9 */
     public $ahpScale = array(
@@ -107,7 +107,7 @@ private $lang;
     4 => array( "4 - Balanced scale",9),
     5 => array( "5 - Balanced-n scale",9),
     6 => array( "6 - Adaptive-bal scale", 0),
-  7 => array( "7 - Adaptive scale", 0),
+    7 => array( "7 - Adaptive scale", 0),
     8 => array( "8 - Power scale",81),
     9 => array( "9 - Geometric scale",256)
     );
@@ -151,7 +151,7 @@ private $lang;
             $this->sessionCode = $sc;
             $this->part = $this->ahpDb->getParticipants($sc);
             if (empty($this->part)) {
-				// Project has no participants
+                // Project has no participants
                 $this->err[] = $this->ahpGroupTxt->wrn['noPart'];
             } else {
                 $this->pj =   $this->ahpDb->readProjectData($sc);
@@ -162,8 +162,8 @@ private $lang;
             }
             $this->simCnt = 0;
         } else {
-			// Invalid Session code
-            $this->err[] = $this->ahpGroupTxt->err['invSc']; 
+            // Invalid Session code
+            $this->err[] = $this->ahpGroupTxt->err['invSc'];
             $this->sessionCode = "";
         }
     }
@@ -428,7 +428,7 @@ private $lang;
             case 8: $c = $x * $x; 	break;    // 8 - Power scale
             case 9: $c = pow(2, $x-1); break; // 9 - Geometric scale
             default: $c = $x; break;
-//  	case 10: $c = 1 + ($x - 1)/(9 - 1); break; Kocz scale
+            // case 10: $c = 1 + ($x - 1)/(9 - 1); break; Kocz scale
         }
             $pwc['Intense']	[$i] = $c;
         }
