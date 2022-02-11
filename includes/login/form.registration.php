@@ -18,11 +18,11 @@
  			<input id="login_input_password_repeat" class="login_input" type="password"
  		 	name="user_password_repeat" pattern=".{6,}" value='<?php echo $registration->pwr; ?>' required autocomplete="off" />
 
-			<input id="website" type="text" name="website" />
+		<input id="website" type="text" name="website" />
 
 		<?php if (CAPTCHA) {
-		if (defined('CPTTXT') && CPTTXT) { // Text captcha
-			echo "<p>";
+		if (defined('CPTTXT') && CPTTXT) { 
+			echo "<p>"; // Text captcha
 			include('../../showCaptchaTxt.php');
 			echo "</p>";
 			echo "<label for='captcha'>Your answer?</label><br>";
@@ -30,8 +30,9 @@
 			echo "<p><img alt='captcha' src='../../showCaptcha.php' ></p>";
 			echo "<label for='captcha'>CAPTCHA code</label><br>";
 		}
+		echo "<input id='captcha' class='login_input' type='text' pattern='[a-zA-Z0-9]{1,15}' name='captcha' required>";
 		}?>				
- 			<input id="captcha" class="login_input" type="text" pattern="[a-zA-Z0-9]{1,15}" name="captcha" required>
+
 		<p class='sm'><input id='dpAgr' type=checkbox required ><?php echo $registration->rgTxt->info['conf']; ?></p>
 		<p class='ca'><input type="submit" name="register" value="Register" ></p>
 	</form>
