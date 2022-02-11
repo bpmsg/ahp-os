@@ -1,22 +1,23 @@
 <?php
-class AhpNewsES {
 
-public $titles1 = array(
+class AhpNewsES
+{
+    public $titles1 = array(
   "pageTitle"   =>  "AHP-OS Noticias",
   "h1title"     =>  "<h1>AHP Online System - BPMSG</h1>",
   "h2welc"      =>  "<h2>Bienvenido %s!</h2>",
-	"h3release"	=>	"<h3>AHP-OS Release %s (%s)</h3>",
+    "h3release"	=>	"<h3>AHP-OS Release %s (%s)</h3>",
   "h3don"       =>  "<h3>Donaciones</h3>",
   "h3news2"		=>	"<h3>AHP-OS en otros idiomas</h3>",
 
 );
 
-public $msg = array(
+    public $msg = array(
   "tu"    =>  "Muchas gracias!",
   "cont"  =>  "Continuar"
 );
 
-public $info = array(
+    public $info = array(
   "news1"   =>  "<p>Hemos realizado una importante actualización del sistema
 				   de base de datos interno AHP-OS. La base de datos Sqlite anterior fue 
 				   reemplazado por una base de datos SQL completa MariaDB, ya que el número 

@@ -25,21 +25,22 @@ include 'includes/config.php';
 $login = new Login();
 // sets the session variable for language
 $lang = filter_input(INPUT_GET, 'lang', FILTER_SANITIZE_STRING);
-if($lang != null && $lang != false && in_array($lang, $languages) )
-	$_SESSION['lang'] = $lang =strtoupper($lang);
-elseif(isset($_SESSION['lang']))
-	$lang = $_SESSION['lang'];
-else
-	$lang ='EN';
+if ($lang != null && $lang != false && in_array($lang, $languages)) {
+    $_SESSION['lang'] = $lang =strtoupper($lang);
+} elseif (isset($_SESSION['lang'])) {
+    $lang = $_SESSION['lang'];
+} else {
+    $lang ='EN';
+}
 
 $class = 'AhpNews' . $lang;
-$ahpOs = new $class;
+$ahpOs = new $class();
 
-$version = substr('$LastChangedDate: 2022-02-03 16:35:59 +0800 (Thu, 03 Feb 2022) $',18,10);
-$rev = trim('$Rev: 93 $', "$");
+$version = substr('$LastChangedDate: 2022-02-11 08:19:55 +0800 (Fri, 11 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 120 $', "$");
 
-/* 
- * --- Web Page HTML OUTPUT --- 
+/*
+ * --- Web Page HTML OUTPUT ---
  */
 $webHtml = new WebHtml($ahpOs->titles1['pageTitle']);
 include('includes/login/form.login-hl.php');
@@ -50,19 +51,20 @@ echo "<p>Language: <a href='", $urlAct ,"?lang=en'>English</a>
         &nbsp;&nbsp;<a href='",$urlAct, "?lang=pt'>Português</a>
 	</p>";
 echo "<div class='entry-content'>";
-printf($ahpOs->titles1['h2welc'],(isset($_SESSION['user_name']) ? $_SESSION['user_name'] : ""));
+printf($ahpOs->titles1['h2welc'], (isset($_SESSION['user_name']) ? $_SESSION['user_name'] : ""));
 printf($ahpOs->titles1['h3release'], $version, $rev);
 echo $ahpOs->info['news1'];
 echo $ahpOs->titles1['h3news2'];
 echo $ahpOs->info['news2'];
-if(DONATIONS){
-	echo $ahpOs->titles1['h3don'];
-	echo $ahpOs->info['don'];
-	include "views/paypal-don.html"; 
+if (DONATIONS) {
+    echo $ahpOs->titles1['h3don'];
+    echo $ahpOs->info['don'];
+    include "views/paypal-don.html";
 }
 echo "<div style='clear:both;text-align:justify;'>";
-if(DONATIONS)
-	echo "<p><a href='https://paypal.me/ahpDonation' target='_blank'>Paypal.me/ahpDonation</a></p>";
+if (DONATIONS) {
+    echo "<p><a href='https://paypal.me/ahpDonation' target='_blank'>Paypal.me/ahpDonation</a></p>";
+}
 echo $ahpOs->msg['tu'];
 echo '<br><img src="images/Klaus.png" alt="Klaus" width="103" height="44" />';
 echo "<div style='text-align:center;'><a href='" . SITE_URL . "'>",$ahpOs->msg['cont'],"</a></p></div>";

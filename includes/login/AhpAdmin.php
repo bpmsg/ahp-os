@@ -16,28 +16,29 @@
  * public function getDonorDetails($trNo)
  * public function getAllTrNos()
  * public function getAllDonors($yr=0)
- * public function writeUserDonation($trDate, $trId, $trAmnt, $trFee, $trName, $trEmail, $trCmnt, $trUid)
+ * public function writeUserDonation(
+ * 	$trDate, $trId, $trAmnt, $trFee, $trName, $trEmail, $trCmnt, $trUid)
  * public function modifyUserDonation($para)
  * public function displayDonorTable($donors){
  *
  * @version 2015-11-18
  * @version 2017-09-27 last version w/o SVN
  *  
-    Copyright (C) 2022  <Klaus D. Goepel>
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
+ *  Copyright (C) 2022  <Klaus D. Goepel>
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
  */
 
 
@@ -53,15 +54,20 @@ class AhpAdmin extends LoginAdmin {
 	public function getUserDetails($user){
 		if ($this->dataBaseConnection()){
 
-			$sqlite = "SELECT user_id, user_name, user_email, nullif(count(projects.project_sc),0), 
+			$sqlite = "SELECT user_id, user_name, user_email, 
+			nullif(count(projects.project_sc),0), 
 			date(users.user_registration_datetime), 
-			substr( round(julianday('now', 'localtime') - julianday( users.user_last_login ),1) || ' d',1,7) FROM users 
+			substr( round(julianday('now', 'localtime') 
+			- julianday( users.user_last_login ),1) || ' d',1,7) 
+			FROM users 
 			LEFT JOIN projects 
 			ON users.user_name = projects.project_author 
 			WHERE users.user_name = :user";
 
-			$mysql = "SELECT user_id, user_name, user_email, count(projects.project_sc),  
-			date(users.user_registration_datetime), DATEDIFF(CURDATE(), user_last_login) 
+			$mysql = "SELECT user_id, user_name, user_email, 
+			count(projects.project_sc),  
+			date(users.user_registration_datetime), 
+			DATEDIFF(CURDATE(), user_last_login) 
 			FROM users 
 			LEFT JOIN projects 
 			ON users.user_name = projects.project_author  
@@ -86,15 +92,18 @@ class AhpAdmin extends LoginAdmin {
 
 			$sqlite = "SELECT user_id, user_name, user_email, 
 			nullif(count(projects.project_sc),0), date(users.user_registration_datetime), 
-			substr( round(julianday('now', 'localtime') - julianday( users.user_last_login ),1) || ' d',1,7),
+			substr( round(julianday('now', 'localtime') 
+			- julianday( users.user_last_login ),1) || ' d',1,7),
 			donations.trUid  
 			FROM users 
 			LEFT JOIN donations ON users.user_id = donations.trUid 
 			LEFT JOIN projects ON users.user_name = projects.project_author 
 			WHERE users.user_id != '" . ADMIN_ID . "' 
 			AND users.user_active = 1 
-			AND julianday( users.user_registration_datetime) > julianday('now', 'localtime', '" . -$days . " days')
-			GROUP BY users.user_email ORDER BY julianday(users.user_registration_datetime) DESC;";
+			AND julianday( users.user_registration_datetime) 
+				> julianday('now', 'localtime', '" . -$days . " days')
+			GROUP BY users.user_email 
+			ORDER BY julianday(users.user_registration_datetime) DESC;";
 
 			$mysql = "SELECT user_id, user_name, user_email, 
 			count(DISTINCT projects.project_sc), users.user_registration_datetime, 
@@ -124,14 +133,17 @@ class AhpAdmin extends LoginAdmin {
 			$sqlite = "SELECT user_id, user_name, user_email, 
 				nullif(count(projects.project_sc),0), 
 				date(users.user_registration_datetime), 
-				substr( round(24 * (julianday('now') - julianday( users.user_last_login)),1) || '   h',1,8),
+				substr( round(24 * (julianday('now') 
+				- julianday( users.user_last_login)),1) || '   h',1,8),
 				donations.trUid
 				FROM users
 				LEFT JOIN donations ON users.user_id = donations.trUid 
 				LEFT JOIN projects ON users.user_name = projects.project_author 
-				WHERE julianday( users.user_last_login) >= julianday('now', '" . -$hours . " hours')
+				WHERE julianday( users.user_last_login) 
+				>= julianday('now', '" . -$hours . " hours')
 				AND users.user_id != '" . ADMIN_ID ."'
-				GROUP BY users.user_email ORDER BY julianday( users.user_last_login ) DESC;";
+				GROUP BY users.user_email 
+				ORDER BY julianday( users.user_last_login ) DESC;";
 
 			$mysql = "SELECT DISTINCT `a_uid`, `a_un`, `a_act`,
                 nullif(count(DISTINCT projects.project_sc),0) AS prj, 
@@ -143,9 +155,11 @@ class AhpAdmin extends LoginAdmin {
                 LEFT JOIN projects ON `a_un` = projects.project_author 
                 LEFT JOIN donations ON `a_uid` = donations.trUid
                 WHERE TIMESTAMPDIFF(HOUR, `a_ts`, CURRENT_TIMESTAMP) < " . $hours . "  
-                AND `a_trg` != 'D' AND `a_act` != 'User deactivated' AND `a_act` != 'Other' 
+                AND `a_trg` != 'D' AND `a_act` != 'User deactivated' 
+                AND `a_act` != 'Other' 
  				AND users.user_id != '" . ADMIN_ID ."'
-   				GROUP BY user_email ORDER BY `a_ts` DESC;";
+   				GROUP BY user_email 
+   				ORDER BY `a_ts` DESC;";
 
 			$sql = ( $this->db_type == 'sqlite' ? $sqlite : $mysql);
 			$query = $this->db_connection->query($sql);
@@ -161,19 +175,24 @@ class AhpAdmin extends LoginAdmin {
 	function getInactivatedUsers($days){
 		if ($this->dataBaseConnection()){
 
-			$sqlite = "SELECT user_id, user_name, user_email, nullif(count(projects.project_sc),0), 
+			$sqlite = "SELECT user_id, user_name, user_email, 
+			nullif(count(projects.project_sc),0), 
 			date(users.user_registration_datetime), 
-			substr( round(julianday('now', 'localtime') - julianday( users.user_registration_datetime ),1) || ' d',1,7),
+			substr( round(julianday('now', 'localtime') 
+			- julianday( users.user_registration_datetime ),1) || ' d',1,7),
 			donations.trUid
 			FROM users 
 			LEFT JOIN donations ON users.user_id = donations.trUid 
 			LEFT JOIN projects ON users.user_name = projects.project_author 
 			WHERE users.user_id != '" . ADMIN_ID . "' 
-				AND users.user_active = 0 
-				AND julianday(user_registration_datetime) + " . $days . " - julianday('now', 'localtime') < 0
-			GROUP BY users.user_email ORDER BY julianday(users.user_registration_datetime) DESC;";
+			AND users.user_active = 0 
+			AND julianday(user_registration_datetime) + " . $days 
+			. " - julianday('now', 'localtime') < 0
+			GROUP BY users.user_email 
+			ORDER BY julianday(users.user_registration_datetime) DESC;";
 
-			$mysql = "SELECT user_id, user_name, user_email, count(projects.project_sc), 
+			$mysql = "SELECT user_id, user_name, user_email, 
+			count(projects.project_sc), 
 			DATE(users.user_registration_datetime), 
 			DATEDIFF(CURDATE(), user_registration_datetime),
 			donations.trUid
@@ -181,8 +200,8 @@ class AhpAdmin extends LoginAdmin {
 			LEFT JOIN donations ON user_id = donations.trUid 
 			LEFT JOIN projects  ON user_name = projects.project_author
 			WHERE user_id != '" . ADMIN_ID . "'  
-				AND user_active = 0
-				AND (DATEDIFF(CURDATE(), user_registration_datetime) >= " . $days .  ")
+			AND user_active = 0
+			AND (DATEDIFF(CURDATE(), user_registration_datetime) >= " . $days .  ")
 			GROUP BY user_email ORDER BY user_registration_datetime DESC;";
 
 			$sql = ( $this->db_type == 'sqlite' ? $sqlite : $mysql);
@@ -208,19 +227,23 @@ class AhpAdmin extends LoginAdmin {
 	public function getInactiveUsers($days){
 		if ($this->dataBaseConnection()){
 
-			$sqlite = "SELECT user_id, user_name, user_email, nullif(count(projects.project_sc),0), 
+			$sqlite = "SELECT user_id, user_name, user_email, 
+			nullif(count(projects.project_sc),0), 
 			date(users.user_registration_datetime), 
-			substr( round(julianday('now', 'localtime') - julianday( users.user_registration_datetime ),1) || ' d',1,7),
+			substr( round(julianday('now', 'localtime') 
+			- julianday( users.user_registration_datetime ),1) || ' d',1,7),
 			donations.trUid 
 			FROM users 
 			LEFT JOIN donations ON users.user_id = donations.trUid 
 			LEFT JOIN projects ON users.user_name = projects.project_author 
 			WHERE user_id !=" . ADMIN_ID . " 
-			 AND max(julianday( users.user_registration_datetime), julianday( users.user_last_login ))
+			AND max(julianday( users.user_registration_datetime), 
+			julianday( users.user_last_login ))
 			 < julianday('now', '" . -$days . " day', 'localtime') 
-			 AND donations.trUid = NULL 
-			 AND user_active != 0
-			GROUP BY users.user_email ORDER BY julianday( users.user_last_login ) DESC;";
+			AND donations.trUid = NULL 
+			AND user_active != 0
+			GROUP BY users.user_email 
+			ORDER BY julianday( users.user_last_login ) DESC;";
 
 			$mysql = "SELECT user_id, user_name, user_email, count(projects.project_sc), 
 			DATE(users.user_registration_datetime), 
@@ -230,10 +253,11 @@ class AhpAdmin extends LoginAdmin {
 			LEFT JOIN donations ON users.user_id = donations.trUid 
 			LEFT JOIN projects ON users.user_name = projects.project_author  
 			WHERE user_id !=" . ADMIN_ID . " 
-				AND (DATEDIFF(CURDATE(), users.user_last_login) >= " . $days . ")
-				AND isnull(donations.trUid)
-                AND user_active != 0
-			GROUP BY users.user_email ORDER BY users.user_last_login DESC;";
+			AND (DATEDIFF(CURDATE(), users.user_last_login) >= " . $days . ")
+			AND isnull(donations.trUid)
+               AND user_active != 0
+			GROUP BY users.user_email 
+			ORDER BY users.user_last_login DESC;";
 
 			$sql = ( $this->db_type == 'sqlite' ? $sqlite : $mysql);
 			$query = $this->db_connection->prepare($sql);
@@ -268,7 +292,8 @@ public function cleanAuditEntries($lmt=100){
 		$cnt = count($un);
 
 		if ($cnt>0) {
-			$sql = "DELETE FROM audit WHERE a_un = :name AND (a_trg<>'D' AND a_trg<>'I');";
+			$sql = "DELETE FROM audit WHERE a_un = :name 
+			AND (a_trg<>'D' AND a_trg<>'I');";
 			$query = $this->db_connection->prepare( $sql );
 			foreach($un as $user){
 				$query->bindValue(':name', $user, PDO::PARAM_STR);
@@ -340,8 +365,10 @@ public  function checkDbIntegrity(){
 	public function displayUserTable($users, $sel=false, $marked=array()){
 		if(!empty($users)){
 			echo "\n<div class='ofl'><table>";
-			echo "<tr>","<th>Nr</th><th class='la'>User Id</th>","<th class='la'>User</th>",
-			"<th>Projects</th><th>Last</th>", "<th>Registered</th>","<th class='la'>Email</th>","</tr>";
+			echo "<tr>","<th>Nr</th><th class='la'>User Id</th>",
+			"<th class='la'>User</th>",
+			"<th>Projects</th><th>Last</th>", "<th>Registered</th>",
+			"<th class='la'>Email</th>","</tr>";
 			$i=0;
 			foreach ($users as $user){
 				echo "\n<tr>";
@@ -350,8 +377,10 @@ public  function checkDbIntegrity(){
 					        echo "<td class='ca'></td>"; // unchecked for donors
 						$i++;
 				        } else {		        
-					        echo "<td class='ca'><input form='ua' type='checkbox' name='chk[", $i, "]'", 
-						        (isset($marked[$i++]) ? "checked='checked' " : ""), "></td>"; // Nr
+					        echo "<td class='ca'><input form='ua' 
+								type='checkbox' name='chk[", $i, "]'", 
+						        (isset($marked[$i++]) ? "checked='checked' " : ""),
+								"></td>"; // Nr
 				        }
 				} else {
 					echo "<td class='ca'>", ++$i, "</td>"; // Nr
@@ -414,8 +443,10 @@ public function checkDonation($name){
  */
 	public function getDonorDetails($trNo){
 		if ($this->dataBaseConnection()){
-		$sql  = "SELECT trNo, trDate, trId, trAmnt, trCur, trFx, trFee, trName, trEmail, trCmnt, trUid, user_name, user_email 
-			FROM donations LEFT JOIN users ON users.user_id = donations.trUid 
+		$sql  = "SELECT trNo, trDate, trId, trAmnt, trCur, trFx, trFee, 
+			trName, trEmail, trCmnt, trUid, user_name, user_email 
+			FROM donations 
+			LEFT JOIN users ON users.user_id = donations.trUid 
 			WHERE donations.trNo = :trNo;";
 			$query = $this->db_connection->prepare($sql);
 			$query->bindValue(':trNo', $trNo, PDO::PARAM_STR);
@@ -461,7 +492,8 @@ public function checkDonation($name){
 				$ld = $year-1 . "-01-01";
 				$ud = $year-1 . "-12-31";
 			}
-			$sql  = "SELECT trNo, trDate, trId, trAmnt, trCur, trFx, trFee, trName, trEmail, trCmnt, trUid, user_name 
+			$sql  = "SELECT trNo, trDate, trId, trAmnt, trCur, trFx, 
+				trFee, trName, trEmail, trCmnt, trUid, user_name 
 				FROM donations
 				LEFT JOIN users ON users.user_id = donations.trUid "
 				. ($yr != 0 ? 
@@ -477,10 +509,13 @@ public function checkDonation($name){
 /* 
  * Insert new donation
  */
- 	public function writeUserDonation($trDate, $trId, $trAmnt, $trFee, $trName, $trEmail, $trCmnt, $trUid){
+ 	public function writeUserDonation($trDate, $trId, $trAmnt, $trFee, 
+							$trName, $trEmail, $trCmnt, $trUid){
 		if ( $this->dataBaseConnection()) {
-			$sql= "INSERT INTO donations ( trDate, trId, trAmnt, trFee, trName, trEmail, trCmnt, trUid )
-                	           VALUES(:trDate, :trId, :trAmnt, :trFee, :trName, :trEmail, :trCmnt, :trUid);";
+			$sql= "INSERT INTO donations ( trDate, trId, trAmnt, trFee, 
+					trName, trEmail, trCmnt, trUid )
+					VALUES(:trDate, :trId, :trAmnt, :trFee, 
+					:trName, :trEmail, :trCmnt, :trUid);";
     		try {
 					$query = $this->db_connection->prepare($sql);
 					$flag =  $query->bindValue(':trDate', $trDate, PDO::PARAM_STR);
@@ -507,7 +542,8 @@ public function checkDonation($name){
  	public function modifyUserDonation($para){
 		// $trDate, $trId, $trAmnt, $trFee, $trName, $trEmail, $trCmnt, $trUid
 		if ( $this->dataBaseConnection()) {
-			$sql= "UPDATE donations SET trDate = :trDate , trId = :trId, trAmnt = :trAmnt, trFee = :trFee, trName = :trName, 
+			$sql= "UPDATE donations SET trDate = :trDate , trId = :trId,
+					trAmnt = :trAmnt, trFee = :trFee, trName = :trName, 
 					trEmail = :trEmail, trCmnt = :trCmnt, trUid = :trUid 
 					WHERE trNo = :trNo;";
     	try {
@@ -543,8 +579,9 @@ public function checkDonation($name){
 		$fsum = 0.;
 		if(!empty($donors)){
 			echo "<div class='ofl'><table>";
-			echo "<tr>","<th>Nr</th><th>Date</th>","<th>Name</th>", "<th>E-mail</th>",
-			"<th>Amount</th><th>Fee</th>", "<th>User name</th>", "<th>Comment</th>", "</tr>";
+			echo "<tr>","<th>Nr</th><th>Date</th>","<th>Name</th>",
+			"<th>E-mail</th>", "<th>Amount</th><th>Fee</th>", 
+			"<th>User name</th>", "<th>Comment</th>", "</tr>";
 			$i = 0;
 			foreach ($donors as $donor){
 				$style = ($i++%2 ? "class='odd'" : "class='even'");
@@ -552,7 +589,8 @@ public function checkDonation($name){
 				$fsum += is_numeric($donor['trFee']) ? $donor['trFee'] : 0.;
 				echo "<tr $style>";
 				echo "<td class='ca'>", $donor['trNo'], "</td>";
-				echo "<td class='nwr'>",$donor['trDate'], "<span class='res'></td>";
+				echo "<td class='nwr'>",$donor['trDate'], 
+					 "<span class='res'></td>";
 				echo "<td>", $donor['trName'], "</td>";
 				echo "<td>", $donor['trEmail'], "</td>";
 				echo "<td class='ra'>", $donor['trAmnt'], "</td>";
@@ -563,7 +601,9 @@ public function checkDonation($name){
 			}
 			echo "</table></div>";
 		echo "<p>Total <span class='res'>" , $i, "</span> donations: 
-		<span class='res'>", sprintf("%01.2f",$dsum), "</span> SGD, net: <span class='res'>", sprintf("%01.2f",$dsum - $fsum), "</span> SGD</p>";
+		<span class='res'>", sprintf("%01.2f",$dsum), 
+		"</span> SGD, net: <span class='res'>", 
+		sprintf("%01.2f",$dsum - $fsum), "</span> SGD</p>";
 		} else
 			echo "<p class='err'>No donors</p>";
 	}

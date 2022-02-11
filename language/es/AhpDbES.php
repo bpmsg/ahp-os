@@ -1,12 +1,14 @@
 <?php
-class AhpDbES {
-  public $titles = array(
+
+class AhpDbES
+{
+    public $titles = array(
   "h3pDat"    =>  "<h3>Datos del proyecto</h3>",
   "h3pPart"   =>  "<h3>Participantes en el proyecto</h3>\n",
   "h3pAlt"    =>  "<h3>Alternativas en el Proyecto</h3>"
   );
 
-  public $err = array(
+    public $err = array(
   "dbType"    =>  "No existe tal tipo de base de datos SQL: ",
   "scInv"     =>  "Código de sesión no válido ",
   "scInUse"   =>  "Código de sesión en uso ",
@@ -20,11 +22,11 @@ class AhpDbES {
   "pNoMod"    =>  "El proyecto tiene participantes, la jerarquía no se puede modificar."
   );
 
-  public $msg = array(
+    public $msg = array(
   "noSess"    => "No hay sesiones almacenadas"
   );
 
-  public $tbl = array(
+    public $tbl = array(
   "scTblTh"   => "<thead><tr>
                     <th>No</th>
                     <th>Sesión</th>
@@ -68,8 +70,7 @@ class AhpDbES {
                   </td></tr></tfoot>"
   );
 
-  public $info = array(
+    public $info = array(
   "shPart"    => "<p><span class='var'>%g</span> participants. <button class='toggle'>Show/Hide</button> all.</p>"
   );
 }
-

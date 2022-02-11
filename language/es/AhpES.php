@@ -1,19 +1,20 @@
 <?php
-class AhpES {
 
-public $titles = array(
+class AhpES
+{
+    public $titles = array(
   "pageTitle"   =>  "AHP Online System - AHP-OS",
   "h1title"     =>  "<h1>AHP Online System - AHP-OS</h1>",
   "h2subTitle"  =>  "<h2>Toma de decisiones multi-criterio usando Analytic Hierarchy Process</h2>",
   "h2contact"   =>  "<h2>Contacto y Feedback</h2>"
 );
 
-public $msg = array(
+    public $msg = array(
   "tu"    =>  "Muchas gracias!",
   "cont"  =>  "Continuar"
 );
 
-public $info = array(
+    public $info = array(
   "contact" =>  "<p>
 		Por favor, sientete libre de dejar un comentario,
                 <a href='%s'>comment</a> 
@@ -92,7 +93,7 @@ public $info = array(
                  El primer eigenvector normalizado (dominante) de la matriz da la escala de razón (la ponderación), el
                  eigenvalue la relación de consistencia.
                 </p>",
-  
+
   "intro24" =>" <h3>AHP Ejemplos</h3>
                 <p style='text-align:justify;'>
 		Para que el método sea más fácil de entender y mostrar la
@@ -105,10 +106,9 @@ public $info = array(
                 </p></div>"
 );
 
-public $tbl = array(
+    public $tbl = array(
   "grTblTh"     =>  "\n<thead><tr class='header'><th>Participantes</th>",
   "grTblTd1"    =>  "<td><strong>Resultado grupal</strong></td>"
 
 );
 }
-

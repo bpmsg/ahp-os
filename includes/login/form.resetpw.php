@@ -1,13 +1,13 @@
 <?php
 if ($login->passwordResetWasSuccessful() == true && $login->passwordResetLinkIsValid() != true) {
-	// the user has just successfully entered a new password
-	// we show the return link to the calling website
-	echo '<div class="ca"><a href="', SITE_URL,'" >Continue</a></div>';
+    // the user has just successfully entered a new password
+    // we show the return link to the calling website
+    echo '<div class="ca"><a href="', SITE_URL,'" >Continue</a></div>';
 } else {
     // show the request-a-password-reset or type-your-new-password form
 
-	if ($login->passwordResetLinkIsValid() == true) { 
-	?>
+    if ($login->passwordResetLinkIsValid() == true) {
+        ?>
 		<form method="post" action="do-reset-pw.php" name="new_password_form">
 		<fieldset>
 	   <input type='hidden' name='user_name' value='<?php echo $_GET['user_name']; ?>' />
@@ -20,7 +20,8 @@ if ($login->passwordResetWasSuccessful() == true && $login->passwordResetLinkIsV
 		</fieldset>
 		</form>
 		<!-- no data from a password-reset-mail has been provided, so we simply show the request-a-password-reset form -->
-	<?php } elseif($login->passwordResetSet == true) { ?>
+	<?php
+    } elseif ($login->passwordResetSet == true) { ?>
 	   <p class='ca'>
 	   	<a href='<?php echo SITE_URL; ?>' ><?php echo $login->lgTxt->wrd['cont']; ?></a>
 	   </p>
@@ -33,6 +34,6 @@ if ($login->passwordResetWasSuccessful() == true && $login->passwordResetLinkIsV
     		<a href='<?php echo SITE_URL; ?>'><?php echo $login->lgTxt->wrd['cont']; ?></a>
     	</p>
 		</form>
-	<?php } 
+	<?php }
 }?>
 

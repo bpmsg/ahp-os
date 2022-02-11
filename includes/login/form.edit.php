@@ -4,14 +4,15 @@
 <h2><?php echo $login->lgTxt->titles['h2info']; ?></h2>
 <table id='tbEd'>
 <?php
-	if(is_object($account)){
-		echo "<tr><td>",  $login->lgTxt->tbl['tbEdTd1'], "</td><td><span class='var'>", $account->user_id, "</span></td></tr>";
-		echo "\n<tr><td>",$login->lgTxt->tbl['tbEdTd2'], "</td><td><span class='var'>", $account->user_name, "</span></td></tr>";
-		echo "\n<tr><td>",$login->lgTxt->tbl['tbEdTd3'], "</td><td><span class='var'>", $account->user_email, "</span></td></tr>";
-		echo "\n<tr><td>",$login->lgTxt->tbl['tbEdTd4'], "</td><td><span class='var'>", $account->user_registration_datetime, "</span></td></tr>";
-		echo "\n<tr><td>",$login->lgTxt->tbl['tbEdTd5'], "</td><td><span class='var'>",($account->user_rememberme_token ? "yes":"no"), "</span></td></tr>";
-	} else
-		$login->errors[] = "Cannot retrieve user information."; 
+    if (is_object($account)) {
+        echo "<tr><td>",  $login->lgTxt->tbl['tbEdTd1'], "</td><td><span class='var'>", $account->user_id, "</span></td></tr>";
+        echo "\n<tr><td>",$login->lgTxt->tbl['tbEdTd2'], "</td><td><span class='var'>", $account->user_name, "</span></td></tr>";
+        echo "\n<tr><td>",$login->lgTxt->tbl['tbEdTd3'], "</td><td><span class='var'>", $account->user_email, "</span></td></tr>";
+        echo "\n<tr><td>",$login->lgTxt->tbl['tbEdTd4'], "</td><td><span class='var'>", $account->user_registration_datetime, "</span></td></tr>";
+        echo "\n<tr><td>",$login->lgTxt->tbl['tbEdTd5'], "</td><td><span class='var'>",($account->user_rememberme_token ? "yes" : "no"), "</span></td></tr>";
+    } else {
+        $login->errors[] = "Cannot retrieve user information.";
+    }
 ?>
 </table>
 <h2><?php echo $login->lgTxt->titles['h2act']; ?></h2>

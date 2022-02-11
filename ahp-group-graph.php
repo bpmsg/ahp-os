@@ -3,11 +3,11 @@
 * @author Klaus D. Goepel
 * @copyright 2014 Klaus D. Goepel
 * @package AHP-OS
-* @version 2014-03-13 
+* @version 2014-03-13
 * @version 2016-06-03 last version w/o SVN
 *
-* Last Change: $LastChangedDate$
-* Revision: $Rev$
+* Last Change: $LastChangedDate: 2022-02-11 08:19:55 +0800 (Fri, 11 Feb 2022) $
+* Revision: $Rev: 120 $
 *
     Copyright (C) 2022  <Klaus D. Goepel>
 
@@ -25,20 +25,20 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 include 'includes/phpgraphlib/phpgraphlib.php';
-		$graph = new PHPGraphLib(600,400);
-		$data = unserialize(urldecode(stripslashes($_GET['dta'])));
-		if(is_array($data['min']) && array_key_exists('min', $data) ){
-			$graph->addData($data['min'],$data['nom'],$data['max']);
-			$graph->setLegend(true);
-			$graph->setLegendTitle('min', 'Result', 'max');
-			$graph->setDataValues(false);
-		} else {
-			$graph->addData($data['nom']);
-			$graph->setDataValues(true);
-		}
-		$graph->setTitle('Consolidated Result');
-		$graph->setupXAxis(39);
-		$graph->setYValues(true);
-		$graph->setDataFormat("percent");
-		$graph->setBarColor("#D9D9D9","green","gray");
-		$graph->createGraph();
+        $graph = new PHPGraphLib(600, 400);
+        $data = unserialize(urldecode(stripslashes($_GET['dta'])));
+        if (is_array($data['min']) && array_key_exists('min', $data)) {
+            $graph->addData($data['min'], $data['nom'], $data['max']);
+            $graph->setLegend(true);
+            $graph->setLegendTitle('min', 'Result', 'max');
+            $graph->setDataValues(false);
+        } else {
+            $graph->addData($data['nom']);
+            $graph->setDataValues(true);
+        }
+        $graph->setTitle('Consolidated Result');
+        $graph->setupXAxis(39);
+        $graph->setYValues(true);
+        $graph->setDataFormat("percent");
+        $graph->setBarColor("#D9D9D9", "green", "gray");
+        $graph->createGraph();

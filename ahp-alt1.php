@@ -1,7 +1,8 @@
-<?php	
-/* AHP-OS  
- * 
- * 
+<?php
+
+/* AHP-OS
+ *
+ *
     Copyright (C) 2022  <Klaus D. Goepel>
 
     This program is free software: you can redistribute it and/or modify
@@ -22,24 +23,24 @@
 include 'includes/config.php';
 session_start();
 
-$version = substr('$LastChangedDate$',18,10);
-$rev = trim('$Rev$', "$");
+$version = substr('$LastChangedDate: 2022-02-11 08:19:55 +0800 (Fri, 11 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 120 $', "$");
 
 $lang = (isset($_SESSION['lang']) ? $_SESSION['lang'] : "EN");
 $class = 'AhpPrioCalc' . $lang;
-$ahpPrioCalc = new $class;
+$ahpPrioCalc = new $class();
 
-	$webHtml = new WebHtml($ahpPrioCalc->titles5['pageTitle'],640);
-	$ahp = new AhpCalcIo(2);
-	$ahpH = new AhpHierAlt();
-	/** Start **/
-	$act = substr_replace($urlAct,".php",-5);
-	$ahp->setNamesFromGet( $ahpH->altNum, $ahpH->project, $names, ALTAHP, 'Alt-');
+    $webHtml = new WebHtml($ahpPrioCalc->titles5['pageTitle'], 640);
+    $ahp = new AhpCalcIo(2);
+    $ahpH = new AhpHierAlt();
+    /** Start **/
+    $act = substr_replace($urlAct, ".php", -5);
+    $ahp->setNamesFromGet($ahpH->altNum, $ahpH->project, $names, ALTAHP, 'Alt-');
 
-	echo $ahpPrioCalc->titles5['h1title'];
-	echo $ahpPrioCalc->msg['inpA'];
-	$n = $ahpH->altNum;
-	$ahp->getNewNames($act, $n, $ahpH->project, $ahpPrioCalc->wrd['alt']);
+    echo $ahpPrioCalc->titles5['h1title'];
+    echo $ahpPrioCalc->msg['inpA'];
+    $n = $ahpH->altNum;
+    $ahp->getNewNames($act, $n, $ahpH->project, $ahpPrioCalc->wrd['alt']);
 
-	echo "<p></p>";	
-	$webHtml->webHtmlFooter($version);
+    echo "<p></p>";
+    $webHtml->webHtmlFooter($version);

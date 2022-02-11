@@ -264,7 +264,8 @@ class Registration
 
 /*
  * sends an email to the provided email address
- * @return boolean gives back true if mail has been sent, gives back false if no mail could been sent
+ * @return boolean gives back true if mail has been sent, 
+ * gives back false if no mail could been sent
  */
     public function sendVerificationEmail($user_id, $user_email, $user_activation_hash)
     {

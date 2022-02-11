@@ -1,19 +1,20 @@
 <?php
-class AhpPrioCalcES {
 
-public $wrd = array(
+class AhpPrioCalcES
+{
+    public $wrd = array(
   "crit"  =>  "Criterios",
   "alt"   =>  "Alternativas"
 );
 
-// Errors
-public $err = array(
+    // Errors
+    public $err = array(
   "pgm"         =>  "<br><span class='err'>Error de programa</span>",
   "pwcInc"      =>  "<span class='err'>¡Aún no se han completado las comparaciones por pares!</span>"
 );
 
-// calc (priority calculator)
-public $titles1 = array(
+    // calc (priority calculator)
+    public $titles1 = array(
   "pageTitle"   =>  "Calculadora AHP - AHP-OS",
   "h1title"     =>  "<h1>Calculadora de prioridad AHP</h1>",
   "h2subTitle"  =>  "<h2>Criterios AHP</h2>",
@@ -21,15 +22,15 @@ public $titles1 = array(
   "h3Res"       =>  "<h3 align='center'>Prioridades resultantes</h3>"
 );
 
-// hiercalc
-public $titles2 = array(
+    // hiercalc
+    public $titles2 = array(
   "pageTitle"   =>  "PWC Crit AHP-OS",
   "h1title"     =>  "<h1>Pairwise Comparison AHP-OS</h1>",
   "h2subTitle"  =>  "<h2>Evaluation of Criteria for <span class='var'>%s</span></h2>",
 );
 
-// altcalc
-public $titles3 = array(
+    // altcalc
+    public $titles3 = array(
   "pageTitle"   =>  "PWC Alt AHP-OS",
   "h1title"     =>  "<h1>Comparación por pares AHP-OS</h1>",
   "h2subTitle"  =>  "<h2>Evaluación de alternativas para<span class='var'>%s</span></h2>",
@@ -40,20 +41,20 @@ public $titles3 = array(
   "h4Res"       =>  "<h4>Prioridades y ranking</h4>"
 );
 
-// calc1
-public $titles4 = array(
+    // calc1
+    public $titles4 = array(
   "pageTitle"   =>  "Criterios AHP",
   "h1title"     =>  "<h1 style='text-align:center;'>Nombres de criterios AHP</h1>"
 );
 
-// alt1
-public $titles5 = array(
+    // alt1
+    public $titles5 = array(
   "pageTitle"   =>  "Alternativas AHP",
   "h1title"     =>  "<h1 style='text-align:center;'>Nombres alternativos de AHP</h1>"
 );
 
-// Messages
-public $msg = array(
+    // Messages
+    public $msg = array(
   "nPwc"    =>  "<span class='msg'>%g pairwise comparison(s). </span>",
   "pwcAB"   =>  "Cuál prefiere A - <span class='var'>%s</span> - o B?",
   "noPwc1"  =>  "<span class='msg'>Primero complete todas las comparaciones por pares. Haga clic en ",
@@ -65,8 +66,8 @@ public $msg = array(
   "inpA"    =>  "<p style='text-align:center;'>Por favor, completalos</p>"
 );
 
-// Information
-public $info= array(
+    // Information
+    public $info= array(
   "intro"   =>  "Seleccione el número y los nombres de los criterios, luego comience por la comparación de pares 
                 comparaciones para calcular prioridades usando
                 el proceso de jerarquía analítica.",
@@ -94,8 +95,8 @@ public $info= array(
 		alternativas definidas para evaluación alternativa.</p>"
 );
 
-// Menu and buttons
-public $mnu = array(
+    // Menu and buttons
+    public $mnu = array(
   "btnSbm"  =>  "Enviar",
   "lgd1"    =>  "Calculadora de prioridad AHP",
   "done"    =>  "Hecho",
@@ -107,5 +108,3 @@ public $mnu = array(
 
 );
 }
-
-

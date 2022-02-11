@@ -1,22 +1,23 @@
 <?php
-class AhpDE {
 
-public $titles = array(
-	"pageTitle"		=>	"AHP Online System - AHP-OS",
-	"h1title"		=>	"<h1>AHP Online System - AHP-OS</h1>",
-	"h2subTitle"	=>	"<h2>Rationale Entscheidungsfindung mit dem Analytischen Hierarchie Prozess</h2>",
-	"h2contact"		=>	"<h2>Kontakt und Feedback</h2>"
+class AhpDE
+{
+    public $titles = array(
+    "pageTitle"		=>	"AHP Online System - AHP-OS",
+    "h1title"		=>	"<h1>AHP Online System - AHP-OS</h1>",
+    "h2subTitle"	=>	"<h2>Rationale Entscheidungsfindung mit dem Analytischen Hierarchie Prozess</h2>",
+    "h2contact"		=>	"<h2>Kontakt und Feedback</h2>"
 );
 
-public $msg = array(
-	"tu"		=>	"Danke!",
-	"cont"	=>	"Weiter"
+    public $msg = array(
+    "tu"		=>	"Danke!",
+    "cont"	=>	"Weiter"
 );
 
-public $info = array(
-	"contact"	=>	"<p>Gerne hinterlasse einen  
+    public $info = array(
+    "contact"	=>	"<p>Gerne hinterlasse einen  
 								<a href='%s'>Kommentar</a> oder teile/möge diese Seite.</p>",
-	"intro11"	=>	"<div class='entry-content'><p style='text-align:justify;'>
+    "intro11"	=>	"<div class='entry-content'><p style='text-align:justify;'>
 								Dieses freie <b>web-basierte AHP Programm</b> ist ein Hilfsmittel
 								zur rationalen Entscheidungsfindung. Das Programm kann hilfreich 
 								sein für einfache Entscheidungsprobleme in der täglichen Arbeit, 
@@ -28,7 +29,7 @@ public $info = array(
 								vollen Funktionalität musst du dich als Nutzer <a href='includes/login/do/do-register.php'>registrieren</a> 
 								und einloggen, falls du noch keinen Account hast. Das Beste: es ist 
 								alles kostenfrei! </p></div>",
-	"intro12"	=>	"<ol style='line-height:150%;'>
+    "intro12"	=>	"<ol style='line-height:150%;'>
 								<li><span style='cursor:help;' 
 								title='Manage komplette AHP Projekte und Gruppen Entscheidungen.' >
 									<a href='ahp-session-admin.php'>Meine AHP Projekte</a></span></li>
@@ -42,22 +43,21 @@ public $info = array(
 								title='Participate in an AHP group sessions to evaluate criteria or alternatives as a member of a group' >
 								<a href='ahp-hiergini.php'>AHP Gruppen Session</a></span></li>
 								</ol>",
-	"intro13"	=>	"<p style='text-align:justify;'>
+    "intro13"	=>	"<p style='text-align:justify;'>
 								Für die Programme 2. und 3. können die Ergebnisdaten als csv Files (comma separated values) für
 								eine weitere Verarbeitung in Excel exportiert werden.",
-	"intro14"	=>	"<p style='text-align:justify;'>
+    "intro14"	=>	"<p style='text-align:justify;'>
 								<b>Nutzungsbedingungen</b> siehe 
 								<a href='https://bpmsg.com/about/user-agreement-and-privacy-policy/' >
 								User agreement and Privacy policy</a>.</p>",
-	"intro15"	=>	"<p style='text-align:justify;'>
+    "intro15"	=>	"<p style='text-align:justify;'>
 								Wenn dir das Programm gefällt, <span class='err'>bitte 
 								erwäge eine <a href='ahp-news.php'>Spende</a>, um die Webseite zu pflegen und am Leben zu halten</span>.</p>",
-	"intro16"	=>	"<p><b>In deiner Arbeit bitte zitiere:</b><br>
+    "intro16"	=>	"<p><b>In deiner Arbeit bitte zitiere:</b><br>
 								<code>
 									Goepel, K.D. (2018). Implementation of an Online Software Tool for the Analytic Hierarchy 
 									Process (AHP-OS). <i>International Journal of the Analytic Hierarchy Process</i>, Vol. 10 Issue 3 2018, pp 469-487,
 									<br><a href='https://doi.org/10.13033/ijahp.v10i3.590'>https://doi.org/10.13033/ijahp.v10i3.590</a>
 								</code></p>"
 );
-
 }

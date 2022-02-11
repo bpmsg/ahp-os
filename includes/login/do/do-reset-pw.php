@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ *
     Copyright (C) 2022  <Klaus D. Goepel>
 
     This program is free software: you can redistribute it and/or modify
@@ -22,33 +22,35 @@ require_once('../../PHPMailer/PHPMailer.php'); // Mailer
 require_once('../../PHPMailer/SMTP.php'); // Mailer
 require_once('../../PHPMailer/Exception.php'); // Mailer
 
-$version = substr('$LastChangedDate$',18,10);
-$rev = trim('$Rev$', "$");
+$version = substr('$LastChangedDate: 2022-02-11 08:19:55 +0800 (Fri, 11 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 120 $', "$");
 
-// create a login object. when this object is created, it will do all login/logout stuff automatically
+// create a login object. when this object is created, it will 
+// do all login/logout stuff automatically
 // so this single line handles the entire login process.
 session_start();
 
 $lang = (isset($_SESSION['lang']) ? $_SESSION['lang'] : "EN");
 $login = new Login();
 
-	if(!isset($_SESSION['REFERER']) && isset($_SERVER['HTTP_REFERER'])){
-		$_SESSION['REFERER'] = htmlspecialchars($_SERVER['HTTP_REFERER']);
-		$url = $_SESSION['REFERER'];
-	} else
-		$url = SITE_URL;
+    if (!isset($_SESSION['REFERER']) && isset($_SERVER['HTTP_REFERER'])) {
+        $_SESSION['REFERER'] = htmlspecialchars($_SERVER['HTTP_REFERER']);
+        $url = $_SESSION['REFERER'];
+    } else {
+        $url = SITE_URL;
+    }
   // --- MAIN
   $webHtml = new WebHtml($login->lgTxt->titles['h1pwR'], 600);
 
- 	// Login header has only a link back from the referring website
-	echo '<div style="display:block;float:left;padding:2px;">', 
-			'<a href="' . SITE_URL . '">AHP-OS Home</a></div>';
-	echo '<div style="padding:2px;float:right;"><a href="',$url,'">back</a></div>';
-	echo '<div style="clear:both;"></div>';
+    // Login header has only a link back from the referring website
+    echo "<div style='display:block;float:left;padding:2px;'>",
+            "<a href='" . SITE_URL . "'>AHP-OS Home</a></div>";
+    echo "<div style='padding:2px;float:right;'><a href='$url'>back</a></div>";
+    echo "<div style='clear:both;'></div>";
   echo "<h1>",$login->lgTxt->titles['h1pwR'],"</h1>";
   // show potential errors / feedback (from login object)
-	echo "<p>",$login->getErrors(),"</p>";
-	// show form
+    echo "<p>",$login->getErrors(),"</p>";
+    // show form
   include('../form.resetpw.php');
   echo "<p></p>";
   $webHtml->webHtmlFooter($version);

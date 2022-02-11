@@ -1,7 +1,8 @@
 <?php
-class AhpHierarchyES {
 
-public $titles = array(
+class AhpHierarchyES
+{
+    public $titles = array(
   "pageTitle"   =>  "Jerarquía AHP - AHP-OS",
   "h1title"     =>  "<h1>Jerarquía AHP</h1>",
   "h2subTitle"  =>  "<h2>Jerarquía de decisiones de AHP-OS</h2>",
@@ -10,12 +11,12 @@ public $titles = array(
   "h3Proj"      =>  "<h3>Proyecto: <span class= 'var'>%s</span></h3>",
   "h2ieHier"    =>  "<h2>Entrada/Editar jerarquía</h2>"
 );
-public $err = array(
+    public $err = array(
   "giH"     =>  "Error en la entrada de la jerarquía"
 );
-public $msg = array(
+    public $msg = array(
   "lgin"    =>  "<span class='msg'>Para una funcionalidad completa, regístrese e inicie sesión.</span>",
-  "pInp"    =>  "<p class='msg'>Entrada para proyecto <span class='var'>%s</span></p>", 
+  "pInp"    =>  "<p class='msg'>Entrada para proyecto <span class='var'>%s</span></p>",
   "pMod"    =>  "<p class='msg'>Modificación de proyecto <span class='var'>%s</span></p>",
   "pNew"    =>  "<p class='msg'>Nuevo proyecto</p>",
   "hMode"   =>  "<p class='msg'>Modo: evaluación de la jerarquía</p>",
@@ -28,7 +29,7 @@ public $msg = array(
   "giPcmpl" =>  "Primero complete todas las comparaciones por pares. "
 );
 
-public $info = array(
+    public $info = array(
   "intro"   =>  "<div class='entry-content'><p style='text-align:justify;'>
 		Defina una jerarquía de decisión de criterios y calcule sus ponderaciones 
 		basándose en comparaciones por pares utilizando el Proceso de jerarquía analítica AHP. 
@@ -60,7 +61,7 @@ public $info = array(
   "giPcmpl" =>  "Click en <input type='button' value='Alternatives'> then <input class='btnr ' type='button' value='AHP'>"
 );
 
-public $mnu = array(
+    public $mnu = array(
   "lgd11"   =>  "Menú de entrada de jerarquía",
   "btn11"   =>  "Enviar",
   "btn12"   =>  "Guardar / actualizar",
@@ -71,8 +72,6 @@ public $mnu = array(
   "btn16"   =>  "Hecho",
   "lgd21"   =>  "Menú de entrada de grupo",
   "btn21"   =>  "Salvar los juicios",
-  "btn22"   =>  "Ver resultado del grupo",  
+  "btn22"   =>  "Ver resultado del grupo",
 );
 }
-
-

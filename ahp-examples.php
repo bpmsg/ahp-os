@@ -5,8 +5,8 @@
 * @since 2013-12-01 release first version ahp hierarchy
 * @version 2019-06-26 using SVN
 *
-* Last Change: $LastChangedDate$
-* 
+* Last Change: $LastChangedDate: 2022-02-11 08:19:55 +0800 (Fri, 11 Feb 2022) $
+*
     Copyright (C) 2022  <Klaus D. Goepel>
 
     This program is free software: you can redistribute it and/or modify
@@ -27,17 +27,18 @@ include 'includes/config.php';
 
 $pageTitle = "AHP Examples";
 $title = "AHP Examples";
-$version = substr('$LastChangedDate$',18,10);
-$rev = trim('$Rev$', "$");
+$version = substr('$LastChangedDate: 2022-02-11 08:19:55 +0800 (Fri, 11 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 120 $', "$");
 
 $login = new Login();
 
 // reset in case back from edit form
-if (isset($_SESSION['REFERER']))
-	unset($_SESSION['REFERER']);
+if (isset($_SESSION['REFERER'])) {
+    unset($_SESSION['REFERER']);
+}
 
 $rsHtml = new WebHtml($pageTitle);
-	include('includes/login/form.login-hl.php');
+    include('includes/login/form.login-hl.php');
 echo"<h1>$title</h1>";
-	include 'views/ahpExamples.html';
+    include 'views/ahpExamples.html';
 $rsHtml->webHtmlFooter($version);

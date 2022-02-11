@@ -9,20 +9,20 @@
  * @version 2017-03-13 - getUidFirstLog( $uid) first entry of user in audit table added
  * @version 2017-04-10 - deleteUser: audit entries will be deleted too
  * 
-    Copyright (C) 2022  <Klaus D. Goepel>
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *  Copyright (C) 2022  <Klaus D. Goepel>
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  * This version works for sqlite and mysql databases
  *
@@ -41,6 +41,21 @@
  * Audit/Log table:
  * public function cleanAuditTable()          Deletes all 'other' entries in the audit table
  * public function displayLogTable($uid = '%', $limit = 5) Output data in HTML table
+ *
+ *  Copyright (C) 2022  <Klaus D. Goepel>
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
  
@@ -124,12 +139,14 @@ class LoginAdmin extends Login {
 		if ($this->dataBaseConnection()){
 
 			$mysql = "SELECT user_id, user_name, user_email, 
-			date(users.user_registration_datetime), TIMEDIFF(NOW(), user_last_login)
+			date(users.user_registration_datetime), 
+			TIMEDIFF(NOW(), user_last_login)
 			FROM users WHERE users.user_name = :user";
 
 			$sqlite = "SELECT user_id, user_name, user_email, 
 			date(users.user_registration_datetime), 
-			substr( round(julianday('now', 'localtime') - julianday( users.user_last_login ),1) || ' d',1,7) 
+			substr( round(julianday('now', 'localtime') 
+			- julianday( users.user_last_login ),1) || ' d',1,7) 
 			FROM users WHERE users.user_name = :user";
 
 			$sql = ( $this->db_type == 'sqlite' ? $sqlite : $mysql);
@@ -147,15 +164,23 @@ class LoginAdmin extends Login {
  */
 	public function getAllUsers($days){
 		if ($this->dataBaseConnection()){
-			$mysql = "SELECT user_id, user_name, user_email, user_registration_datetime,
+
+			$mysql = "SELECT user_id, user_name, user_email, 
+			user_registration_datetime,
 			(CONCAT(DATEDIFF(CURDATE(), user_registration_datetime), ' d')) as days 
 			FROM users WHERE DATEDIFF(CURDATE(), user_registration_datetime) < " . $days .
 			" GROUP BY user_email ORDER BY user_registration_datetime DESC;";
-			$sqlite = "SELECT user_id, user_name, user_email, user_registration_datetime, 
-			substr( round(julianday('now', 'localtime') - julianday( users.user_last_login ),1) || ' d',1,7) 
+
+			$sqlite = "SELECT user_id, user_name, user_email, 
+			user_registration_datetime, 
+			substr( round(julianday('now', 'localtime') 
+			- julianday( users.user_last_login ),1) || ' d',1,7) 
 			FROM users WHERE users.user_active = 1 
-			AND julianday( users.user_registration_datetime) > julianday('now', 'localtime', '" . -$days . " days') 
-		    GROUP BY users.user_email ORDER BY users.user_registration_datetime DESC;";
+			AND julianday( users.user_registration_datetime) 
+			> julianday('now', 'localtime', '" . -$days . " days') 
+		    GROUP BY users.user_email 
+		    ORDER BY users.user_registration_datetime DESC;";
+		    
 			$sql = ( $this->db_type == 'sqlite' ? $sqlite : $mysql);
 			$query = $this->db_connection->query($sql);
 			$users = $query->fetchAll(PDO::FETCH_NUM);
@@ -167,18 +192,26 @@ class LoginAdmin extends Login {
 /* Get user name, email and number of projects for active users logged in the last $hours hours */
 	public function getLatestUsers($hours){
 		if ($this->dataBaseConnection()){
-			
-			$mysql = "SELECT user_id, user_name, user_email, DATE(user_registration_datetime), 
-			CONCAT(HOUR(TIMEDIFF(NOW(), user_last_login)), ':', MINUTE(TIMEDIFF(NOW(), user_last_login)), ' h') AS 'last'
-			FROM users WHERE HOUR(TIMEDIFF(NOW(), user_last_login)) < " . $hours . " 
-			GROUP BY user_email ORDER BY user_last_login DESC;";
-			
 
-			$sqlite = "SELECT user_id, user_name, user_email, date(users.user_registration_datetime), 
-			substr( round(24 * (julianday('now') - julianday( users.user_last_login)),1) || '   h',1,8) AS 'last'
-			FROM users WHERE julianday( users.user_last_login) > julianday('now', '" . -$hours . " hours') 
-			GROUP BY users.user_email ORDER BY julianday( users.user_last_login ) DESC;";
-
+			$sqlite = "SELECT user_id, user_name, user_email, 
+			date(users.user_registration_datetime), 
+			substr( round(24 * (julianday('now') 
+			- julianday( users.user_last_login)),1) || '   h',1,8) AS 'last'
+			FROM users 
+			WHERE julianday( users.user_last_login) 
+			> julianday('now', '" . -$hours . " hours') 
+			GROUP BY users.user_email 
+			ORDER BY julianday( users.user_last_login ) DESC;";
+			
+			$mysql = "SELECT user_id, user_name, user_email, 
+			DATE(user_registration_datetime), 
+			CONCAT(HOUR(TIMEDIFF(NOW(), user_last_login)), ':', 
+			MINUTE(TIMEDIFF(NOW(), user_last_login)), ' h') AS 'last'
+			FROM users 
+			WHERE HOUR(TIMEDIFF(NOW(), user_last_login)) < " . $hours . " 
+			GROUP BY user_email 
+			ORDER BY user_last_login DESC;";
+			
 			$sql = ( $this->db_type == 'sqlite' ? $sqlite : $mysql);
 			$query = $this->db_connection->query($sql);
 			$users = $query->fetchAll(PDO::FETCH_NUM);
@@ -194,16 +227,21 @@ class LoginAdmin extends Login {
 			$mysql = "SELECT user_id, user_name, user_email,
 			user_registration_datetime, 
 			DATEDIFF(CURDATE(), user_registration_datetime)  
-			FROM users WHERE users.user_active = 0 AND (DATEDIFF(CURDATE(), user_registration_datetime) >= " . $days .  
-			") GROUP BY user_email ORDER BY user_registration_datetime DESC;";
+			FROM users WHERE users.user_active = 0 
+			AND (DATEDIFF(CURDATE(), user_registration_datetime) >= " . $days . ") 
+			GROUP BY user_email 
+			ORDER BY user_registration_datetime DESC;";
 
 			$sqlite = "SELECT user_id, user_name, user_email, 
 			date(users.user_registration_datetime), 
-			substr( round(julianday('now', 'localtime') - julianday( users.user_registration_datetime ),1) || ' d',1,7) 
+			substr( round(julianday('now', 'localtime') 
+			- julianday( users.user_registration_datetime ),1) || ' d',1,7) 
 			FROM users WHERE users.user_active = 0 
-			AND max(julianday( users.user_registration_datetime), julianday( users.user_last_login ))
+			AND max(julianday( users.user_registration_datetime), 
+			julianday( users.user_last_login ))
 			 < julianday('now', '" . -$days . " day', 'localtime') 
-			  GROUP BY users.user_email ORDER BY julianday(users.user_registration_datetime) DESC;";
+			 GROUP BY users.user_email 
+			 ORDER BY julianday(users.user_registration_datetime) DESC;";
 
 			$sql = ( $this->db_type == 'sqlite' ? $sqlite : $mysql);
 			$query = $this->db_connection->prepare($sql);
@@ -218,19 +256,24 @@ class LoginAdmin extends Login {
 	public function getInactiveUsers($days){
 		if ($this->dataBaseConnection()){
 
-			$mysql = "SELECT user_id, user_name, user_email, date(users.user_registration_datetime),
-				DATEDIFF(CURDATE(), user_last_login)
-				FROM users 
-				WHERE (DATEDIFF(CURDATE(), user_last_login) >= " . $days .") 
-				GROUP BY users.user_email 
-				ORDER BY user_last_login DESC;";
+			$mysql = "SELECT user_id, user_name, user_email, 
+			date(users.user_registration_datetime),
+			DATEDIFF(CURDATE(), user_last_login)
+			FROM users 
+			WHERE (DATEDIFF(CURDATE(), user_last_login) >= " . $days .") 
+			GROUP BY users.user_email 
+			ORDER BY user_last_login DESC;";
 
-			$sqlite = "SELECT user_id, user_name, user_email, date(users.user_registration_datetime), 
-			  substr( round(julianday('now', 'localtime') - julianday( users.user_registration_datetime ),1) || ' d',1,7)
-				FROM users 
-				WHERE max(julianday( users.user_registration_datetime), julianday( users.user_last_login ))
-			 	< julianday('now', '" . -$days . " day', 'localtime') 
-				GROUP BY users.user_email ORDER BY julianday( users.user_last_login ) DESC;";
+			$sqlite = "SELECT user_id, user_name, user_email, 
+			date(users.user_registration_datetime), 
+			substr( round(julianday('now', 'localtime') 
+			- julianday( users.user_registration_datetime ),1) || ' d',1,7)
+			FROM users 
+			WHERE max(julianday( users.user_registration_datetime), 
+			julianday( users.user_last_login ))
+			 < julianday('now', '" . -$days . " day', 'localtime') 
+			GROUP BY users.user_email 
+			ORDER BY julianday( users.user_last_login ) DESC;";
 
 			$sql = ( $this->db_type == 'sqlite' ? $sqlite : $mysql);
 			$query = $this->db_connection->prepare($sql);
@@ -252,7 +295,12 @@ class LoginAdmin extends Login {
 	public function deactivateUser($name, $mail = true){
 		if ( $this->dataBaseConnection() ){
 		// first get user id and email for name
-			$sql = "SELECT user_id, user_email, user_registration_datetime FROM users WHERE user_name = :name AND user_active = 1;";
+
+			$sql = "SELECT user_id, user_email, 
+			user_registration_datetime FROM users 
+			WHERE user_name = :name 
+			AND user_active = 1;";
+
 			$query = $this->db_connection->prepare($sql);
 			$query->bindValue(':name', $name, PDO::PARAM_STR);
 			$query->execute();
@@ -265,9 +313,14 @@ class LoginAdmin extends Login {
 			$hash = sha1(uniqid(mt_rand(), true));
 			$actv = 0;
 			$dttm = date("Y-m-d H:i:s");
-			$this->db_connection->exec( ($this->db_type == 'sqlite' ? 'BEGIN TRANSACTION;' : 'START TRANSACTION;') );
-			$sql = "UPDATE users SET user_active = :actv, user_activation_hash = :hash, user_registration_datetime = :dttm  
+			$this->db_connection->exec(
+			 ($this->db_type == 'sqlite' ? "BEGIN TRANSACTION;" : "START TRANSACTION;") );
+
+			$sql = "UPDATE users 
+			SET user_active = :actv, user_activation_hash = :hash, 
+			user_registration_datetime = :dttm  
 		 	WHERE user_name = :name;";
+
 			try {
 				$update = $this->db_connection->prepare($sql);
 				$update->bindValue(':actv', $actv, PDO::PARAM_INT);
@@ -282,16 +335,17 @@ class LoginAdmin extends Login {
 			if($updateState){
 				if($mail){
 					// send reactivation email
-					if ( $this->sendReactivationEmail( $user['user_id'], $user['user_email'], $hash) ) {
-						$this->db_connection->exec( 'COMMIT;' );
+					if ( $this->sendReactivationEmail( $user['user_id'], 
+					$user['user_email'], $hash) ) {
+						$this->db_connection->exec( "COMMIT;" );
 						// when mail has been send successfully
 						return true;
 					} else {
 					// rollback because email could not be sent
-						$this->db_connection->exec( 'ROLLBACK;' );
+						$this->db_connection->exec( "ROLLBACK;" );
 					}
 				} else {
-					$this->db_connection->exec( 'COMMIT;' );
+					$this->db_connection->exec( "COMMIT;" );
 					return true;
 				}
     	} 
@@ -309,7 +363,12 @@ class LoginAdmin extends Login {
 	public function reactivateUser($name){
 		if ( $this->dataBaseConnection() ){
 		// first get user id and email for name
-			$sql = "SELECT user_id, user_email, user_registration_datetime FROM users WHERE user_name = :name AND user_active = 0;";
+
+			$sql = "SELECT user_id, user_email, 
+			user_registration_datetime FROM users 
+			WHERE user_name = :name 
+			AND user_active = 0;";
+
 			$query = $this->db_connection->prepare($sql);
 			$query->bindValue(':name', $name, PDO::PARAM_STR);
 			$query->execute();
@@ -322,8 +381,11 @@ class LoginAdmin extends Login {
 			$hash = "NULL";
 			$actv = 1;
 			$dttm = date("Y-m-d H:i:s");
-			$this->db_connection->exec( ($this->db_type == 'sqlite' ? 'BEGIN TRANSACTION;' : 'START TRANSACTION;') );
-			$sql = "UPDATE users SET user_active = :actv, user_activation_hash = :hash, user_registration_datetime = :dttm  
+			$this->db_connection->exec(
+			 ($this->db_type == 'sqlite' ? "BEGIN TRANSACTION;" : "START TRANSACTION;") );
+			$sql = "UPDATE users 
+			SET user_active = :actv, user_activation_hash = :hash, 
+			user_registration_datetime = :dttm  
 		 	WHERE user_name = :name;";
 			try {
 				$update = $this->db_connection->prepare($sql);
@@ -347,7 +409,8 @@ class LoginAdmin extends Login {
 
 
 /* sends an reactivation email to the provided email address 
-* @return boolean gives back true if mail has been sent, gives back false if no mail could been sent
+* @return boolean gives back true if mail has been sent, 
+* gives back false if no mail could been sent
 */
   private function sendReactivationEmail($user_id, $user_email, $user_activation_hash){
 		$mail = new PHPMailer\PHPMailer\PHPMailer();
@@ -370,7 +433,8 @@ class LoginAdmin extends Login {
     $mail->FromName = EMAIL_VERIFICATION_FROM_NAME;
     $mail->AddAddress($user_email);
     $mail->Subject = EMAIL_REACTIVATION_SUBJECT;
-    $link = EMAIL_VERIFICATION_URL.'?id='.urlencode($user_id).'&verification_code='.urlencode($user_activation_hash);
+    $link = EMAIL_VERIFICATION_URL.'?id='.urlencode($user_id)
+    .'&verification_code='.urlencode($user_activation_hash);
 
     // the link to your register.php, please set this value in config/email_verification.php
     $mail->Body = EMAIL_REACTIVATION_CONTENT.' ' . $link . EMAIL_REACTIVATION_INFO;
@@ -389,7 +453,7 @@ class LoginAdmin extends Login {
 		$allUsers = $this->getUserNames();
 		if( in_array($name, $allUsers) ){
 			// check whether user is deactivated
-			$sql = 'SELECT user_active FROM users WHERE user_name = :name;';	
+			$sql = "SELECT user_active FROM users WHERE user_name = :name;";	
 			$query = $this->db_connection->prepare($sql);
 			$query->bindValue(':name', $name, PDO::PARAM_STR);
 			$query->execute();
@@ -398,13 +462,14 @@ class LoginAdmin extends Login {
 				$this->errors[] = DB_USER_ACTIVE;
 				return false;
 			}
-    		$this->db_connection->exec( 'PRAGMA foreign_keys = ON;' );
-			$sql = 'DELETE FROM users WHERE user_name = :name;';	
+    		$this->db_connection->exec( "PRAGMA foreign_keys = ON;" );
+			$sql = "DELETE FROM users WHERE user_name = :name;";	
 			$query = $this->db_connection->prepare($sql);
 			$query->bindValue(':name', $name, PDO::PARAM_STR);
 			$deleteStatus = $query->execute();
 			// delete entries from audit table
-			$sql = 'DELETE FROM audit WHERE a_un = :name AND (a_trg<>"D" AND a_trg<>"I") ;';	
+			$sql = "DELETE FROM audit WHERE a_un = :name 
+			AND (a_trg<>'D' AND a_trg<>'I') ;";	
 			$query = $this->db_connection->prepare($sql);
 			$query->bindValue(':name', $name, PDO::PARAM_STR);
 			$deleteStatus &= $query->execute();
@@ -413,7 +478,8 @@ class LoginAdmin extends Login {
 				$this->errors[] = DB_DELETE_ERROR;
 				return false;
 			} else{
-				$this->messages[] = "User " . $name . " successfully deleted.";
+				$this->messages[] 
+					= "User " . $name . " successfully deleted.";
 				return true;
 			}
 		} else {
@@ -431,13 +497,18 @@ class LoginAdmin extends Login {
 	private function getUidLogData( $uid, $limit){
 		if ( $this->dataBaseConnection()){
 
-			$sqlite = "SELECT a_id, date(datetime(a_ts, 'localtime')) AS 'date', time(datetime(a_ts, 'localtime')) as 'time', 
+			$sqlite = "SELECT a_id, date(datetime(a_ts, 'localtime')) AS 'date',
+			time(datetime(a_ts, 'localtime')) as 'time', 
 			a_uid, a_un, a_act as 'activity' FROM audit 
-			WHERE a_uid LIKE :uid AND a_act != 'other' ORDER BY a_id DESC LIMIT " . $limit . ";";
+			WHERE a_uid LIKE :uid 
+			AND a_act != 'other' 
+			ORDER BY a_id DESC LIMIT " . $limit . ";";
 
 			$mysql = "SELECT a_id, date(a_ts) AS 'date', time(a_ts) as 'time', 
 			a_uid, a_un, a_act as 'activity' FROM audit 
-			WHERE a_uid LIKE :uid AND a_act != 'other' ORDER BY a_id DESC LIMIT " . $limit . ";";
+			WHERE a_uid LIKE :uid 
+			AND a_act != 'other' 
+			ORDER BY a_id DESC LIMIT " . $limit . ";";
 
 			$query = $this->db_connection->prepare( ($this->db_type == 'sqlite' ? $sqlite : $mysql));
 			$query->bindValue(':uid', $uid, PDO::PARAM_STR);
@@ -455,13 +526,18 @@ class LoginAdmin extends Login {
 	private function getUidFirstLog( $uid){
 		if ( $this->dataBaseConnection()){
 
-			$sqlite = "SELECT a_id, date(datetime(a_ts, 'localtime')) AS 'date', time(datetime(a_ts, 'localtime')) as 'time', 
+			$sqlite = "SELECT a_id, date(datetime(a_ts, 'localtime')) AS 'date', 
+			time(datetime(a_ts, 'localtime')) as 'time', 
 			a_uid, a_un, a_act as 'activity' FROM audit 
-			WHERE a_uid LIKE :uid AND a_act != 'other' ORDER BY a_id ASC LIMIT 1;";
+			WHERE a_uid LIKE :uid 
+			AND a_act != 'other' 
+			ORDER BY a_id ASC LIMIT 1;";
 
 			$mysql = "SELECT a_id, date(a_ts) AS 'date', time(a_ts) as 'time', 
 			a_uid, a_un, a_act as 'activity' FROM audit 
-			WHERE a_uid LIKE :uid AND a_act != 'other' ORDER BY a_id ASC LIMIT 1;";
+			WHERE a_uid LIKE :uid 
+			AND a_act != 'other' 
+			ORDER BY a_id ASC LIMIT 1;";
 
 			$query = $this->db_connection->prepare( ($this->db_type == 'sqlite' ? $sqlite : $mysql));
 			$query->bindValue(':uid', $uid, PDO::PARAM_STR);
@@ -476,7 +552,8 @@ class LoginAdmin extends Login {
 /* clean audit table: remove all "other" entries from the table */
 	public function cleanAuditTable(){
 		if ( $this->dataBaseConnection()){
-			$query = $this->db_connection->prepare("SELECT count(a_id) FROM audit;");
+			$query = 
+				$this->db_connection->prepare("SELECT count(a_id) FROM audit;");
 			$query->execute();
 			$tot = $query->fetch(PDO::FETCH_COLUMN);
 			$this->messages[] = $tot . " entries total, ";
@@ -487,7 +564,8 @@ class LoginAdmin extends Login {
 				$this->errors[] = DB_DELETE_ERROR;
 				return false;
 			} else {
-				$query = $this->db_connection->prepare("SELECT count(a_id) FROM audit;");
+				$query = 
+					$this->db_connection->prepare("SELECT count(a_id) FROM audit;");
 				$query->execute();
 				$tot -= $query->fetch(PDO::FETCH_COLUMN);
 				$this->messages[] = $tot . " entries deleted.";
@@ -576,10 +654,10 @@ public function getUserFlow($m = 12){
 	  foreach( $log as $entry){
 			$ldat = ($entry['date'] == $ld ? "" : $entry['date']);
 	  	echo "\n<tr class='$stl'>
-	  		<td>",$entry['a_id'],"</td>
-	  		<td>",$ldat, "</td>
+	  		<td>", $entry['a_id'],"</td>
+	  		<td>", $ldat, "</td>
 	  		<td>", $entry['time'],"</td>
-	  		<td>",$entry['a_uid'],"</td>
+	  		<td>", $entry['a_uid'],"</td>
 	  		<td>", $entry['a_un'],"</td>
 	  		<td>", $entry['activity'], "</td>
 	  		</tr>";

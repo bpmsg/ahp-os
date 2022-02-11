@@ -1,8 +1,10 @@
 <?php
-class AhpGroupResES {
-// for ahp-group.php AND  ahp-g-input.php
-/* Titles and headings */
-public $titles = array(
+
+class AhpGroupResES
+{
+    // for ahp-group.php AND  ahp-g-input.php
+    /* Titles and headings */
+    public $titles = array(
   "pageTitle1"  =>  "AHP Resultados del grupo - AHP-OS",
   "h1title1"    =>  "<h1>AHP Resultados del grupo</h1>",
   "h2subTitle1" =>  "<h2>Datos de resultado del proyecto</h2>",
@@ -26,7 +28,7 @@ public $titles = array(
   "h2crit"      =>  "<h2>Desglose por criterios</h2>",
   "h4group"     =>  "<h4>Resultado grupal y prioridades de los participantes individuales</h4>",
   "h2grMenu"    =>  "<h2>Menú de resultados de grupo</h2>",
-  
+
   "h2dm"        =>  "<h2>Matrices de decisión de comparación por pares</h2>",
   "h4dm"        =>  "<h4>Matriz de decisión</h4>",
   "h4crit"      =>  "<h4>Criterio: <span class='res'>%s</span></h4>",
@@ -34,14 +36,14 @@ public $titles = array(
   "h4nd"        =>  "<h4>Nodo: <span class='res'>%s</span></h4>"
 );
 
-/* Individual words */
-public $wrd  = array(
+    /* Individual words */
+    public $wrd  = array(
   "crit"      =>  "criterios",
   "alt"       =>  "alternativas"
 );
 
-/* Result output */
-public $res  = array(
+    /* Result output */
+    public $res  = array(
   "cr"          =>  "Ratio de consistencia CR: <span class='res'>%02.1f%%</span>",
   "consens1"    =>  "<p>Concenso grupal AHP: <span class='res'>%02.1f%%</span> ",
   "consens2"    =>  " Criterio: <span class='res'>%s</span> - CR: <span class='res'>%g%%</span>",
@@ -68,8 +70,8 @@ public $res  = array(
                     <span class='res'>%s</span>."
   );
 
-/* Messages */
-public $msg  = array(
+    /* Messages */
+    public $msg  = array(
   "scaleSel"    =>  "<p class='msg'>Escala seleccionada: <span class ='hl'>%s</span></p>",
   "wMethod"     =>  "<p>Método: <span class ='hl'> Método de producto ponderado (WPM)</span></p>",
   "rMethod"     =>  "<p>Variación aleatoria: <span class ='hl'>basado en la desviación estándar</span></p>",
@@ -85,23 +87,23 @@ public $msg  = array(
   "nlgin"       =>  "<p class='msg'>Debe ser un usuario registrado e iniciar sesión para manejar proyectos.</p>"
 );
 
-/* Errors */
-public $err  = array(
+    /* Errors */
+    public $err  = array(
   "incompl"     =>  "<p class='err'>La evaluación del proyecto está incompleta</p>",
   "consens0"    =>  "<p>Consenso del grupo AHP: <span class='err'>n/a</span>",
   "consens1"    =>  " - Consenso <span class='res err'>n/a</span>",
   "consens2"    =>  "<p><small>en la evaluación de las alternativas WRT al criterio <span class='res err'>n/a</span>"
 );
 
-/* Information output */
-public $info = array(
+    /* Information output */
+    public $info = array(
   "sensDl"      =>  "<p><small>Nota: análisis completo mediante descarga.</small></p>",
   "cpbd"        =>  "Preferencias consolidadas por alternativas con respecto a cada criterio",
   "pwcfor"      =>  "Comparaciones por pares para: <br>"
 );
 
-/* Menu and buttons */
-public $mnu = array(
+    /* Menu and buttons */
+    public $mnu = array(
   "btnNdD"  =>  "<p><button href='#%s' class='nav-toggle'>
                  Details</button>",
   "lgd1"    =>  "Menú de resultados de grupo",
@@ -114,4 +116,3 @@ public $mnu = array(
   "lgd2"    =>  "Menú de datos de entrada del proyecto"
 );
 }
-

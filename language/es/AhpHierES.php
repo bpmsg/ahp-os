@@ -1,7 +1,8 @@
 <?php
-class AhpHierES {
-  
-public $wrd = array(
+
+class AhpHierES
+{
+    public $wrd = array(
   "lvl"       =>  "Nivel",
   "nd"        =>  "Nodo",
   "lvls"      =>  "nivel(es) de jerarquía",
@@ -12,12 +13,12 @@ public $wrd = array(
   "alt"       =>  "Alternativas"
 );
 
-public $wrn = array(
+    public $wrn = array(
   "glbPrioS"  => "Suma de prioridades globales no totaliza 100%. ¡Compruebe la jerarquía!",
   "prioSum"   =>  "¡Advertencia! Suma de prioridades no totaliza 100% en la categoría: "
 );
 
-public $err  = array(
+    public $err  = array(
   "hLmt"      =>  "Se excedieron los límites del programa. ",
   "hLmtLv"    =>  "Demasiados niveles de jerarquía. ",
   "hLmtLf"    =>  "Demasiadas hojas de jerarquía. ",
@@ -37,18 +38,17 @@ public $err  = array(
   "unkn"      =>  "<span class='err'>Error desconocido: repita la evaluación %s </span>"
 );
 
-public $msg = array(
+    public $msg = array(
   "sbmPwc1"   =>  "<small><span class='msg'>Complete las comparaciones por pares (haga clic en \"AHP \")</span></small>",
   "sbmPwc2"   =>  "<small><span class='msg'>Ok. Enviar para evaluación de grupo o evaluación alternativa.</span></small>",
   "aPwcCmplN" =>  "<small><span class='msg'>%g de %g comparaciones completadas</span></small>",
   "aPwcCmplA" =>  "<small><span class='msg'>Se completan todas las evaluaciones.</span></small>"
 );
 
-public $tbl = array(
+    public $tbl = array(
   "hTblCp"    =>  "<caption>Jerarquía de decisiones</caption>",
   "aTblCp"    =>  "<caption>Jerarquía con alternativas</caption>",
   "aTblTh"    =>  "<th>No</th><th>Node</th><th>Criterio</th><th>Glb Prio.</th><th>Comparar</th>",
   "aTblTd1"   =>  "Peso total de alternativas:"
 );
 }
-

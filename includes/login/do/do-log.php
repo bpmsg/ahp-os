@@ -19,36 +19,35 @@
 
 include '../../config.php';
 
-$title="User Account Log Table";
-$version = substr('$LastChangedDate$',18,10);
-$rev = trim('$Rev$', "$");
+$title= "User Account Log Table";
+$version = substr('$LastChangedDate: 2022-02-11 08:19:55 +0800 (Fri, 11 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 120 $', "$");
 
 session_start();
 
 $lang = (isset($_SESSION['lang']) ? $_SESSION['lang'] : "EN");
 $login = new Login();
-if (isset($_SESSION['REFERER']))
-	unset($_SESSION['REFERER']);
-
-if($login->isUserLoggedIn() && in_array($_SESSION['user_id'], $admin )){
-	$webHtml = new WebHtml($title);
-	$ahpDb = new LoginAdmin();
-
-// --- MAIN
-	include('../form.login-hl.php');
-	echo "<h1>$title</h1>";
-
-// --- Log --- all users, 25 lines max.
-	$ahpDb->displayLogTable("%", 50);
-	echo '<p></p>';
-	echo $ahpDb->getErrors();
-	echo '<p></p>';
-	echo "<p><a href='do-user-admin.php'>back</a></p>";
-	$webHtml->webHtmlFooter($version);
-
-} else {
-	$url = (isset($_SESSION['REFERER']) ? $_SESSION['REFERER'] : SITE_URL);
-    	header("Location: " . "$url");
-    	exit();
+if (isset($_SESSION['REFERER'])) {
+    unset($_SESSION['REFERER']);
 }
 
+if ($login->isUserLoggedIn() && in_array($_SESSION['user_id'], $admin)) {
+    $webHtml = new WebHtml($title);
+    $ahpDb = new LoginAdmin();
+
+    // --- MAIN
+    include('../form.login-hl.php');
+    echo "<h1>$title</h1>";
+
+    // --- Log --- all users, 25 lines max.
+    $ahpDb->displayLogTable("%", 50);
+    echo '<p></p>';
+    echo $ahpDb->getErrors();
+    echo '<p></p>';
+    echo "<p><a href='do-user-admin.php'>back</a></p>";
+    $webHtml->webHtmlFooter($version);
+} else {
+    $url = (isset($_SESSION['REFERER']) ? $_SESSION['REFERER'] : SITE_URL);
+    header("Location: " . "$url");
+    exit();
+}

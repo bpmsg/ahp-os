@@ -15,7 +15,7 @@ if (!extension_loaded('gd')) {
     die("It looks like GD is not installed");
 }
 
-$version = substr('$LastChangedDate: 2022-02-06 16:09:31 +0800 (Sun, 06 Feb 2022) $',18,10);
+$version = substr('$LastChangedDate: 2022-02-06 16:09:31 +0800 (Sun, 06 Feb 2022) $', 18, 10);
 $rev = trim('$Rev: 110 $', "$");
 
 session_start();
@@ -30,7 +30,7 @@ $str_captcha = '';
 for ($i=0; $i < $iCaptchaLength; $i++) {
     do {
         $ipos = rand(0, strlen($str_choice) - 1);
-    // checks that each letter is used only once
+        // checks that each letter is used only once
     } while (stripos($str_captcha, $str_choice[$ipos]) !== false);
 
     $str_captcha .= $str_choice[$ipos];
@@ -47,13 +47,13 @@ $bg = imagecolorallocate($im, 255, 255, 255);
 imagefill($im, 0, 0, $bg);
 
 // create background with 1000 short lines
-for($i=0;$i<1000;$i++) {
-$lines = imagecolorallocate($im, rand(200, 220), rand(200, 220), rand(200, 220));
-$start_x = rand(0,220);
-$start_y = rand(0,70);
-$end_x = $start_x + rand(0,5);
-$end_y = $start_y + rand(0,5);
-imageline($im, $start_x, $start_y, $end_x, $end_y, $lines);
+for ($i=0;$i<1000;$i++) {
+    $lines = imagecolorallocate($im, rand(200, 220), rand(200, 220), rand(200, 220));
+    $start_x = rand(0, 220);
+    $start_y = rand(0, 70);
+    $end_x = $start_x + rand(0, 5);
+    $end_y = $start_y + rand(0, 5);
+    imageline($im, $start_x, $start_y, $end_x, $end_y, $lines);
 }
 
 // create letters. for more info on how this works, please
@@ -62,8 +62,8 @@ imageline($im, $start_x, $start_y, $end_x, $end_y, $lines);
 for ($i=0; $i < $iCaptchaLength; $i++) {
     $text_color = imagecolorallocate($im, rand(0, 100), rand(10, 100), rand(0, 100));
     // font-path relative to this file
-    imagefttext($im, 35, rand(-10, 10), 20 + ($i * 30) + rand(-5, +5), 35 
-		+ rand(10, 30), $text_color, 'fonts/times_new_yorker.ttf', $str_captcha[$i]);
+    imagefttext($im, 35, rand(-10, 10), 20 + ($i * 30) + rand(-5, +5), 35
+        + rand(10, 30), $text_color, 'fonts/times_new_yorker.ttf', $str_captcha[$i]);
 }
 
 // send http-header to prevent image caching (so we always see a fresh captcha image)

@@ -1,8 +1,9 @@
 <?php
-class AhpHierginiES {
-  
+
+class AhpHierginiES
+{
 // Errors
-public $err = array(
+    public $err = array(
   "pExc"    =>  "Se superó el número de proyectos, no se pueden guardar los datos. Cancela y elimina algunos de tus proyectos.",
   "noSc"    =>  "Proporcione un código de sesión. ",
   "noName"  =>  "Proporcione su nombre. ",
@@ -11,7 +12,7 @@ public $err = array(
   "unknw"   =>  "Error desconocido - propietario: %s retFlg: %g"
 );
 
-public $titles = array(
+    public $titles = array(
   "pageTitle" =>  "Entrada a la sesión AHP AHP-OS",
   "h1Title"   =>  "<h1>Entrada a la sesión AHP</h1>",
   "subTitle1" =>  "Aporte del participante de AHP-OS",
@@ -22,14 +23,14 @@ public $titles = array(
   "h2siMnu"   =>  "<h2>Menú de entrada de sesión AHP</h2>"
 );
 
-// Messages
-public $msg = array(
+    // Messages
+    public $msg = array(
   "nProj"   =>  "Nuevo proyecto, haz clic en \"Ir \" para guardar",
   "pMod"    =>  "¡El proyecto existente será modificado y sobrescrito!"
 );
 
-// Information
-public $info= array(
+    // Information
+    public $info= array(
   "intro"   =>  "<div class='entry-content'>
                 <p style='text-align:justify;'>AHP-OS es una herramienta en línea 
 		para apoyar la toma de decisiones racional basada en el 
@@ -52,8 +53,8 @@ public $info= array(
               Puede utilizar etiquetas HTML, como & lt; em & gt; o & lt; font & gt; para enfatizar o resaltar el texto.</small>"
 );
 
-// Menu and buttons
-public $mnu = array(
+    // Menu and buttons
+    public $mnu = array(
   "lgd1"    =>  "Entrada de sesión AHP",
   "lgd2"    =>  "Menú de entrada de sesión AHP",
   "sc"      =>  "Código de sesión:",
@@ -65,4 +66,3 @@ public $mnu = array(
   "btn5"    =>  "Cancelar"
 );
 }
-
