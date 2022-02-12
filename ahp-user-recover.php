@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
- *  Revision: $Rev: 120 $
+ *  Revision: $Rev: 129 $
  *
  */
 
@@ -39,8 +39,8 @@ $ahpUser = array();
 $pageTitle ='AHP recover';
 $title="AHP-OS User Recovery";
 $subTitle = "User recovery from bachup database";
-$version = substr('$LastChangedDate: 2022-02-11 08:19:55 +0800 (Fr, 11 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 120 $', "$");
+$version = substr('$LastChangedDate: 2022-02-12 10:51:37 +0800 (Sa, 12 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 129 $', "$");
 
 // productive database
 $login =  new Login();
@@ -65,8 +65,11 @@ if (isset($_POST['EXIT']) || !$login->isUserLoggedIn()) {
 if (isset($_POST['DEL']) || isset($_POST['OPEN']) || isset($_POST['REACT'])) {
     $para = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
     if (filter_has_var(INPUT_POST, 'userName')) {
-        $userName = mb_substr(preg_replace('~[^\p{L}\p{N}]++~u', '', 
-			$para['userName']), 0, 64);
+        $userName = mb_substr(preg_replace(
+            '~[^\p{L}\p{N}]++~u',
+            '',
+            $para['userName']
+        ), 0, 64);
     }
 
     // TODO: add menu point to download $ahpUser JSON to
@@ -75,10 +78,14 @@ if (isset($_POST['DEL']) || isset($_POST['OPEN']) || isset($_POST['REACT'])) {
         // JSON encoded
         $ahpJs = json_encode($ahpUser);
 
-        if ($ahpDb->restoreUser($ahpUser['user'], $ahpUser['projects'], 
-				$ahpUser['pwc'], $ahpUser['a'])) {
+        if ($ahpDb->restoreUser(
+            $ahpUser['user'],
+            $ahpUser['projects'],
+            $ahpUser['pwc'],
+            $ahpUser['a']
+        )) {
             $errMsg = "<p class='msg'><br>Account of $userName was successfully 
-				restored with " . count($ahpUser['projects']) . " projects</p>";
+                restored with " . count($ahpUser['projects']) . " projects</p>";
         } else {
             $errMsg = "<p class='err'><br>Restore error for $userName ";
             $errMsg .= $ahpDb->getErrors() . "</p>";

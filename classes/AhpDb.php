@@ -2,8 +2,8 @@
 /**
 * Analytic Hierarchy Process database functions for ahp
 *
-* $LastChangedDate: 2022-02-12 08:39:22 +0800 (Sa, 12 Feb 2022) $
-* $Rev: 128 $
+* $LastChangedDate: 2022-02-12 10:51:37 +0800 (Sa, 12 Feb 2022) $
+* $Rev: 129 $
 *
 * @author Klaus D. Goepel
 * @copyright 2014-2017 Klaus D. Goepel
@@ -1140,6 +1140,245 @@ class AhpDb
             return($act);
         }
         return array();
+    }
+
+
+    /* --- ahp-user-recover functions ---/
+
+    /*
+     * get user account data for $user_name
+     */
+    private function getAccountData($userName)
+    {
+        if ($this->dataBaseConnection()) {
+            $query = $this->db_connection->prepare(
+                "SELECT * FROM `users` WHERE `user_name` = :user_name"
+            );
+            $query->bindValue(':user_name', $userName, PDO::PARAM_STR);
+            $query->execute();
+            return $query->fetch(PDO::FETCH_ASSOC);
+        }
+    }
+
+
+    /*
+     * get array of all projects from $user
+     */
+    public function getAllProjects($userName)
+    {
+        if ($this->databaseConnection()) {
+            $query = $this->db_connection->prepare(
+                "SELECT * FROM `projects` WHERE `project_author` = :user_name"
+            );
+            $query->bindValue(':user_name', $userName, PDO::PARAM_STR);
+            $query->execute();
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        }
+    }
+
+
+    /*
+     * get all pairwise comparisons for project with session code $sc
+     */
+    private function getAllPwc($sc)
+    {
+        if ($this->databaseConnection()) {
+            $query = $this->db_connection->prepare(
+                "SELECT * FROM `pwc` WHERE `project_sc` = :sc"
+            );
+            $query->bindValue(':sc', $sc, PDO::PARAM_STR);
+            $query->execute();
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        }
+    }
+
+
+    /*
+     *  get all alternatives for projects with session code $sc
+     */
+    private function getAllAlt($sc)
+    {
+        if ($this->databaseConnection()) {
+            $query = $this->db_connection->prepare(
+                "SELECT * FROM `alternatives` WHERE `project_sc` = :sc"
+            );
+            $query->bindValue(':sc', $sc, PDO::PARAM_STR);
+            $query->execute();
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        }
+    }
+
+
+
+    /*
+     * Get complete user data from $userName and return as $ahpUser array
+     */
+    public function getUser($userName)
+    {
+        $ahpUser = array();
+        if ($this->databaseConnection()) {
+            $ahpUser['user'] = $this->getAccountData($userName);
+            $ahpUser['projects'] = $this->getAllProjects($userName);
+            $pwc = array();
+            $a = array();
+            foreach ($ahpUser['projects'] as $p) {
+                $r = $this->getAllPwc($p['project_sc']);
+                if (!empty($r)) {
+                    foreach ($r as $row) {
+                        $pwc[]= $row;
+                    }
+                }
+                $al = $this->getAllAlt($p['project_sc']);
+                if (!empty($al)) {
+                    foreach ($al as $row) {
+                        $a[] = $row;
+                    }
+                }
+            }
+            $ahpUser['pwc'] = $pwc;
+            $ahpUser['a'] = $a;
+            return $ahpUser;
+        }
+    }
+
+    /*
+     * Restore user
+     */
+    public function restoreUser($user, $projects, $pwc, $alt=array())
+    {
+        $insState = true;
+        if ($this->databaseConnection()) {
+            $this->db_connection->exec("SET autocommit=0");
+            $this->db_connection->exec(($this->db_type == 'sqlite' ? "BEGIN TRANSACTION;" : "START TRANSACTION;"));
+
+            // write user data
+            try {
+                $sql = "INSERT INTO `users` 
+            (`user_name`, `user_password_hash`, `user_email`, `user_active`, 
+             `user_registration_ip`, `user_registration_datetime`, `user_last_login`) 
+            VALUES( :user_name, :user_password_hash, :user_email, :user_active,
+             :user_registration_ip, :user_registration_datetime, :user_last_login);";
+                $queryIns = $this->db_connection->prepare($sql);
+            } catch (PDOException $e) {
+                $this->err[] = DB_PROJECT_WRITE_ERROR . $e;
+            }
+            if (is_object($queryIns)) {
+                $queryIns->bindValue(':user_name', $user['user_name'], PDO::PARAM_STR);
+                $queryIns->bindValue(':user_password_hash', $user['user_password_hash'], PDO::PARAM_STR);
+                $queryIns->bindValue(':user_email', $user['user_email'], PDO::PARAM_STR);
+                $queryIns->bindValue(':user_active', 0, PDO::PARAM_INT);
+                $queryIns->bindValue(':user_registration_ip', $user['user_registration_ip'], PDO::PARAM_STR);
+                $queryIns->bindValue(':user_registration_datetime', $user['user_registration_datetime'], PDO::PARAM_STR);
+                $queryIns->bindValue(':user_last_login', $user['user_last_login'], PDO::PARAM_STR);
+                $insState = $queryIns->execute();
+            }
+            if ($insState != true) {
+                $this->err[] = "User insert failed ";
+                $this->db_connection->exec("ROLLBACK;");
+                return false;
+            }
+            $user_id = $this->db_connection->lastInsertId();
+            // write projects
+            if (is_array($projects) && count($projects)>0) {
+                try {
+                    $sql = "INSERT INTO `projects` 
+                (`project_sc`, `project_name`, `project_description`, 
+                 `project_hText`, `project_datetime`, `project_author`) 
+                VALUES ( :project_sc, :project_name, :project_description, 
+                 :project_hText, :project_datetime, :project_author);";
+                    $queryInsert = $this->db_connection->prepare($sql);
+                } catch (PDOException $e) {
+                    $this->err[] = DB_PROJECT_WRITE_ERROR . $e;
+                }
+                if (is_object($queryInsert)) {
+                    foreach ($projects as $p) {
+                        // write project data
+                        $queryInsert->bindValue(':project_sc', $p['project_sc'], PDO::PARAM_STR);
+                        $queryInsert->bindValue(':project_name', $p['project_name'], PDO::PARAM_STR);
+                        $queryInsert->bindValue(':project_description', $p['project_description'], PDO::PARAM_STR);
+                        $queryInsert->bindValue(':project_hText', $p['project_hText'], PDO::PARAM_STR);
+                        $queryInsert->bindValue(':project_datetime', $p['project_datetime'], PDO::PARAM_STR);
+                        $queryInsert->bindValue(':project_author', $p['project_author'], PDO::PARAM_STR);
+                        $insState &= $queryInsert->execute();
+                        if (!$insState) {
+                            $err[] = DB_PROJECT_WRITE_ERROR;
+                        }
+                    }
+                }
+            }
+            if (!$insState) {
+                $this->db_connection->exec("ROLLBACK;");
+                $this->err[] = "Project insert failed ";
+                return false;
+            }
+            // write pwc
+            if (is_array($pwc) && count($pwc)>0) {
+                try {
+                    $sql = "INSERT INTO pwc ( project_sc, pwc_part, pwc_timestamp, pwc_node, pwc_ab, pwc_intense ) 
+                        VALUES ( :project_sc, :pwc_part, :pwc_timestamp, :pwc_node, :pwc_ab, :pwc_intense );";
+                    $queryIns = $this->db_connection->prepare($sql);
+                } catch (PDOException $e) {
+                    $err[] = DB_PROJECT_WRITE_ERROR . $e;
+                }
+                foreach ($pwc as $c) {
+                    $queryIns->bindValue(':project_sc', $c['project_sc'], PDO::PARAM_STR);
+                    $queryIns->bindValue(':pwc_part', $c['pwc_part'], PDO::PARAM_STR);
+                    $queryIns->bindValue(':pwc_timestamp', $c['pwc_timestamp'], PDO::PARAM_INT);
+                    $queryIns->bindValue(':pwc_node', $c['pwc_node'], PDO::PARAM_STR);
+                    $queryIns->bindValue(':pwc_ab', $c['pwc_ab'], PDO::PARAM_STR);
+                    $queryIns->bindValue(':pwc_intense', $c['pwc_intense'], PDO::PARAM_STR);
+                    $insState &= $queryIns->execute();
+                }
+                if (!$insState) {
+                    $this->db_connection->exec("ROLLBACK;");
+                    $this->err[] = DB_PROJECT_WRITE_ERROR;
+                    return false;
+                }
+            }
+            // write Alternatives
+            if (is_array($alt) && count($alt)>0) {
+                try {
+                    $this->db_connection->exec("PRAGMA foreign_keys = ON;");
+                    $sql = "INSERT INTO alternatives ( project_sc, alt) 
+                        VALUES ( :project_sc, :alt);";
+                    $queryIns = $this->db_connection->prepare($sql);
+                } catch (PDOException $e) {
+                    $this->err[] = DB_PROJECT_WRITE_ERROR . $e;
+                }
+                foreach ($alt as $a) {
+                    $queryIns->bindValue(':project_sc', $a['project_sc'], PDO::PARAM_STR);
+                    $queryIns->bindValue(':alt', $a['alt'], PDO::PARAM_STR);
+                    $insState &= $queryIns->execute();
+                }
+                if (!$insState) {
+                    $this->db_connection->exec("ROLLBACK;");
+                    $this->err[] = DB_PROJECT_WRITE_ERROR;
+                    return false;
+                }
+            }
+            // write audit table
+            try {
+                $sql = "INSERT INTO audit ( a_trg, a_uid, a_un, a_act) 
+                    VALUES ( 'R', :a_uid, :a_un, 'Backup recovery' );";
+                $queryIns = $this->db_connection->prepare($sql);
+            } catch (PDOException $e) {
+                $this->err[] = DB_PROJECT_WRITE_ERROR . $e;
+            }
+            $queryIns->bindValue(':a_uid', $user_id, PDO::PARAM_INT);
+            $queryIns->bindValue(':a_un', $user['user_name'], PDO::PARAM_STR);
+            $insState &= $queryIns->execute();
+            if (!$insState) {
+                $this->databaseConnection->exec("ROLLBACK;");
+                $thisd->err[] = DB_PROJECT_WRITE_ERROR;
+                return false;
+            }
+            // --- COMMIT all inserts
+            $this->db_connection->exec("COMMIT;");
+            $this->db_connection->exec("SET autocommit=0");
+            return true;
+        }
+        $this->err[] .= "Restore error for $userName, no database connection.";
+        return false;
     }
 
 
