@@ -60,8 +60,8 @@ function get_client_ip()
 
 
 $title="User Registration";
-$version = substr('$LastChangedDate: 2022-02-11 08:19:55 +0800 (Fr, 11 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 120 $', "$");
+$version = substr('$LastChangedDate: 2022-02-12 08:39:22 +0800 (Sa, 12 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 128 $', "$");
 
 session_start();
 
@@ -73,10 +73,19 @@ if (defined('HPAPIKEY') && !empty('HPAPIKEY')) {
     if (!($res == "ok" || isset($_COOKIE['notabot']))
             && $res[0] == 127 && $res[2] >20) {
         $block = true;
+        $_SESSION['block'] = $ip;
         trigger_error(
             "do-register.php: block of suspicious IP $ip",
             E_USER_NOTICE
         );
+    } elseif (isset($_COOKIE['notabot']) && $_SESSION['block'] == $ip) {
+        trigger_error(
+            "do-register.php: NOTABOT cookie set for $ip ",
+            E_USER_NOTICE
+        );
+        unset($_SESSION['block']);
+    } elseif (isset($_SESSION['block'])) {
+        unset($_SESSION['block']);
     }
 }
 
@@ -93,10 +102,10 @@ $_SESSION['reg_s'] = microtime(true);
 if (isset($_COOKIE['lang'])  && in_array(strtolower($_COOKIE['lang']), $languages)) {
     $_SESSION['lang'] = $lang = $_COOKIE['lang'];
 } elseif (isset($_SESSION['lang'])) {
-        $lang = $_SESSION['lang'];
-    } else {
-        $lang = "EN";
-    }
+    $lang = $_SESSION['lang'];
+} else {
+    $lang = "EN";
+}
 
 $registration = new Registration();
 
@@ -127,7 +136,7 @@ $webHtml = new WebHtml($registration->rgTxt->titles['h1reg'], 600);
         // Antispam measure: time needed to fill up form
         if ($reg_t != 0. && $reg_t < 3000) {
             echo "<p class='err'>You are very fast in filling out the form";
-            trigger_error("do-register.php: Probably Spam!", E_USER_WARNING);
+            trigger_error("do-register.php: Probably Spam!", E_USER_NOTICE);
         }
         // show potential errors / feedback (from registration object)
         if (isset($registration) && $registration->errors) {
@@ -136,8 +145,8 @@ $webHtml = new WebHtml($registration->rgTxt->titles['h1reg'], 600);
         if (isset($registration) && $registration->messages) {
             echo "<p class='msg'>", implode(' ', $registration->messages), "</p>";
         }
-        if (!$registration->registration_successful 
-			&& !$registration->verification_successful) {
+        if (!$registration->registration_successful
+            && !$registration->verification_successful) {
             //-- show registration form, if not successfully submitted yet
             include('../form.registration.php');
         } else {
@@ -149,11 +158,11 @@ $webHtml = new WebHtml($registration->rgTxt->titles['h1reg'], 600);
     } else {
         echo "<script src='../../../js/letmein.js'></script><p class='err'>Sorry!</p>";
         echo "<p>You are using a suspicious IP. If you <strong>ARE NOT</strong> 
-			a bot of any kind, please <a href='javascript:letmein()'>click here</a> 
-		    to access the page (Java needs to be enabled!).</p>";
+            a bot of any kind, please <a href='javascript:letmein()'>click here</a> 
+            to access the page (Java needs to be enabled!).</p>";
         if (!empty('HONEYPOT')) {
             echo "<p>Otherwise, please have fun  
-			<a href='" . HONEYPOT . "'</a>here.</p>";
+            <a href='" . HONEYPOT . "'</a>here.</p>";
         }
     }
 $webHtml->webHtmlFooter($version);

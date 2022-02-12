@@ -13,8 +13,8 @@
  *
  * With exportHierarchyTable($ds)csv output is generated for download.
  *
- * $LastChangedDate: 2022-02-11 16:19:15 +0800 (Fr, 11 Feb 2022) $
- * $Rev: 126 $
+ * $LastChangedDate: 2022-02-12 08:39:22 +0800 (Sa, 12 Feb 2022) $
+ * $Rev: 128 $
  *
  * @package AHP online
  * @author Klaus D. Goepel
@@ -196,7 +196,7 @@ class AhpHier
         unset($_SESSION['alt']);
         unset($_SESSION['pwcaDone']);
         unset($ahpH->prioAlt);
-        $ahpH->altNum = $altnum = 2;
+        $ahpH->altNum = 2;
         $ahpH->alt = array();
     }
 
@@ -753,17 +753,11 @@ class AhpHier
         global $colors;
         $rgbBaseColor = "#50D27B";
         $rgbEndColor =  "#EBB5A2";
-        if ($altNum != count($this->alt)) {
-            $altnum = count($this->alt);
-            trigger_error("displayHierarchyTable(): altNum = "
-            . $altNum . "this->alt = "
-            . count($this->alt), E_USER_NOTICE);
-        }
         $cols=$this->level; // columns
         $r_sp = array();    // rowspan for columns
         $k0 = array();      // previous node
 
-    // --- Get array of pairwise comparisons (leafs) already done
+        // --- Get array of pairwise comparisons (leafs) already done
         $pwcCnt = ($this->pwcDone ? count($this->pwcDone) : 0);
 
         // ---	Formats
@@ -789,6 +783,7 @@ class AhpHier
         }
         echo "</tr><tbody>";
         $row=0;
+
         foreach ($this->flatarray as $faKey => $val) {
             // --- flatarray has leafCnt elements
             $k1 = explode(self::FLAT_DELIM, $faKey);
@@ -837,8 +832,9 @@ class AhpHier
                     echo "</td>";
                 } // --- if new node
             } // --- nodes
+
         // --- Leafs
-        echo "<td class='hier' colspan='", $c_sp, "'>$val ";
+            echo "<td class='hier' colspan='", $c_sp, "'>$val ";
             // --- show priorities for leafs
             if ($pflag) {
                 $inpfmt = (
@@ -958,12 +954,14 @@ class AhpHier
         $row = 1;
         $textout[] = $line . self::ENCL . "Project: " . $this->project
         . self::ENCL . self::NEWL;
+
         // ---	Table Headers
         for ($i =1; $i< $this->level; $i++) {
             $line .= self::ENCL . "Level " . $i . self::ENCL . $fs . self::ENCL
             . "p (L" . $i . ")" . self::ENCL . $fs;
         }
         $line .= self::ENCL . "Glb. Pr." . self::ENCL;
+
         // --- Table Header for alternatives
         if (isset($this->alt) && !empty($this->alt)) {
             foreach ($this->alt as $i => $a) {
@@ -975,6 +973,7 @@ class AhpHier
         }
         $textout[] .= $line . self::NEWL;
         $k0 = array_fill(0, $this->level, "");
+
         // ---	Hierarchy
         foreach ($this->flatarray as $key => $val) {
             $line = "";
@@ -1096,7 +1095,7 @@ class AhpHier
             $br = mb_substr(trim($branchArr[0]), 0, WLMAX);
             $br = trim($br);
             if (mb_strstr($br, trim($node)) !== false
-        && mb_strlen($br) == $ndlen) {
+                    && mb_strlen($br) == $ndlen) {
                 // found
                 $branchArr[1] = rtrim($txtNode, ";");
                 $branch = implode(":", $branchArr);

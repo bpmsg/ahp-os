@@ -2,8 +2,8 @@
 /**
 * Analytic Hierarchy Process database functions for ahp
 *
-* $LastChangedDate: 2022-02-11 16:19:15 +0800 (Fr, 11 Feb 2022) $
-* $Rev: 126 $
+* $LastChangedDate: 2022-02-12 08:39:22 +0800 (Sa, 12 Feb 2022) $
+* $Rev: 128 $
 *
 * @author Klaus D. Goepel
 * @copyright 2014-2017 Klaus D. Goepel
@@ -657,13 +657,16 @@ class AhpDb
                      :project_hText, :project_datetime, :project_author
                     );";
             $queryInsert = $this->db_connection->prepare($sql);
-            $queryInsert->bindValue(':project_sc', $sc, PDO::PARAM_STR);
-            $queryInsert->bindValue(':project_name', $project, PDO::PARAM_STR);
-            $queryInsert->bindValue(':project_description', $description, PDO::PARAM_STR);
-            $queryInsert->bindValue(':project_hText', $hText, PDO::PARAM_STR);
-            $queryInsert->bindValue(':project_datetime', date("Y-m-d H:i:s"), PDO::PARAM_STR);
-            $queryInsert->bindValue(':project_author', $author, PDO::PARAM_STR);
-            $insertState = $queryInsert->execute();
+            $insertState =
+                $queryInsert->execute(
+                    array(':project_sc' => $sc,
+                                ':project_name' => $project,
+                                ':project_description' => $description,
+                                ':project_hText' => $hText,
+                                ':project_datetime' => date("Y-m-d H:i:s"),
+                                ':project_author' => $author
+                               )
+                );
             if (!$insertState) {
                 $this->err[] = $ahpDSbTxt->err['dbWrite'];
                 return false;
@@ -724,11 +727,11 @@ class AhpDb
                     project_hText = :project_hText 
                     WHERE project_sc = :project_sc;";
             $query = $this->db_connection->prepare($sql);
-            $query->bindValue(':project_sc', $sc, PDO::PARAM_STR);
-            $query->bindValue(':project_name', $project, PDO::PARAM_STR);
-            $query->bindValue(':project_description', $description, PDO::PARAM_STR);
-            $query->bindValue(':project_hText', $hText, PDO::PARAM_STR);
-            $state = $query->execute();
+            $state = $query->execute(array(
+                                ':project_sc' => $sc,
+                                ':project_name' => $project,
+                                ':project_description' => $description,
+                                ':project_hText' => $hText));
             if (!$state) {
                 $this->err[] = $this->ahpDbTxt->err['dbWrite'];
                 return false;

@@ -195,11 +195,11 @@
         exit("Sorry, this script does not run on a PHP version smaller than 5.5.0 !");
     }
 
-// --- GLOBALS
+    // --- GLOBALS
 
     $admin = array(ADMIN_ID); // additional ids can be added here
     $loginHeaderText = "<a href='" . SITE_URL . "'>" . APP . "</a>
-	&nbsp;&nbsp;<a href='ahp-news.php'>Latest News</a>";
+        &nbsp;&nbsp;<a href='ahp-news.php'>Latest News</a>";
 
     // --- Language settings
     $languages = array('en','de','es','pt');
@@ -210,7 +210,7 @@
 
     $hlNoLogin = "<div style='display:block;float:left'><a href='"
         . URL_HOME . "'>Home</a>&nbsp;&nbsp;<a href='ahp-news.php'>Latest News</a></div>
-		<div style='display:block;float:right'><a href='" . SITE_URL . "'>" . APP . "</a>"
+        <div style='display:block;float:right'><a href='" . SITE_URL . "'>" . APP . "</a>"
         . "</div><div style='clear:both'></div>";
 
     // --- css style sheet
@@ -299,7 +299,7 @@
         }
         closeSession();
         die("INVALID SESSION, SESSION EXPIRED! 
-			-&nbsp;&nbsp;<a href=" . SITE_URL . ">Back</a>");
+            -&nbsp;&nbsp;<a href=" . SITE_URL . ">Back</a>");
     }
 
     /* Close session */
