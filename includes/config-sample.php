@@ -121,7 +121,7 @@
     );
 
     // --- error log for php in BASE directory
-    ini_set('error_log', ABS_PATH . BASE . 'err_log');
+    ini_set('error_log', ABS_PATH . BASE . 'error_log');
 
 
     // --- DOMAIN
