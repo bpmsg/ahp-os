@@ -2,8 +2,8 @@
 /**
 * Analytic Hierarchy Process database functions for ahp
 *
-* $LastChangedDate: 2022-02-12 14:35:55 +0800 (Sa, 12 Feb 2022) $
-* $Rev: 130 $
+* $LastChangedDate: 2022-02-12 15:29:21 +0800 (Sa, 12 Feb 2022) $
+* $Rev: 131 $
 *
 * @author Klaus D. Goepel
 * @copyright 2014-2017 Klaus D. Goepel
@@ -112,12 +112,13 @@ class AhpDb
         $class = get_class() . $lang;
         $this->lang = $lang;
         $this->ahpDbTxt = new $class();
-        $this->db_name = $dbname;
-        // if db name is explicitely given with extension .db, type is set
-        // to sqlite
+        // $this->db_name = $dbname;
+        // if db name is explicitely given with extension .db,
+        // type is set to sqlite
+        $l = strlen($dbname);
         if (substr($dbname, -3) == ".db") {
             $this->db_type = "sqlite";
-            $this->db_name = substr($dbname, 0, strlen($dbname-3));
+            $this->db_name = substr($dbname, 0, $l-3);
         } else {
             $this->db_name = $dbname;
         }
@@ -156,7 +157,7 @@ class AhpDb
                     . ';charset=utf8';
                     $this->db_connection = new PDO($dsn, DBUSER, DBPASS);
                 } else {
-                    $err[] = $this->ahpDbTxt->err['dbType'] . $this->db_name;
+                    $err[] = $this->ahpDbTxt->err['dbType'] . DB_TYPE;
                     return false;
                 }
                 return true;
