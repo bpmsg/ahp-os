@@ -322,9 +322,10 @@ class AhpAdmin extends LoginAdmin
 
         if ($this->db_type == 'sqlite') {
             // --- sqlite
-            $res[] = array("Filename: " => DB_PATH . DBNAME . ".db");
+            $res[] = array("Path: " => DB_PATH);
+            $res[] = array("Filename: " => $this->db_name . ".db");
             $res[] = array("Last access: " => date("M d Y H:i:s.", filemtime(DB_PATH)));
-            $res[] = array("Size: " => filesize(DB_PATH . DBNAME . ".db")/1024);
+            $res[] = array("Size: " => filesize(DB_PATH . $this->db_name . ".db")/1024);
             if ($this->dataBaseConnection()) {
                 $vers = $this->db_connection->getAttribute(PDO::ATTR_SERVER_VERSION);
                 $res[] = array("DB Version: " => $vers);
@@ -336,6 +337,8 @@ class AhpAdmin extends LoginAdmin
             }
         } elseif ($this->db_type == 'mysql') {
             // --- mariadb (mysql)
+            $res[] = array("Database name: " => $this->db_name);
+            $res[] = array("Host:" => DBHOST);
             if ($this->dataBaseConnection()) {
                 $vers = $this->db_connection->getAttribute(PDO::ATTR_SERVER_VERSION);
                 $res[] = array("DB Version: " => $vers);
@@ -343,6 +346,7 @@ class AhpAdmin extends LoginAdmin
                 $query = $this->db_connection->prepare($sql);
                 $query->execute();
                 $tmp = $query->fetchall(PDO::FETCH_ASSOC);
+                $res[] = array("Tables to check: " => count($tables));
                 for ($i=0; $i<count($tables); $i++) {
                     $res[] = array($tmp[$i]['Table'] . ": " => $tmp[$i]['Msg_text']);
                 }
@@ -533,8 +537,7 @@ class AhpAdmin extends LoginAdmin
         $trEmail,
         $trCmnt,
         $trUid
-    )
-    {
+    ) {
         if ($this->dataBaseConnection()) {
             $sql= "INSERT INTO donations ( trDate, trId, trAmnt, trFee, 
                     trName, trEmail, trCmnt, trUid )

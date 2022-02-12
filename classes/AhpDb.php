@@ -2,8 +2,8 @@
 /**
 * Analytic Hierarchy Process database functions for ahp
 *
-* $LastChangedDate: 2022-02-12 10:51:37 +0800 (Sa, 12 Feb 2022) $
-* $Rev: 129 $
+* $LastChangedDate: 2022-02-12 14:35:55 +0800 (Sa, 12 Feb 2022) $
+* $Rev: 130 $
 *
 * @author Klaus D. Goepel
 * @copyright 2014-2017 Klaus D. Goepel
@@ -95,7 +95,7 @@ class AhpDb
 
     public $err = array();
     public $db_sqlite_path = DB_PATH;
-    public $db_type = DB_TYPE;
+    public $db_type =  DB_TYPE;
     public $db_name;
     public $db_connection;
     public $sessionCode;
@@ -113,6 +113,14 @@ class AhpDb
         $this->lang = $lang;
         $this->ahpDbTxt = new $class();
         $this->db_name = $dbname;
+        // if db name is explicitely given with extension .db, type is set
+        // to sqlite
+        if (substr($dbname, -3) == ".db") {
+            $this->db_type = "sqlite";
+            $this->db_name = substr($dbname, 0, strlen($dbname-3));
+        } else {
+            $this->db_name = $dbname;
+        }
         return;
     }
 
@@ -141,14 +149,14 @@ class AhpDb
             // create a db connection, using the constants from config/config.php
             try {
                 if ($this->db_type == 'sqlite') {
-                    $this->db_connection = new PDO(DB_TYPE . ':' . DB_PATH
+                    $this->db_connection = new PDO('sqlite:' . DB_PATH
                     . $this->db_name. ".db");
                 } elseif ($this->db_type == 'mysql') {
                     $dsn = 'mysql:host=' . DBHOST . ';dbname=' . $this->db_name
                     . ';charset=utf8';
                     $this->db_connection = new PDO($dsn, DBUSER, DBPASS);
                 } else {
-                    $err[] = $this->ahpDbTxt->err['dbType'] . DB_TYPE;
+                    $err[] = $this->ahpDbTxt->err['dbType'] . $this->db_name;
                     return false;
                 }
                 return true;
@@ -169,9 +177,9 @@ class AhpDb
     public function generateSessionCode($length=8, $strength=0)
     {
         $vowels = 'aeuy';
-        $consonants = 'bdghjmnpqrstvz';
+        $consonants = 'bdfghjkmnpqrstvwz';
         if ($strength & 1) {
-            $consonants .= 'BDGHJLMNPQRSTVWXZ';
+            $consonants .= 'BDGHJKLMNPQRSTVWXZ';
         }
         if ($strength & 2) {
             $vowels .= "AEUY";
@@ -235,7 +243,7 @@ class AhpDb
         if ($this->dataBaseConnection()) {
             $sql = "SELECT project_sc FROM projects 
                     WHERE project_author = :name ORDER BY project_sc";
-            $sql .= (DB_TYPE == "sqlite" ? " COLLATE NOCASE ASC;" : ";") ;
+            $sql .= ($this->db_type == "sqlite" ? " COLLATE NOCASE ASC;" : ";") ;
             $query = $this->db_connection->prepare($sql);
             $query->bindValue(':name', $name, PDO::PARAM_STR);
             $query->execute();
@@ -1072,7 +1080,7 @@ class AhpDb
             ORDER BY actlv DESC
             LIMIT " . ($lmt+1) . ";";
 
-            $sql = (DB_TYPE == 'sqlite' ? $sqlite : $mysql);
+            $sql = ($this->db_type == 'sqlite' ? $sqlite : $mysql);
             $query = $this->db_connection->prepare($sql);
             $query->execute();
 
