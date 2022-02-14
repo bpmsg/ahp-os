@@ -58,17 +58,24 @@ if ($login->isUserLoggedIn() && in_array($_SESSION['user_id'], $admin)) {
     }
 
     echo "<h3>PWC Consistency Check</h3>";
+    echo "<p>Projects with nodes in the pwc table, but not in the hierarchy of
+    the corresponding project.</p>";
     $prjts = array();
     // all projects with pwc
     $rslt = $ahpDb->checkPwcCons();
-    echo "<p><span class='res'>"
-    . (count($rslt)==0 ? " o.k.</span>" : "<span class='res'>"
-    . count($rslt)
-    . "</span> projects affected.</p>");
-    foreach ($rslt as $project) {
-        echo $project, "<br>";
+    echo "<p><span class='res'>";
+    if(empty($rslt)) {
+        echo "o.k.</span></p>";
+    } else {
+        echo count($rslt), "</span> projects affected.</p>";
+        foreach ($rslt as $project) {
+            echo "<span class='hl'>", $project['user'], "</span> 
+                <span class='res'>", $project['sc'], "</span> ",
+                count($project['nodes']), " Node(s): ",
+                implode(", ", $project['nodes']), $project['type'], "<br>";
+        }
     }
-
+    
     // --- user flow
     echo "<h3>User Flow</h3>";
     $reg = $ahpAdmin->getUserFlow(MONTHS_USER_FLOW);

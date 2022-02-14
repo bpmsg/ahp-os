@@ -2,8 +2,8 @@
 /**
 * Analytic Hierarchy Process database functions for ahp
 *
-* $LastChangedDate: 2022-02-14 08:56:13 +0800 (Mo, 14 Feb 2022) $
-* $Rev: 134 $
+* $LastChangedDate: 2022-02-14 17:50:49 +0800 (Mo, 14 Feb 2022) $
+* $Rev: 135 $
 *
 * @author Klaus D. Goepel
 * @copyright 2014-2017 Klaus D. Goepel
@@ -794,14 +794,22 @@ class AhpDb
 
     /* Submit group data
      * pwc array in format as stored in session parameter [node][A], [node][Intense]
-     * @return 0 (false) for error, 1 (true) for ok.
-     *
+     * @para $sc session code
+     * @para $name participant
+     * @pwc pairwise comparison array
+     * @return array update count [''] and insert count ['']
      */
     public function submitGroupData($sc, $name, $pwc)
     {
         $pwcConv = $this->convertPwcToString($pwc);
         $timestamp = time();
         if ($this->dataBaseConnection()) {
+            $rslt = $this->checkPwcCons($sc);
+            // --- temporary trying to find a possible bug
+            if(!empty($rslt)){
+                // Something wrong
+                trigger_error("submitGroupData 1st consistency check $sc", E_USER_WARNING);
+            }
             $sql = "SELECT pwc_node FROM pwc WHERE project_sc = :sc 
                     AND pwc_part = :part;";
             $query = $this->db_connection->prepare($sql);
@@ -883,7 +891,13 @@ class AhpDb
             } else { // no pwcs to insert
                 $insCnt = 0;
             }
-            return array( "upd" => $updCnt, "ins" => $insCnt);
+            $rslt = $this->checkPwcCons($sc);
+            // --- temporary trying to find a possible bug
+            if(!empty($rslt)){
+                // Something wrong
+                trigger_error("submitGroupData consistency check after insert $sc", E_USER_WARNING);
+            }
+            return array( 'upd' => $updCnt, 'ins' => $insCnt);
         }
         $this->err[] = $this->ahpDbTxt->err['dbSubmit'];
         return array();
@@ -931,25 +945,29 @@ class AhpDb
     }
 
 
-    /* check whether pwc nodes are all nodes or leafs of hierarchy
-     * @param $prjSc array of project sc's with pwc to be checked
+    /* Check pwc consistency: Due to some unknown reason it happens
+     * that hierarchy and pwc nodes under the same session code do not
+     * match. This functions checks whether the pwc nodes of a project 
+     * in the pwc table are all nodes or leafs of the corresponding 
+     * hierarchy
+     * @param $psc project session code, '%' = all
      * @uses ahpH
+     * @return array
      */
-    public function checkPwcCons($prjSc="")
+    public function checkPwcCons($psc="%")
     {
-        $prjSc = array();
         $result = array();
         $pwcnods =array();
         $dn = array();
         if ($this->dataBaseConnection()) {
-            if (empty($prjSc)) {
-                // all projects with pwc
-                $query = $this->db_connection->prepare(
-                    "SELECT DISTINCT project_sc FROM pwc;"
-                );
-                $query->execute();
-                $prjSc = $query->fetchAll(PDO::FETCH_COLUMN);
-            }
+            // all projects with pwc
+            $query = $this->db_connection->prepare(
+                "SELECT DISTINCT project_sc FROM pwc
+                 WHERE project_sc LIKE :sc;"
+            );
+            $query->bindValue(':sc', $psc, PDO::PARAM_STR);
+            $query->execute();
+            $prjSc = $query->fetchAll(PDO::FETCH_COLUMN);
             $pCnt = 0;
             $dn = array();
             $rslt = array();
@@ -983,17 +1001,14 @@ class AhpDb
                         $dn = array_diff(array_values($pwcnods), $ahpH->nodes);
                     }
                     if (!empty($dn)) {
-                        $pCnt++;
-                        $rslt[] = " <b>" . $user . "</b>: "
-                    . $sc . ($aflg ? " (a)" : "") . " "
-                    . count($dn) . ": " . implode(",", $dn);
-                    }
-                } else {
-                    $pCnt++;
-                    $rslt[] = " " . $sc . " Project was deleted ";
+                        $rslt[$pCnt]['user'] =  $user;
+                        $rslt[$pCnt]['sc'] = $sc;
+                        $rslt[$pCnt]['nodes'] = $dn;
+                        $rslt[$pCnt++]['type'] = ($aflg ? "a" : "h");
+                     }
                 }
-                unset($ahpH);
-            } // end projects
+                unset($ahpH);     
+            }
             return $rslt;
         }
     }
