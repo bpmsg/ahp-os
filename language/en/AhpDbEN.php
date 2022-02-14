@@ -33,14 +33,13 @@ class AhpDbEN
 					<th>Session</th>
 					<th>Project</th>
 					<th>Type<sup>1</sup></th>
-					<th>Status<sup>2</sup></th>
+					<th>Status</th>
 					<th>Description</th>
-					<th>Part.<sup>3</sup></th>
+					<th>Part.<sup>2</sup></th>
 					<th>created</th></tr></thead>",
     'scTblFoot'	=> 	"<tfoot><tr><td colspan='8'>
 					<sup>1</sup> H: Priority evaluation hierarchy, A: Alternative evaluation, 
-					<sup>2</sup>Project status: 1 - Open 0 - Closed, 
-					<sup>3</sup> Number of participants</td>
+					<sup>2</sup> Number of participants</td>
 					</tr></tfoot>",
     'pdTblTh'	=>	"<thead><tr>
 					<th>Field</th>

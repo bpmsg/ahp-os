@@ -32,14 +32,13 @@ class AhpDbES
                     <th>Sesión</th>
                     <th>Proyecto</th>
                     <th>Tipo<sup>1</sup></th>
-                    <th>Status<sup>2</sup></th>
+                    <th>Status</th>
                     <th>Descripción</th>
-                    <th>Parte.<sup>3</sup></th>
+                    <th>Parte.<sup>2</sup></th>
                     <th>creado</th></tr></thead>",
   "scTblFoot" =>  "<tfoot><tr><td colspan='8'>
                   <sup>1</sup> H: Jerarquía de evaluación prioritaria, A: Evaluación alternativas, 
-                  <sup>2</sup>Status del proyecto: 1 - abierto 0 - cerrado, 
-                  <sup>3</sup> Número de participantes</td>
+                  <sup>2</sup> Número de participantes</td>
                   </tr></tfoot>",
   "pdTblTh"   =>  "<thead><tr>
                     <th>Campo</th>

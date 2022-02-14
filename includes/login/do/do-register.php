@@ -60,8 +60,8 @@ function get_client_ip()
 
 
 $title="User Registration";
-$version = substr('$LastChangedDate: 2022-02-12 08:39:22 +0800 (Sa, 12 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 128 $', "$");
+$version = substr('$LastChangedDate: 2022-02-14 08:56:13 +0800 (Mo, 14 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 134 $', "$");
 
 session_start();
 
@@ -162,7 +162,7 @@ $webHtml = new WebHtml($registration->rgTxt->titles['h1reg'], 600);
             to access the page (Java needs to be enabled!).</p>";
         if (!empty('HONEYPOT')) {
             echo "<p>Otherwise, please have fun  
-            <a href='" . HONEYPOT . "'</a>here.</p>";
+            <a href='" . HONEYPOT . "' ></a>here</a>.</p>";
         }
     }
 $webHtml->webHtmlFooter($version);

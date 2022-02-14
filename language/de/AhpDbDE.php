@@ -30,14 +30,13 @@ class AhpDbDE
 									 <th>Kennung</th>
 									 <th>Projekt</th>
 									 <th>Typ<sup>1</sup></th>
-									 <th>Status<sup>2</sup>
+									 <th>Status
 									 </th><th>Beschreibung</th>
-									 <th>Teiln.<sup>3</sup></th>
+									 <th>Teiln.<sup>2</sup></th>
 									 <th>Erstellt</th></tr></thead>",
     "scTblFoot"	=>	"<tfoot><tr><td colspan='8'>
 									 <sup>1</sup> H: Hierarchie, A: Hierarchie mit Alternativen, 
-									 <sup>2</sup> Project Status: 1 = Aktiv 0 = Geschlossen, 
-									 <sup>3</sup> Anzahl der Teilnehmer</td></tr></tfoot>",
+									 <sup>2</sup> Anzahl der Teilnehmer</td></tr></tfoot>",
     "pdTblTh"		=>	"<thead><tr>
 									 <th>Attribut</th>
 									 <th>Inhalt</th></tr></thead>\n",

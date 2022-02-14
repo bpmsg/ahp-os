@@ -2,8 +2,8 @@
 /**
 * Analytic Hierarchy Process database functions for ahp
 *
-* $LastChangedDate: 2022-02-12 15:29:21 +0800 (Sa, 12 Feb 2022) $
-* $Rev: 131 $
+* $LastChangedDate: 2022-02-14 08:56:13 +0800 (Mo, 14 Feb 2022) $
+* $Rev: 134 $
 *
 * @author Klaus D. Goepel
 * @copyright 2014-2017 Klaus D. Goepel
@@ -1172,15 +1172,19 @@ class AhpDb
 
     /*
      * get array of all projects from $user
+     * with session coder LIKE $sc. Without sc given
+     * will return all projects
      */
-    public function getAllProjects($userName)
+    public function getAllProjects($user, $sc="%")
     {
         if ($this->databaseConnection()) {
             $query = $this->db_connection->prepare(
-                "SELECT * FROM `projects` WHERE `project_author` = :user_name"
+                "SELECT * FROM `projects` 
+                WHERE `project_author` = :user_name
+                AND `project_sc` LIKE :sc;"
             );
-            $query->bindValue(':user_name', $userName, PDO::PARAM_STR);
-            $query->execute();
+            $query->execute(array(':user_name' => $user,
+                                ':sc' => $sc));
             return $query->fetchAll(PDO::FETCH_ASSOC);
         }
     }
@@ -1189,7 +1193,7 @@ class AhpDb
     /*
      * get all pairwise comparisons for project with session code $sc
      */
-    private function getAllPwc($sc)
+    public function getAllPwc($sc)
     {
         if ($this->databaseConnection()) {
             $query = $this->db_connection->prepare(
@@ -1205,7 +1209,7 @@ class AhpDb
     /*
      *  get all alternatives for projects with session code $sc
      */
-    private function getAllAlt($sc)
+    public function getAllAlt($sc)
     {
         if ($this->databaseConnection()) {
             $query = $this->db_connection->prepare(
@@ -1577,47 +1581,6 @@ class AhpDb
 
 
     /*
-     * get decision matrix from pwc array
-     * this function is the same as the one used in ahpClass
-     * @return array $dm decision matrix nxn, 0 on error
-     */
-    private function getMatrixFromPwc($pwc)
-    {
-        $dm = array();
-        $dmstring = array();
-        $pwcCnt = count($pwc['A']);
-        if (count($pwc['Intense']) != $pwcCnt) {
-            return 0;
-        }
-        $n = 1 + (sqrt(8*$pwcCnt + 1)-1)/2;
-        $dmstring = array_fill(0, $pwcCnt, 0.);
-        $m = 0;
-        for ($i = 0; $i < $n-1 ; $i++) {
-            for ($j= $i+1; $j<$n; $j++) {
-                $dmstring[$m] = ($pwc['A'][$m] == 0 ? $pwc['Intense'][$m] : 1/$pwc['Intense'][$m]);
-                $m++;
-            }
-        }
-        for ($i=0;$i<$n;$i++) {
-            $dm[] = array_fill(0, $n, 1.);
-        }
-        $m = 0;
-        for ($i = 0; $i< $n-1; $i++) {
-            for ($j = $i+1; $j < $n; $j++) {
-                $dm[$i][$j] = (float) $dmstring[$m];
-                $dm[$j][$i] = (float) 1/$dmstring[$m];
-                $m++;
-            }
-        }
-        // Fill diagonal
-        for ($i = 0; $i<$n; $i++) {
-            $dm[$i][$i] = 1.00;
-        }
-        return $dm;
-    }
-
-
-    /*
      * csv export function for project details
      */
     public function exportProjectDetails($sc, $ds)
@@ -1629,6 +1592,7 @@ class AhpDb
         $part = $this->getSelectedParticipants($sc);
         $partCnt = count($part);
         $hiermode = (isset($pjd['project_alt']) ? false : true);
+        $ahpC = new AhpCalc(0);
         if ($hiermode) {
             $nodes = explode(";", $pjd['project_hText']);
         }
@@ -1684,9 +1648,9 @@ class AhpDb
                         . self::ENCL . $node . self::ENCL . $fs
                         . self::ENCL . $n . "x" . $n . " decision matrix"
                         . self::ENCL . self::NEWL;
-                $dm = $this->getMatrixFromPwc($pwc);
+                $dm = $ahpC->getMatrixFromPwc($pwc);
                 for ($i=0; $i<$n; $i++) {
-                    $buf .= $fs;
+                    $buf .= $fs . $fs;
                     for ($j=0; $j<$n; $j++) {
                         $buf .= self::ENCL . number_format($dm[$i][$j], ROUND, $ds, "")
                          . self::ENCL . $fs;
