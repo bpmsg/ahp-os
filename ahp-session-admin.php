@@ -30,8 +30,8 @@ $errMsg = "";
 $msg = "";
 $sessionName= "";
 
-$version = substr('$LastChangedDate: 2022-02-15 14:53:37 +0800 (Di, 15 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 136 $', "$");
+$version = substr('$LastChangedDate: 2022-02-15 15:26:26 +0800 (Di, 15 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 137 $', "$");
 
 $login = new Login();
 
@@ -261,15 +261,15 @@ if ($login->isUserLoggedIn() === true) {
 
         // --- EXPORT --- export project
         if (isset($_POST['EXPORT'])) {
-            $author = $login->user_name;
-            $project = $ahpDb->getAllProjects($author, $sessionName);
-            $ahpPj = array(
-                    'pj'    => $ahpDb->getAllProjects($author, $sessionName),
-                    'pwc'   => $ahpDb->getAllPwc($sessionName)
-                    );
+            $author  = $login->user_name;
+            $ahpPj = array( 'pj' => $ahpDb->getAllProjects($author, $sessionName));
+            $pwc  = $ahpDb->getAllPwc($sessionName);
+            if(!empty($pwc)){
+                $ahpPj += array('pwc' => $pwc);
+            }
             $alt = $ahpDb->getAllAlt($sessionName);
-            if (!empty($alt)) {
-                $ahpPj += array('alt'=>$alt);
+            if(!empty($alt)) {
+                $ahpPj += array('alt' => $alt);
             }
             // JSON encode
             $ahpPjJs = json_encode($ahpPj, JSON_PRETTY_PRINT);
