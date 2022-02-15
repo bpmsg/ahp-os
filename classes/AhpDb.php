@@ -2,8 +2,8 @@
 /**
 * Analytic Hierarchy Process database functions for ahp
 *
-* $LastChangedDate: 2022-02-14 17:50:49 +0800 (Mo, 14 Feb 2022) $
-* $Rev: 135 $
+* $LastChangedDate: 2022-02-15 14:53:37 +0800 (Di, 15 Feb 2022) $
+* $Rev: 136 $
 *
 * @author Klaus D. Goepel
 * @copyright 2014-2017 Klaus D. Goepel
@@ -141,7 +141,7 @@ class AhpDb
      * tries to open it.
      * @return bool Success status of the database connecting process
      */
-    public function databaseConnection()
+    private function databaseConnection()
     {
         // if connection already exists
         if ($this->db_connection != null) {
@@ -806,7 +806,7 @@ class AhpDb
         if ($this->dataBaseConnection()) {
             $rslt = $this->checkPwcCons($sc);
             // --- temporary trying to find a possible bug
-            if(!empty($rslt)){
+            if (!empty($rslt)) {
                 // Something wrong
                 trigger_error("submitGroupData 1st consistency check $sc", E_USER_WARNING);
             }
@@ -893,7 +893,7 @@ class AhpDb
             }
             $rslt = $this->checkPwcCons($sc);
             // --- temporary trying to find a possible bug
-            if(!empty($rslt)){
+            if (!empty($rslt)) {
                 // Something wrong
                 trigger_error("submitGroupData consistency check after insert $sc", E_USER_WARNING);
             }
@@ -947,8 +947,8 @@ class AhpDb
 
     /* Check pwc consistency: Due to some unknown reason it happens
      * that hierarchy and pwc nodes under the same session code do not
-     * match. This functions checks whether the pwc nodes of a project 
-     * in the pwc table are all nodes or leafs of the corresponding 
+     * match. This functions checks whether the pwc nodes of a project
+     * in the pwc table are all nodes or leafs of the corresponding
      * hierarchy
      * @param $psc project session code, '%' = all
      * @uses ahpH
@@ -1005,9 +1005,9 @@ class AhpDb
                         $rslt[$pCnt]['sc'] = $sc;
                         $rslt[$pCnt]['nodes'] = $dn;
                         $rslt[$pCnt++]['type'] = ($aflg ? "a" : "h");
-                     }
+                    }
                 }
-                unset($ahpH);     
+                unset($ahpH);
             }
             return $rslt;
         }

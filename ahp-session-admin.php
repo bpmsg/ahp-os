@@ -30,8 +30,8 @@ $errMsg = "";
 $msg = "";
 $sessionName= "";
 
-$version = substr('$LastChangedDate: 2022-02-11 08:19:55 +0800 (Fr, 11 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 120 $', "$");
+$version = substr('$LastChangedDate: 2022-02-15 14:53:37 +0800 (Di, 15 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 136 $', "$");
 
 $login = new Login();
 
@@ -104,8 +104,11 @@ if ($login->isUserLoggedIn() === true) {
     if (isset($_POST['OPEN'])) {
         $para = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
         if (filter_has_var(INPUT_POST, 'sessionName')) {
-            $sessionName = mb_substr(preg_replace('~[^\p{L}\p{N}]++~u', '',
-            $para['sessionName']), 0, 6);
+            $sessionName = mb_substr(preg_replace(
+                '~[^\p{L}\p{N}]++~u',
+                '',
+                $para['sessionName']
+            ), 0, 6);
             if ($ahpDb->checkSessionCode($sessionName)) {
                 $_SESSION['sessionCode'] = $sessionName;
             } else {
@@ -130,7 +133,7 @@ if ($login->isUserLoggedIn() === true) {
     if (isset($_SESSION['sessionCode']) && (isset($_POST['pselect']) || isset($_POST['VRES'])
    || isset($_POST['GINP']) || isset($_POST['DELP']) || isset($_POST['DEL'])
    || isset($_POST['PMOD']) || isset($_POST['HMOD'])|| isset($_POST['HEDIT'])
-   || isset($_POST['STATUS']))) {
+   || isset($_POST['STATUS']) || isset($_POST['EXPORT']))) {
         $sessionName = $_SESSION['sessionCode'];
     }
 
@@ -189,7 +192,7 @@ if ($login->isUserLoggedIn() === true) {
             exit();
         }
 
-        // --- GINP --- group input
+        // --- GINP --- pwc  input
         if (isset($_POST['GINP'])) {
             if ($pd['project_status'] == 0) {
                 $erMsg = $sessionAdmin->err["pClosed"];
@@ -235,7 +238,7 @@ if ($login->isUserLoggedIn() === true) {
             exit();
         }
 
-        // --- HEDIT --- modify hierarchy
+        // --- HEDIT --- edit
         if (isset($_POST['HEDIT']) && $pcnt == 0) {
             $_SESSION['hText'] = 	$pd['project_hText'];
             if (isset($pd['project_alt'])) {
@@ -248,12 +251,32 @@ if ($login->isUserLoggedIn() === true) {
             exit();
         }
 
-        // --- STATUS --- change project status
+        // --- STATUS --- toggle project status
         if (isset($_POST['STATUS'])) {
             $st = $ahpDb->toggleStatus($sessionName);
             $pd['project_status'] = $st;
-            $msg = $sessionAdmin->msg['pStat1'] 
+            $msg = $sessionAdmin->msg['pStat1']
             . ($st == 1 ? $sessionAdmin->msg['pStatO'] : $sessionAdmin->msg['pStatC']);
+        }
+
+        // --- EXPORT --- export project
+        if (isset($_POST['EXPORT'])) {
+            $author = $login->user_name;
+            $project = $ahpDb->getAllProjects($author, $sessionName);
+            $ahpPj = array(
+                    'pj'    => $ahpDb->getAllProjects($author, $sessionName),
+                    'pwc'   => $ahpDb->getAllPwc($sessionName)
+                    );
+            $alt = $ahpDb->getAllAlt($sessionName);
+            if (!empty($alt)) {
+                $ahpPj += array('alt'=>$alt);
+            }
+            // JSON encode
+            $ahpPjJs = json_encode($ahpPj, JSON_PRETTY_PRINT);
+            $ahp = new AhpCalcIo(0);
+            $ahp->txtDownload($sessionName . "-AHP-project" . ".JSON", $ahpPjJs, 'application/json');
+            session_write_close();
+            exit();
         }
 
         // --- pselect --- read selected participants

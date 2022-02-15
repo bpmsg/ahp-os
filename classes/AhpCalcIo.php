@@ -4,8 +4,8 @@
  * Contains functions for html and file i/o
  * Extends AHP base class
  *
- * $LastChangedDate: 2022-02-11 16:19:15 +0800 (Fr, 11 Feb 2022) $
- * $Rev: 126 $
+ * $LastChangedDate: 2022-02-15 14:53:37 +0800 (Di, 15 Feb 2022) $
+ * $Rev: 136 $
  *
  * Main methods:
  * set_txtbuf(), txtDownload($fname, $txt)
@@ -57,9 +57,9 @@ class AhpCalcIo extends AhpCalc
     * @param string %txt Text String to Download
     * @return int 0 for error, 1 for ok
     */
-    public function txtDownload($fname, $txt)
+    public function txtDownload($fname, $txt, $content_type="text/csv")
     {
-        $flen = strlen($txt);
+        $flen = mb_strlen($txt) + 4;
         if ($flen == 0) {
             echo "<span class='err'>Error: empty text file</span>";
             return 0;
@@ -67,7 +67,7 @@ class AhpCalcIo extends AhpCalc
         ob_start();
         echo $txt;
         ob_start();
-        header('Content-type: text/csv');
+        header('Content-type: ' . $content_type);
         header('Content-Description: File Transfer');
         header('Content-Disposition: attachment; filename=' . $fname);
         header('Expires: 0');

@@ -11,8 +11,7 @@ class AhpDbPT
     public $err = array(
     "dbType"		=>	"Não existe este tipo de base de dados SQL : ",
     "scInv"			=>	"Código inválido da Sessão ",
-    "scInUse"		=>	"
-Código de sessão em uso ",
+    "scInUse"		=>	"Código de sessão em uso ",
     "dbWrite"		=>	"O dado não pode ser inserido na base de dados . Por favor tente novamente, mais tarde.",
     "dbWriteA"	=>	"Erro na data base, não foi possível armazenar as alternativas ",
     "dbUpd"			=>	"O dado não pode ser atualizado. Por favor tente novamente mais tarde.",
@@ -33,14 +32,13 @@ Código de sessão em uso ",
 										<th>Sessão</th>
 										<th>Projeto</th>
 										<th>Tipo<sup>1</sup></th>
-										<th>Status<sup>2</sup></th>
+										<th>Status</th>
 										<th>Descrição</th>
-										<th>Part.<sup>3</sup></th>
+										<th>Part.<sup>2</sup></th>
 										<th>Criado</th></tr></thead>",
     "scTblFoot"	=> 	"<tfoot><tr><td colspan='8'>
 									<sup>1</sup> H: Prioridade de avaliação da hierarquia, A:Avaliação da Alternativa, 
-									<sup>2</sup>Status do Projeto: 1 - Aberto 0 - Fechado, 
-									<sup>3</sup> Número de participantes</td>
+									<sup>2</sup> Número de participantes</td>
 									</tr></tfoot>",
     "pdTblTh"		=>	"<thead><tr>
 										<th>Campo</th>

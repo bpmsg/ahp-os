@@ -1,42 +1,43 @@
 <form method='POST' action='<?php echo $urlAct; ?>'>
-	<div style='display:block;padding:2px;'>
-		<fieldset style='margin-left:2px;'><legend><?php echo $sessionAdmin->mnu['lgd2']; ?></legend>
-			<div style='display:block;float:left;padding:2px;'>
-				<?php if($pcnt > 0){ ?>
-					<input type='submit' value='<?php echo $sessionAdmin->mnu['btnpa1']; ?>' name='VRES' class='btnr'>&nbsp;&nbsp;
-					<?php if( $pd['project_status'] == 1)
-						echo "<input type='submit' value='",$sessionAdmin->mnu['btnpa2'], "' name='GINP' >&nbsp;&nbsp;";
-					else
-						echo "<input type='submit' value='",$sessionAdmin->mnu['btnpa2'], "'name='GINP' disabled >&nbsp;&nbsp;";
-					?>
-					<input type='submit' value='<?php echo $sessionAdmin->mnu['btnpa3']; ?>'  name='HMOD' >
-				<?php } 	elseif( isset($_SESSION['pwcDone']) && $hierMode ) { ?>
-					<input type='submit' value='<?php echo $sessionAdmin->mnu['btnpa1']; ?>' name='VRES' disabled >
-					<input type='submit' value='<?php echo $sessionAdmin->mnu['btnpa2']; ?>' name='GINP' disabled >
-					<input type='submit' value='<?php echo $sessionAdmin->mnu['btnpa3']; ?>' name='HMOD' class='btnr'>
-				<?php } else { ?>
-					<input type='submit' value='<?php echo $sessionAdmin->mnu['btnpa1']; ?>' name='VRES' disabled >
-					<input type='submit' value='<?php echo $sessionAdmin->mnu['btnpa2']; ?>' name='GINP' class='btnr'>
-				<?php } ?>
-				&nbsp;&nbsp;<input type='submit' value='<?php echo $sessionAdmin->mnu['btnpa4']; ?>' name='PMOD' >
-				<?php if($pcnt == 0)
-						echo "&nbsp;<input type='submit' value='",$sessionAdmin->mnu['btnpa5'],"' name='HEDIT' >";
-					else
-					echo "&nbsp;<input type='submit' value='",$sessionAdmin->mnu['btnpa5'],"' name='HEDIT' disabled >";
-				?>
-				&nbsp;&nbsp;
-				<?php if(count($psel) > 0)
-						echo "<input type='submit' value='",$sessionAdmin->mnu['btnpa6'], "' name='DELP' onclick='return deletconfig()'>";
-					else
-						echo "<input type='submit' value='",$sessionAdmin->mnu['btnpa6'], "' name='DELP' disabled >";
-				?>	
-				&nbsp;&nbsp;<input type='submit' value='<?php echo $sessionAdmin->mnu['btnpa7']; ?>' name='DEL' onclick='return deletconfig()'>
-				&nbsp;&nbsp;<input type='submit' value='<?php echo $sessionAdmin->mnu['btnpa8']; ?>' name='STATUS'>
-			</div>
-			<div style='padding:2px;float:right;'>
-				&nbsp;&nbsp;<input type='submit' value='<?php echo $sessionAdmin->mnu['btnpa9']; ?>' name='CLOSE' >
-			</div>
-		</fieldset>
-		<script src="js/delcfm.js"></script>
-	</div>
+    <div style='display:block;padding:2px;'>
+        <fieldset style='margin-left:2px;'><legend><?php echo $sessionAdmin->mnu['lgd2']; ?></legend>
+            <div style='display:block;float:left;padding:2px;'>
+                <?php if($pcnt > 0){ ?>
+                    <input type='submit' value='<?php echo $sessionAdmin->mnu['btnpa1']; ?>' name='VRES' class='btnr'>&nbsp;&nbsp;
+                    <?php if( $pd['project_status'] == 1)
+                        echo "<input type='submit' value='",$sessionAdmin->mnu['btnpa2'], "' name='GINP' >&nbsp;&nbsp;";
+                    else
+                        echo "<input type='submit' value='",$sessionAdmin->mnu['btnpa2'], "'name='GINP' disabled >&nbsp;&nbsp;";
+                    ?>
+                    <input type='submit' value='<?php echo $sessionAdmin->mnu['btnpa3']; ?>'  name='HMOD' >
+                <?php }     elseif( isset($_SESSION['pwcDone']) && $hierMode ) { ?>
+                    <input type='submit' value='<?php echo $sessionAdmin->mnu['btnpa1']; ?>' name='VRES' disabled >
+                    <input type='submit' value='<?php echo $sessionAdmin->mnu['btnpa2']; ?>' name='GINP' disabled >
+                    <input type='submit' value='<?php echo $sessionAdmin->mnu['btnpa3']; ?>' name='HMOD' class='btnr'>
+                <?php } else { ?>
+                    <input type='submit' value='<?php echo $sessionAdmin->mnu['btnpa1']; ?>' name='VRES' disabled >
+                    <input type='submit' value='<?php echo $sessionAdmin->mnu['btnpa2']; ?>' name='GINP' class='btnr'>
+                <?php } ?>
+                &nbsp;&nbsp;<input type='submit' value='<?php echo $sessionAdmin->mnu['btnpa4']; ?>' name='PMOD' >
+                <?php if($pcnt == 0)
+                        echo "&nbsp;<input type='submit' value='",$sessionAdmin->mnu['btnpa5'],"' name='HEDIT' >";
+                    else
+                    echo "&nbsp;<input type='submit' value='",$sessionAdmin->mnu['btnpa5'],"' name='HEDIT' disabled >";
+                ?>
+                &nbsp;&nbsp;
+                <?php if(count($psel) > 0)
+                        echo "<input type='submit' value='",$sessionAdmin->mnu['btnpa6'], "' name='DELP' onclick='return deletconfig()'>";
+                    else
+                        echo "<input type='submit' value='",$sessionAdmin->mnu['btnpa6'], "' name='DELP' disabled >";
+                ?>    
+                &nbsp;&nbsp;<input type='submit' value='<?php echo $sessionAdmin->mnu['btnpa7']; ?>' name='DEL' onclick='return deletconfig()'>
+                &nbsp;&nbsp;<input type='submit' value='<?php echo $sessionAdmin->mnu['btnpa8']; ?>' name='STATUS'>
+            </div>
+            <div style='padding:2px;float:right;'>
+                &nbsp;&nbsp;<input type='submit' value='<?php echo $sessionAdmin->mnu['btnpa10']; ?>' name='EXPORT' >
+                &nbsp;&nbsp;<input type='submit' value='<?php echo $sessionAdmin->mnu['btnpa9']; ?>' name='CLOSE' >
+            </div>
+        </fieldset>
+        <script src="js/delcfm.js"></script>
+    </div>
 </form>
