@@ -67,8 +67,8 @@ $loggedIn = $login->isUserLoggedIn();
 $msg ="";
 $subTitle = $ahpHiergini->titles['subTitle1'];
 
-$version = substr('$LastChangedDate: 2022-02-16 09:47:49 +0800 (Mi, 16 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 138 $', "$");
+$version = substr('$LastChangedDate: 2022-02-16 11:53:54 +0800 (Mi, 16 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 139 $', "$");
 
 /** get data (name, session code, description from POST parameter
 * called from ahp-hiergini page
@@ -268,7 +268,6 @@ $iniOwner = false;
             if ($retFlg) {
                 $ahpH = new AhpHier();
                 $ahpH->closeHier();
-                unset($_SESSION['sessionCode']);
                 unset($_SESSION['mod']);
                 // redirect
                 $url = $urlSessionAdmin;
@@ -295,8 +294,6 @@ $iniOwner = false;
             $url = $urlSessionAdmin;
             $ahpH = new AhpHier();
             $ahpH->closeHier();
-            unset($_SESSION['groupSession']);
-            unset($_SESSION['sessionCode']);
         } else {
             $url = $urlAhp;
             closeSession();

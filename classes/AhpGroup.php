@@ -9,8 +9,8 @@
  * pairwise comparisons are stored. The AhpGroup class has all methods
  * to calculate and display the final results.
  *
- * $LastChangedDate: 2022-02-11 16:19:15 +0800 (Fr, 11 Feb 2022) $
- * $Rev: 126 $
+ * $LastChangedDate: 2022-02-16 11:53:54 +0800 (Mi, 16 Feb 2022) $
+ * $Rev: 139 $
  *
  * @author Klaus D. Goepel
  * @since 2014-01-06
@@ -185,8 +185,7 @@ class AhpGroup
     public function getPrioHier($iScale = 0)
     {
         $text = "";
-        $ahpH = new AhpHier();
-        $ahpH->setHierarchy($this->pj['project_hText']);
+        $ahpH = new AhpHier($this->pj['project_hText']);
         // get hierarchy nodes
         $this->nodes = $ahpH->nodes;
         // consolidate
@@ -733,8 +732,7 @@ class AhpGroup
     public function uncertainty($pwcr, $ahpH, $iScale, $sdFlg=0, $hierMode)
     {
         if ($hierMode) {
-            $ahpH = new AhpHier();
-            $ahpH->setHierarchy($this->pj['project_hText']);
+            $ahpH = new AhpHier($this->pj['project_hText']);
             $ahpH->setPglb();
         } else {
             $n = $ahpH->altNum;

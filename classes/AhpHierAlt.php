@@ -3,8 +3,8 @@
 * Analytic Hierarchy Process Alternative Evaluation class 2014-01-06
 * extends ahpHierClass
 *
-* $LastChangedDate: 2022-02-11 16:19:15 +0800 (Fr, 11 Feb 2022) $
-* $Rev: 126 $
+* $LastChangedDate: 2022-02-16 11:53:54 +0800 (Mi, 16 Feb 2022) $
+* $Rev: 139 $
 *
 *
 * @package AHP-OS
@@ -65,9 +65,9 @@ class AhpHierAlt extends AhpHier
 
     /** Methods */
 
-    public function __construct()
+    public function __construct($hText="")
     {
-        parent::__construct();
+        parent::__construct($hText);
         mb_internal_encoding('UTF-8');
         //	$this->ahpHierTxt = new $class;
         return;

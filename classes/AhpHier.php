@@ -13,8 +13,8 @@
  *
  * With exportHierarchyTable($ds)csv output is generated for download.
  *
- * $LastChangedDate: 2022-02-12 08:39:22 +0800 (Sa, 12 Feb 2022) $
- * $Rev: 128 $
+ * $LastChangedDate: 2022-02-16 11:53:54 +0800 (Mi, 16 Feb 2022) $
+ * $Rev: 139 $
  *
  * @package AHP online
  * @author Klaus D. Goepel
@@ -97,7 +97,7 @@ class AhpHier
 
     /** Methods */
 
-    public function __construct()
+    public function __construct($hText="")
     {
         mb_internal_encoding('UTF-8');
         global $lang;
@@ -107,16 +107,17 @@ class AhpHier
 
         if (!defined('WLMAX')) {
             define('WLMAX', 45);
-        }// max word lenght for hierarchy elements
+        } // max word lenght for hierarchy elements
         if (!defined('ROUND')) {
             define('ROUND', 6);
         } // rounding for csv export
 
-        if (isset($this->hText) && $this->hText !="") {
+        if ($Text !="") {
+            $this->hText = $hText;
             $this->hierarchy = $this->setHierarchy($this->hText);
             $this->getArrayDepth($this->hierarchy);
         }
-        $this->altNum = 2;
+        // $this->altNum = 2; why?
         return;
     }
 

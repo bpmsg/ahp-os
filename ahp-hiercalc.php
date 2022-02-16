@@ -34,8 +34,8 @@ $lang = (isset($_SESSION['lang']) ? $_SESSION['lang'] : "EN");
 $class = 'AhpPrioCalc' . $lang;
 $ahpPrioCalc = new $class();
 
-$version = substr('$LastChangedDate: 2022-02-11 08:19:55 +0800 (Fr, 11 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 120 $', "$");
+$version = substr('$LastChangedDate: 2022-02-16 11:53:54 +0800 (Mi, 16 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 139 $', "$");
 
 // reset in case back from edit form
 if (isset($_SESSION['REFERER'])) {
@@ -56,7 +56,7 @@ $submit = array(
         'var' => 'calc');
 
 $err = "";
-$cr=0.;
+$cr = 0.;
 
 // --- MAIN ---
     if (isset($_SESSION['hText'])) {
@@ -68,10 +68,15 @@ $cr=0.;
     }
 
 // --- GET CRITERIA set n and criteria from url string if any
-    $errGet =  $ahp->setNamesFromGet($ahp->n, $ahp->header, 
-		$ahp->criteria, CRITMAX, 'Crit-');
+    $errGet =  $ahp->setNamesFromGet(
+        $ahp->n,
+        $ahp->header,
+        $ahp->criteria,
+        CRITMAX,
+        'Crit-'
+    );
     $criteria = $ahp->criteria;
-    $n = 	  $ahp->n;
+    $n =       $ahp->n;
     $m_pc =   $ahp->get_npc($n); // pair-wise comparison for n criteria
     $ptitle =  $ahp->header;
     $actUrl = $ahp->getUrlCode($urlAct, $n, $ptitle, $criteria);
@@ -121,7 +126,7 @@ $webHtml = new WebHtml($ahpPrioCalc->titles2['pageTitle']);
     // No login field for pwc page
     echo '<div style="display:block;float:left">',
         $loginHeaderText,'</div>
-		<div style="clear:both;"></div>';
+        <div style="clear:both;"></div>';
     echo $ahpPrioCalc->titles2['h1title'];
     printf($ahpPrioCalc->titles2['h2subTitle'], $project);
     printf($ahpPrioCalc->titles1['h3Pwc'], $ahp->header);
