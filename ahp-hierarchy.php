@@ -48,8 +48,8 @@ if (isset($_SESSION['REFERER'])) {
 }
 $loggedIn = $login->isUserLoggedIn();
 
-$version = substr('$LastChangedDate: 2022-02-11 16:19:15 +0800 (Fr, 11 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 126 $', "$");
+$version = substr('$LastChangedDate: 2022-02-16 09:47:49 +0800 (Mi, 16 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 138 $', "$");
 
 $defaultHierarchy = "AHP-Project:Crit-1,Crit-2,Crit-3;";
 
@@ -329,7 +329,7 @@ $webHtml =  new WebHtml($ahpHier->titles['pageTitle']);
     echo $ahpHier->titles['h1title'];
 
     if (defined('SYS_MSG')) {
-        echo "<p class='err'>System message: " . SYS_MSG . "</p>";
+        echo "<p class='err'>" . SYS_MSG . "</p>";
     }
 
     echo $ahpHier->titles['h2subTitle'];

@@ -30,8 +30,8 @@ $errMsg = "";
 $msg = "";
 $sessionName= "";
 
-$version = substr('$LastChangedDate: 2022-02-15 15:26:26 +0800 (Di, 15 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 137 $', "$");
+$version = substr('$LastChangedDate: 2022-02-16 09:47:49 +0800 (Mi, 16 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 138 $', "$");
 
 $login = new Login();
 
@@ -322,7 +322,7 @@ echo '<script src="js/ahp-session-admin.js"></script>';
 echo $sessionAdmin->titles['h1title'];
 
 if (defined('SYS_MSG')) {
-    echo "<p class='err'>System message: " . SYS_MSG . "</p>";
+    echo "<p class='err'>" . SYS_MSG . "</p>";
 }
 
 if (!isset($_SESSION['lang'])) {
