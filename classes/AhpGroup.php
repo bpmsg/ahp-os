@@ -9,8 +9,8 @@
  * pairwise comparisons are stored. The AhpGroup class has all methods
  * to calculate and display the final results.
  *
- * $LastChangedDate: 2022-02-16 11:53:54 +0800 (Mi, 16 Feb 2022) $
- * $Rev: 139 $
+ * $LastChangedDate: 2022-02-17 13:03:38 +0800 (Do, 17 Feb 2022) $
+ * $Rev: 143 $
  *
  * @author Klaus D. Goepel
  * @since 2014-01-06
@@ -334,7 +334,7 @@ class AhpGroup
                         $this->err[] = sprintf($this->ahpGroupTxt->err['dbE'], $name, $node);
                         trigger_error(
                             $this->sessionCode .
-                            " inconsistent PWC: $name node: $node",
+                            " No PWC for $name node: $node",
                             E_USER_WARNING
                         );
                     }

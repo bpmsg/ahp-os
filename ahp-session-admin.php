@@ -29,9 +29,11 @@ $psel = array();
 $errMsg = "";
 $msg = "";
 $sessionName= "";
+// todo: replace by $urlProjectImport from config file
+$urlPjImport= "ahp-project-import.php";
 
-$version = substr('$LastChangedDate: 2022-02-16 09:47:49 +0800 (Mi, 16 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 138 $', "$");
+$version = substr('$LastChangedDate: 2022-02-17 13:03:38 +0800 (Do, 17 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 143 $', "$");
 
 $login = new Login();
 
@@ -41,7 +43,8 @@ $lang = filter_input(INPUT_GET, 'lang', FILTER_SANITIZE_STRING);
         $lang = strtoupper($lang);
         setcookie('lang', $lang, time() + COOKIE_RUNTIME, "/", COOKIE_DOMAIN);
         $_SESSION['lang'] = $lang;
-    } elseif (isset($_COOKIE['lang']) && in_array(strtolower($_COOKIE['lang']), $languages)) {
+    } elseif (isset($_COOKIE['lang'])
+        && in_array(strtolower($_COOKIE['lang']), $languages)) {
         $lang = $_COOKIE['lang'];
         $_SESSION['lang'] = $lang;
     } else {
@@ -117,6 +120,13 @@ if ($login->isUserLoggedIn() === true) {
             }
         }
     }
+
+    // --- IMPORT --- import project from json file
+    if (isset($_POST['IMPORT'])) {
+        header('HTTP/1.0 200');
+        header("Location: " . $urlPjImport);
+    }
+
     // reads session code from url
     if ($sessionName =="") {
         $sessionName = $ahpH->getSessionCode();
@@ -130,10 +140,12 @@ if ($login->isUserLoggedIn() === true) {
         }
     }
     // reads session code from $_SESSION variable
-    if (isset($_SESSION['sessionCode']) && (isset($_POST['pselect']) || isset($_POST['VRES'])
-   || isset($_POST['GINP']) || isset($_POST['DELP']) || isset($_POST['DEL'])
-   || isset($_POST['PMOD']) || isset($_POST['HMOD'])|| isset($_POST['HEDIT'])
-   || isset($_POST['STATUS']) || isset($_POST['EXPORT']))) {
+    if (isset($_SESSION['sessionCode']) && (isset($_POST['pselect'])
+        || isset($_POST['VRES']) || isset($_POST['GINP'])
+        || isset($_POST['DELP']) || isset($_POST['DEL'])
+        || isset($_POST['PMOD']) || isset($_POST['HMOD'])
+        || isset($_POST['HEDIT'])|| isset($_POST['STATUS'])
+        || isset($_POST['EXPORT']))) {
         $sessionName = $_SESSION['sessionCode'];
     }
 
@@ -179,7 +191,8 @@ if ($login->isUserLoggedIn() === true) {
                     $sessionName = "";
                     unset($_SESSION['sessionCode']);
                 } else {
-                    $errMsg = "Session " . $sessionName . ", " . $ahpDb->getErrors();
+                    $errMsg = "Session " . $sessionName . ", "
+                    . $ahpDb->getErrors();
                 }
             }
         }
@@ -261,20 +274,29 @@ if ($login->isUserLoggedIn() === true) {
 
         // --- EXPORT --- export project
         if (isset($_POST['EXPORT'])) {
-            $author  = $login->user_name;
+            // --- only admin can export projects from other users
+            if (in_array($_SESSION['user_id'], $admin)) {
+                $author = "%";
+            } else {
+                $author  = $login->user_name;
+            }
             $ahpPj = array( 'pj' => $ahpDb->getAllProjects($author, $sessionName));
             $pwc  = $ahpDb->getAllPwc($sessionName);
-            if(!empty($pwc)){
+            if (!empty($pwc)) {
                 $ahpPj += array('pwc' => $pwc);
             }
             $alt = $ahpDb->getAllAlt($sessionName);
-            if(!empty($alt)) {
+            if (!empty($alt)) {
                 $ahpPj += array('alt' => $alt);
             }
             // JSON encode
             $ahpPjJs = json_encode($ahpPj, JSON_PRETTY_PRINT);
             $ahp = new AhpCalcIo(0);
-            $ahp->txtDownload($sessionName . "-AHP-project" . ".JSON", $ahpPjJs, 'application/json');
+            $ahp->txtDownload(
+                $sessionName . "-AHP-project" . ".JSON",
+                $ahpPjJs,
+                'application/json'
+            );
             session_write_close();
             exit();
         }
@@ -303,6 +325,7 @@ if ($login->isUserLoggedIn() === true) {
         }
     } // session code != empty
 
+
     // --- selection list ---
     $storedSessions = $ahpDb->getStoredSessions($name);
 } else { // user not logged in
@@ -327,10 +350,10 @@ if (defined('SYS_MSG')) {
 
 if (!isset($_SESSION['lang'])) {
     echo "<p>Language: <a href='", $urlAct, "?lang=en'>English</a>
-			&nbsp;&nbsp;<a href='", $urlAct, "?lang=de'>Deutsch</a>
-			&nbsp;&nbsp;<a href='", $urlAct, "?lang=es'>Español</a>
-			&nbsp;&nbsp;<a href='", $urlAct, "?lang=pt'>Português</a>
-			</p>";
+        &nbsp;&nbsp;<a href='", $urlAct, "?lang=de'>Deutsch</a>
+        &nbsp;&nbsp;<a href='", $urlAct, "?lang=es'>Español</a>
+        &nbsp;&nbsp;<a href='", $urlAct, "?lang=pt'>Português</a>
+        </p>";
 }
 if ($errMsg !="") {
     echo "<p class='err'>", $errMsg, "</p>";
@@ -398,7 +421,8 @@ if ($login->isUserLoggedIn() === true) {
             }
         }
         unset($res);
-        echo "<p><button href='#collapse1' class='nav-toggle'>Show project structure</button>";
+        echo "<p><button href='#collapse1' class='nav-toggle'>
+                Show project structure</button>";
         echo "<div id='collapse1' style='display:none'>";
         $ahpH->displayHierarchyInfo();
         $ahpH->displayHierarchyTable($acnt, false, false, false);

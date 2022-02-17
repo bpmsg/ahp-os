@@ -233,6 +233,7 @@
 
     $urlSessionAdmin = 'ahp-session-admin.php';   // Project administration
     $urlUserAdmin    = 'includes/login/do/do-user-admin.php'; // User administration
+    $urlProjectImport = 'ahp-project-import.php'; // Import project from json file
 
     // --- CLASS LOADER
     spl_autoload_register('appClassLoader');

@@ -115,6 +115,7 @@ ahp-\
      |-- ahp-g-input.php
      |-- ahp-group.php (AHP results)
      |-- ahp-group-graph.php
+     |-- ahp-project-import.php (Import project from json file)
      |-- ahp-session-admin.php (AHP project administration)
      |-- ahp-user-recover.php (Recover user from a backup database)
      |-- index.php (entry page)
@@ -184,33 +185,33 @@ There are 6 tables in the database, 4 of them to store ahp data:
 
 ### Tables
 ```
-users	user_id (primary, ai)
-		user_name unique,
-projects	project_id (primary, ai), 
-		project_sc (unique), 
-		project_author (foreign key users,user_name)
-pwc	        project_sc (foreign key projects.project_sc)
-	        pwc_id (primary, ai)
-alternatives	project_sc (foreign key projects.project_sc)
-audit		a_id (primary, ai)
-donations	tr_no (primary, ai)
+users           user_id (primary, ai)
+                user_name unique,
+projects        project_id (primary, ai), 
+                project_sc (unique), 
+                project_author (foreign key users,user_name)
+pwc             project_sc (foreign key projects.project_sc)
+                pwc_id (primary, ai)
+alternatives    project_sc (foreign key projects.project_sc)
+audit           a_id (primary, ai)
+donations       tr_no (primary, ai)
 ```
 ### Triggers
 In the audit table entries are triggered by user and admin actions:
 ```
-a_trg	a_act (activity)
-U	User login
-	Failed login
-	User activated
-	User deactivated
-	Change of remember me token
-	New user name
-	Change of user email
-	Password change
-	Password reset
-	Other
-I	New user registration
-D	User deleted
+a_trg   a_act (activity)
+U       User login
+        Failed login
+        User activated
+        User deactivated
+        Change of remember me token
+        New user name
+        Change of user email
+        Password change
+        Password reset
+        Other
+I       New user registration
+D       User deleted
 ```
 Clean audit table will delete all "Other" entries.
 ## License
@@ -219,3 +220,5 @@ The work is published under GNU GENERAL PUBLIC LICENSE Version 3.
 ## Work in progress!
 
 2022-01-28 - First version added to svn
+2022-02-17 - Import/Export function for projects added
+             ToDo: translation, move menu to views

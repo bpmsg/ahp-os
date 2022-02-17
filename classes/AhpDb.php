@@ -2,8 +2,8 @@
 /**
 * Analytic Hierarchy Process database functions for ahp
 *
-* $LastChangedDate: 2022-02-15 14:53:37 +0800 (Di, 15 Feb 2022) $
-* $Rev: 136 $
+* $LastChangedDate: 2022-02-17 13:03:38 +0800 (Do, 17 Feb 2022) $
+* $Rev: 143 $
 *
 * @author Klaus D. Goepel
 * @copyright 2014-2017 Klaus D. Goepel
@@ -82,8 +82,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-define("MESSAGE_DATABASE_ERROR", "Database error ");
-
+define('MESSAGE_DATABASE_ERROR', "Database error ");
+define('DB_PROJECT_WRITE_ERROR', "Database write error");
 
 class AhpDb
 {
@@ -557,8 +557,7 @@ class AhpDb
         }
         if ($hier) { // Hierarchy - calculate priorities from pwc
             if ($pwcsCnt > 0) {
-                $ahpH = new AhpHier();
-                $ahpH->setHierarchy($_SESSION['hText']);
+                $ahpH = new AhpHier($_SESSION['hText']);
                 foreach ($pwcs as $node=>$pwc) {
                     $npc = count($pwc['A']);
                     $n = (int)(0.5+sqrt(2*$npc+0.25));
@@ -580,8 +579,7 @@ class AhpDb
                     unset($ahp);
                 }
                 // pwcDone will be set when calling hierarchy
-                $ahpH = new AhpHier();
-                $ahpH->setHierarchy($_SESSION['hText']);
+                $ahpH = new AhpHier($_SESSION['hText']);
                 if ($ahpH->pwcDoneFlg) {
                     $_SESSION['pwcDone'] = true;
                 } else {
@@ -592,8 +590,7 @@ class AhpDb
         } else { // Alternatives - calculate priorities from pwc
             $ahp = new AhpCalc($altNum);
             if ($pwcsCnt > 0) {
-                $ahpH = new AhpHierAlt();
-                $ahpH->setHierarchy($_SESSION['hText']);
+                $ahpH = new AhpHierAlt($_SESSION['hText']);
                 $lvCnt = $ahpH->leafCnt;
                 $ahpH->altNum = $altNum;
                 if (($lvCnt - $pwcsCnt) == 0) {
@@ -669,15 +666,15 @@ class AhpDb
             $insertState =
                 $queryInsert->execute(
                     array(':project_sc' => $sc,
-                                ':project_name' => $project,
-                                ':project_description' => $description,
-                                ':project_hText' => $hText,
-                                ':project_datetime' => date("Y-m-d H:i:s"),
-                                ':project_author' => $author
+                        ':project_name' => $project,
+                        ':project_description' => $description,
+                        ':project_hText' => $hText,
+                        ':project_datetime' => date("Y-m-d H:i:s"),
+                        ':project_author' => $author
                                )
                 );
             if (!$insertState) {
-                $this->err[] = $ahpDSbTxt->err['dbWrite'];
+                $this->err[] = $ahpDbTxt->err['dbWrite'];
                 return false;
             }
             // Alternatives
@@ -696,7 +693,7 @@ class AhpDb
                     return false;
                 }
             }
-            return $insertState;
+            return true;
         } catch (PDOException $e) {
             $this->err[] = $this->ahpDbTxt->err['dbWrite'] . $e;
         }
@@ -982,8 +979,7 @@ class AhpDb
                 if (!empty($result)) {
                     $user =  $result[0]['project_author'];
                     $hText = $result[0]['project_hText'];
-                    $text = $ahpH = new AhpHier();
-                    $ahpH->setHierarchy($hText);
+                    $text = $ahpH = new AhpHier($hText);
                     $query = $this->db_connection->prepare(
                         "SELECT DISTINCT pwc.pwc_node FROM pwc 
                          WHERE project_sc = :sc;"
@@ -1167,7 +1163,7 @@ class AhpDb
     }
 
 
-    /* --- ahp-user-recover functions ---/
+    /* --- ahp-user-recover and project import functions ---/
 
     /*
      * get user account data for $user_name
@@ -1186,7 +1182,7 @@ class AhpDb
 
 
     /*
-     * get array of all projects from $user
+     * get array of all projects from $user 
      * with session coder LIKE $sc. Without sc given
      * will return all projects
      */
@@ -1195,7 +1191,7 @@ class AhpDb
         if ($this->databaseConnection()) {
             $query = $this->db_connection->prepare(
                 "SELECT * FROM `projects` 
-                WHERE `project_author` = :user_name
+                WHERE `project_author` LIKE :user_name
                 AND `project_sc` LIKE :sc;"
             );
             $query->execute(array(':user_name' => $user,
@@ -1270,6 +1266,101 @@ class AhpDb
     }
 
     /*
+     * Restore projects from project array
+     */
+    public function restoreProjects($projects){
+        if (is_array($projects) && count($projects)>0) {
+            try {
+                $sql = "INSERT INTO `projects` 
+            (`project_sc`, `project_name`, `project_description`, 
+             `project_hText`, `project_datetime`, `project_author`) 
+            VALUES ( :project_sc, :project_name, :project_description, 
+             :project_hText, :project_datetime, :project_author);";
+                $queryInsert = $this->db_connection->prepare($sql);
+            } catch (PDOException $e) {
+                $this->err[] = DB_PROJECT_WRITE_ERROR . $e;
+                return false;
+            }
+            if (is_object($queryInsert)) {
+                $insState = true;
+                foreach ($projects as $p) {
+                    // write project data
+                    $queryInsert->bindValue(':project_sc', $p['project_sc'], PDO::PARAM_STR);
+                    $queryInsert->bindValue(':project_name', $p['project_name'], PDO::PARAM_STR);
+                    $queryInsert->bindValue(':project_description', $p['project_description'], PDO::PARAM_STR);
+                    $queryInsert->bindValue(':project_hText', $p['project_hText'], PDO::PARAM_STR);
+                    $queryInsert->bindValue(':project_datetime', $p['project_datetime'], PDO::PARAM_STR);
+                    $queryInsert->bindValue(':project_author', $p['project_author'], PDO::PARAM_STR);
+                    $insState &= $queryInsert->execute();
+                    if (!$insState)
+                        $err[] = DB_PROJECT_WRITE_ERROR;
+                    else 
+                        return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /* 
+     * Restore alt from alt array
+     */
+    public function restoreAlt($alt, $sc=""){
+        try {
+            $this->db_connection->exec("PRAGMA foreign_keys = ON;");
+            $sql = "INSERT INTO alternatives ( project_sc, alt) 
+                VALUES ( :project_sc, :alt);";
+            $queryIns = $this->db_connection->prepare($sql);
+        } catch (PDOException $e) {
+            $this->err[] = DB_PROJECT_WRITE_ERROR . $e;
+            return false;
+        }
+        $insState = true;
+        foreach ($alt as $a) {
+            $nsc = ($sc != "" ? $sc : $a['project_sc']);
+            $queryIns->bindValue(':project_sc', $nsc, PDO::PARAM_STR);
+            $queryIns->bindValue(':alt', $a['alt'], PDO::PARAM_STR);
+            $insState &= $queryIns->execute();
+        }
+        if (!$insState) {
+            $this->db_connection->exec("ROLLBACK;");
+            $this->err[] = DB_PROJECT_WRITE_ERROR;
+            return false;
+        }
+        return true;    
+    }
+
+    /* 
+     * Restore pwc from pwc array
+     */
+    public function restorePwc($pwc, $sc=""){
+        try {
+            $sql = "INSERT INTO pwc ( project_sc, pwc_part, pwc_timestamp, pwc_node, pwc_ab, pwc_intense ) 
+                VALUES ( :project_sc, :pwc_part, :pwc_timestamp, :pwc_node, :pwc_ab, :pwc_intense );";
+            $queryIns = $this->db_connection->prepare($sql);
+        } catch (PDOException $e) {
+            $err[] = DB_PROJECT_WRITE_ERROR . $e;
+            return false;
+        }
+        $insState = true;
+        foreach ($pwc as $c) {
+            $nsc = ($sc != "" ? $sc : $c['project_sc']);
+            $queryIns->bindValue(':project_sc', $nsc, PDO::PARAM_STR);
+            $queryIns->bindValue(':pwc_part', $c['pwc_part'], PDO::PARAM_STR);
+            $queryIns->bindValue(':pwc_timestamp', $c['pwc_timestamp'], PDO::PARAM_INT);
+            $queryIns->bindValue(':pwc_node', $c['pwc_node'], PDO::PARAM_STR);
+            $queryIns->bindValue(':pwc_ab', $c['pwc_ab'], PDO::PARAM_STR);
+            $queryIns->bindValue(':pwc_intense', $c['pwc_intense'], PDO::PARAM_STR);
+            $insState &= $queryIns->execute();
+        }
+        if(!$insState){
+            $err[] = DB_PROJECT_WRITE_ERROR . " - restorePwc()";
+            return false;
+        } 
+        return true;
+    }       
+ 
+    /*
      * Restore user
      */
     public function restoreUser($user, $projects, $pwc, $alt=array())
@@ -1300,90 +1391,43 @@ class AhpDb
                 $queryIns->bindValue(':user_last_login', $user['user_last_login'], PDO::PARAM_STR);
                 $insState = $queryIns->execute();
             }
-            if ($insState != true) {
+            if (!$insState) {
                 $this->err[] = "User insert failed ";
                 $this->db_connection->exec("ROLLBACK;");
                 return false;
             }
             $user_id = $this->db_connection->lastInsertId();
-            // write projects
-            if (is_array($projects) && count($projects)>0) {
-                try {
-                    $sql = "INSERT INTO `projects` 
-                (`project_sc`, `project_name`, `project_description`, 
-                 `project_hText`, `project_datetime`, `project_author`) 
-                VALUES ( :project_sc, :project_name, :project_description, 
-                 :project_hText, :project_datetime, :project_author);";
-                    $queryInsert = $this->db_connection->prepare($sql);
-                } catch (PDOException $e) {
-                    $this->err[] = DB_PROJECT_WRITE_ERROR . $e;
-                }
-                if (is_object($queryInsert)) {
-                    foreach ($projects as $p) {
-                        // write project data
-                        $queryInsert->bindValue(':project_sc', $p['project_sc'], PDO::PARAM_STR);
-                        $queryInsert->bindValue(':project_name', $p['project_name'], PDO::PARAM_STR);
-                        $queryInsert->bindValue(':project_description', $p['project_description'], PDO::PARAM_STR);
-                        $queryInsert->bindValue(':project_hText', $p['project_hText'], PDO::PARAM_STR);
-                        $queryInsert->bindValue(':project_datetime', $p['project_datetime'], PDO::PARAM_STR);
-                        $queryInsert->bindValue(':project_author', $p['project_author'], PDO::PARAM_STR);
-                        $insState &= $queryInsert->execute();
-                        if (!$insState) {
-                            $err[] = DB_PROJECT_WRITE_ERROR;
-                        }
-                    }
-                }
-            }
-            if (!$insState) {
-                $this->db_connection->exec("ROLLBACK;");
-                $this->err[] = "Project insert failed ";
-                return false;
-            }
-            // write pwc
-            if (is_array($pwc) && count($pwc)>0) {
-                try {
-                    $sql = "INSERT INTO pwc ( project_sc, pwc_part, pwc_timestamp, pwc_node, pwc_ab, pwc_intense ) 
-                        VALUES ( :project_sc, :pwc_part, :pwc_timestamp, :pwc_node, :pwc_ab, :pwc_intense );";
-                    $queryIns = $this->db_connection->prepare($sql);
-                } catch (PDOException $e) {
-                    $err[] = DB_PROJECT_WRITE_ERROR . $e;
-                }
-                foreach ($pwc as $c) {
-                    $queryIns->bindValue(':project_sc', $c['project_sc'], PDO::PARAM_STR);
-                    $queryIns->bindValue(':pwc_part', $c['pwc_part'], PDO::PARAM_STR);
-                    $queryIns->bindValue(':pwc_timestamp', $c['pwc_timestamp'], PDO::PARAM_INT);
-                    $queryIns->bindValue(':pwc_node', $c['pwc_node'], PDO::PARAM_STR);
-                    $queryIns->bindValue(':pwc_ab', $c['pwc_ab'], PDO::PARAM_STR);
-                    $queryIns->bindValue(':pwc_intense', $c['pwc_intense'], PDO::PARAM_STR);
-                    $insState &= $queryIns->execute();
-                }
+
+            // restore projects
+            if (is_array($projects) && count($projects) > 0) {
+                $insState = $this->restoreProjects($projects);
                 if (!$insState) {
                     $this->db_connection->exec("ROLLBACK;");
-                    $this->err[] = DB_PROJECT_WRITE_ERROR;
+                    $this->err[] = " Project insert failed ";
                     return false;
                 }
             }
-            // write Alternatives
+
+            // restore alternatives
             if (is_array($alt) && count($alt)>0) {
-                try {
-                    $this->db_connection->exec("PRAGMA foreign_keys = ON;");
-                    $sql = "INSERT INTO alternatives ( project_sc, alt) 
-                        VALUES ( :project_sc, :alt);";
-                    $queryIns = $this->db_connection->prepare($sql);
-                } catch (PDOException $e) {
-                    $this->err[] = DB_PROJECT_WRITE_ERROR . $e;
-                }
-                foreach ($alt as $a) {
-                    $queryIns->bindValue(':project_sc', $a['project_sc'], PDO::PARAM_STR);
-                    $queryIns->bindValue(':alt', $a['alt'], PDO::PARAM_STR);
-                    $insState &= $queryIns->execute();
-                }
+                $insState = $this->restoreAlt($alt);
                 if (!$insState) {
                     $this->db_connection->exec("ROLLBACK;");
-                    $this->err[] = DB_PROJECT_WRITE_ERROR;
+                    $this->err[] = " Alternative insert failed ";
+                    return false;
+                }                
+            }
+            
+            // restore pwc
+            if (is_array($pwc) && count($pwc)>0) {
+                $insState = $this->restorePwc($pwc);
+                if (!$insState) {
+                    $this->db_connection->exec("ROLLBACK;");
+                    $this->err[] = " Pwc insert failed ";
                     return false;
                 }
             }
+            
             // write audit table
             try {
                 $sql = "INSERT INTO audit ( a_trg, a_uid, a_un, a_act) 

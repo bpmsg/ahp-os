@@ -13,8 +13,8 @@
  *
  * With exportHierarchyTable($ds)csv output is generated for download.
  *
- * $LastChangedDate: 2022-02-16 11:53:54 +0800 (Mi, 16 Feb 2022) $
- * $Rev: 139 $
+ * $LastChangedDate: 2022-02-16 20:13:04 +0800 (Mi, 16 Feb 2022) $
+ * $Rev: 141 $
  *
  * @package AHP online
  * @author Klaus D. Goepel
@@ -112,7 +112,7 @@ class AhpHier
             define('ROUND', 6);
         } // rounding for csv export
 
-        if ($Text !="") {
+        if ($hText !="") {
             $this->hText = $hText;
             $this->hierarchy = $this->setHierarchy($this->hText);
             $this->getArrayDepth($this->hierarchy);
