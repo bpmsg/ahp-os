@@ -23,17 +23,18 @@
  */
 
 include '../../config.php';
+require('../../../vendor/autoload.php');
 
 // --- SENDING MAIL WHEN USER IS DEACTVATED
-require_once('../../PHPMailer/PHPMailer.php'); // Mailer
-require_once('../../PHPMailer/SMTP.php'); // Mailer
-require_once('../../PHPMailer/Exception.php'); // Mailer
+//require_once('../../PHPMailer/PHPMailer.php'); // Mailer
+//require_once('../../PHPMailer/SMTP.php'); // Mailer
+//require_once('../../PHPMailer/Exception.php'); // Mailer
 
 session_start();
 
 $title= "User Administration";
-$version = substr('$LastChangedDate: 2022-02-11 08:19:55 +0800 (Fr, 11 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 120 $', "$");
+$version = substr('$LastChangedDate: 2022-02-18 14:21:29 +0800 (Fr, 18 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 150 $', "$");
 
 $lang = (isset($_SESSION['lang']) ? $_SESSION['lang'] : "EN");
 

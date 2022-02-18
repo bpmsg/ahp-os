@@ -42,6 +42,7 @@ Create a `config.php` file, or duplicate the `config-sample.php` file
 in the `includes` directory and rename it to `config.php`.
 Edit/modify `includes/config.php` to set your database and mail 
 parameters. Set permission for `config.php` to 640.
+Run "composer install" to install dependencies.
 
 As a database, either **`sqlite`** or **`mysql`** (MariaDB) can be 
 defined. If you expect to have less than hundred users, sqlite will 
