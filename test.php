@@ -23,5 +23,5 @@ $webHtml = new WebHtml($pageTitle);
     echo "<h1>$title</h1>";
     echo "<h2>$subTitle</h2>";
     echo "<p>Output here</p>";
-    // echo phpinfo();
+    echo phpinfo();
 $webHtml->webHtmlFooter($version);

@@ -45,9 +45,9 @@ class AhpSessionAdminDE
     public $info = array(
     'sc'            => "Projektkennung ist <span class='var'>%s</span>. ",
     'scLnk1'        => "<span>Gebe diese Projektkennung oder den folgenden Link an deine Teilnehmer: </span><br>",
-    'scLnk2'        => "<textarea rows='1' cols='78'>https:%s?sc=%s</textarea><br>",
+    'scLnk2'        => "<textarea rows='1' cols='78'>%s?sc=%s</textarea><br>",
     'scLnk3'        => "Gehe zum Gruppen-Eingabelink: 
-                                    <a href='https:%s?sc=%s' >Gruppen Eingabe</a><br>",
+                                    <a href='%s?sc=%s' >Gruppen Eingabe</a><br>",
     'pOpen1'        => "Klicke auf die Projektkennung in der Tabelle, um die Projektzusammenfassung anzuzeigen.",
     'pOpen2'        => "<br>Definiere eine <a href='%s'>neue Hierarchie</a>.",
     'logout'        => "<div class='entry-content'>

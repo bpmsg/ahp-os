@@ -32,8 +32,8 @@ $sessionName= "";
 // todo: replace by $urlProjectImport from config file
 $urlPjImport= "ahp-project-import.php";
 
-$version = substr('$LastChangedDate: 2022-02-17 16:18:12 +0800 (Do, 17 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 146 $', "$");
+$version = substr('$LastChangedDate: 2022-02-18 16:24:01 +0800 (Fr, 18 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 152 $', "$");
 
 $login = new Login();
 
@@ -382,9 +382,10 @@ if ($login->isUserLoggedIn() === true) {
             $url = htmlspecialchars(pathinfo($myUrl, PATHINFO_DIRNAME)) . "/";
             $url .= $urlGroupInit;
             printf($sessionAdmin->info['sc'], $sessionName);
-            echo   $sessionAdmin->info['scLnk1'];
-            printf($sessionAdmin->info['scLnk2'], $url, $sessionName);
-            printf($sessionAdmin->info['scLnk3'], $url, $sessionName);
+            $ptc = (isset($_SERVER['HTTPS']) ? "https:" : "http:");
+            echo  $sessionAdmin->info['scLnk1'];
+            printf($sessionAdmin->info['scLnk2'], $ptc .$url, $sessionName);
+            printf($sessionAdmin->info['scLnk3'], $ptc .$url, $sessionName);
         }
 
         // --- Project Structure

@@ -47,8 +47,8 @@ class AhpSessionAdminPT
     public $info = array(
     'sc'            => "O código da sessão é<span class='var'>%s</span>.",
     'scLnk1'        => "Forneça este código de sessão ou o seguinte link para seus participantes: </span><br>",
-    'scLnk2'        => "<textarea rows='1' cols='78'>https:%s?sc=%s</textarea><br>",
-    'scLnk3'        => "Vá para o link acima: <a href='https:%s?sc=%s' >Entrada do grupo</a><br>",
+    'scLnk2'        => "<textarea rows='1' cols='78'>%s?sc=%s</textarea><br>",
+    'scLnk3'        => "Vá para o link acima: <a href='%s?sc=%s' >Entrada do grupo</a><br>",
     'pOpen1'        => "Clique no link da sessão na tabela abaixo para abrir um projeto.",
     'pOpen2'        => "<br>Criar uma <a href='%s'>nova hierarquia</a>.",
     'logout'        => "<div class='entry-content'>
