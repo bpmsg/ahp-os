@@ -731,6 +731,10 @@ class Login
                     return false;
                 }
                 // database query:
+                $this->db_connection->exec("SET autocommit=0");
+                $this->db_connection->exec(
+                    ($this->db_type == 'sqlite' ? "BEGIN TRANSACTION;" : "START TRANSACTION;"));
+
                 $query_update = $this->db_connection->prepare(
                     "UPDATE users 
                      SET user_password_reset_hash = :user_password_reset_hash,
@@ -745,8 +749,17 @@ class Login
                 // check if exactly one row was successfully changed:
                 if ($query_update->rowCount() == 1) {
                     // send a mail to the user, containing a link with that token hash string
-                    $this->sendPasswordResetMail($user_name, $result_row->user_email, $user_password_reset_hash);
-                    return true;
+                    if($this->sendPasswordResetMail($user_name, $result_row->user_email, $user_password_reset_hash))
+                    {
+                        $this->db_connection->exec("COMMIT;");
+                        $this->db_connection->exec("SET autocommit=0");
+                        return true;
+                    } else {
+                        $this->db_connection->exec("ROLLBACK;");
+                        $this->db_connection->exec("SET autocommit=0");
+                        return false;
+                    }
+
                 } else {
                     // MESSAGE_DATABASE_ERROR
                     $this->errors[] = $this->lgTxt->err['dbCon'];
