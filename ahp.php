@@ -28,27 +28,12 @@ include 'includes/config.php';
 
 session_start();
 
-$version = substr('$LastChangedDate: 2022-02-17 13:03:38 +0800 (Do, 17 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 143 $', "$");
+$version = substr('$LastChangedDate: 2022-02-17 16:18:12 +0800 (Do, 17 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 146 $', "$");
 
-// sets the session variable for language
-$lang = filter_input(INPUT_GET, 'lang', FILTER_SANITIZE_STRING);
-    if ($lang != null && $lang != false && in_array($lang, $languages)) {
-        $lang = strtoupper($lang);
-        setcookie('lang', $lang, time() + COOKIE_RUNTIME, "/", COOKIE_DOMAIN);
-        $_SESSION['lang'] = $lang;
-    } elseif (isset($_COOKIE['lang'])
-        && in_array(strtolower($_COOKIE['lang']), $languages)) {
-        $lang = $_COOKIE['lang'];
-        $_SESSION['lang'] = $lang;
-    } elseif (isset($_SESSION['lang'])
-        && in_array(strtolower($_SESSION['lang']), $languages)) {
-        $lang = $_SESSION['lang'];
-    } else {
-        $lang ='EN';
-    }
 $class = 'Ahp' . $lang;
 $ahpOs = new $class();
+$_SESSION['lang'] = $lang;
 
 $js = new JsCheck();
 $login = new Login();

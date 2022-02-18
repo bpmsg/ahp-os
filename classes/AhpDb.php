@@ -2,8 +2,8 @@
 /**
 * Analytic Hierarchy Process database functions for ahp
 *
-* $LastChangedDate: 2022-02-17 13:03:38 +0800 (Do, 17 Feb 2022) $
-* $Rev: 143 $
+* $LastChangedDate: 2022-02-18 11:47:47 +0800 (Fr, 18 Feb 2022) $
+* $Rev: 147 $
 *
 * @author Klaus D. Goepel
 * @copyright 2014-2017 Klaus D. Goepel
@@ -37,9 +37,9 @@
 * public  function getPwcArray($sc, $name, $nod="")
 * public  function deleteRecord($sc)
 * public  function writeProjectData($sc, $project, $description, $hText,
-* 									 $author, $alt=array())
+*                  $author, $alt=array())
 * public  function updateProjectData($sc, $project, $description, $hText,
-*									 $author, $alt=array())
+*                  $author, $alt=array())
 * public  function submitGroupData($sc, $name, $pwc)
 * public  function setSessfmPrjc($sc)
 * public  function toggleStatus($sc)
@@ -58,7 +58,7 @@
 * --- HTML output functions ---
 * public  function displayProjectDetails($sc, $sel=false) - ahp-group,
 * private function displayParticipantTable($part)
-* 		- called by displayProjectDetails
+*       - called by displayProjectDetails
 * private function displaySessionTable($name)
 *
 * private function getMatrixFromPwc($pwc) Same function as in ahp class!
@@ -301,24 +301,28 @@ class AhpDb
 
     /* Toggle project status open/closed
      * @return project status 1 (open) or 0 (closed)
+     * 2 on error
      */
     public function toggleStatus($sc)
     {
-        $this->databaseConnection();
-        $sql = "SELECT `project_status` from `projects` 
-                WHERE `project_sc` = :sc";
-        $query = $this->db_connection->prepare($sql);
-        $query->bindValue(':sc', $sc, PDO::PARAM_STR);
-        $query->execute();
-        $status = $query->fetch(PDO::FETCH_NUM);
-        $stnew = ($status[0] == 1 ? 0 : 1);
-        $sql = "UPDATE `projects` SET `project_status` = :stnew
-                WHERE `project_sc` = :sc;";
-        $query = $this->db_connection->prepare($sql);
-        $query->bindValue(':sc', $sc, PDO::PARAM_STR);
-        $query->bindValue(':stnew', $stnew, PDO::PARAM_STR);
-        $state = $query->execute();
-        return $stnew;
+        if($this->databaseConnection()){
+            $sql = "SELECT `project_status` from `projects` 
+                    WHERE `project_sc` = :sc";
+            $query = $this->db_connection->prepare($sql);
+            $query->bindValue(':sc', $sc, PDO::PARAM_STR);
+            $query->execute();
+            $status = $query->fetch(PDO::FETCH_NUM);
+            $stnew = ($status[0] == 1 ? 0 : 1);
+            $sql = "UPDATE `projects` SET `project_status` = :stnew
+                    WHERE `project_sc` = :sc;";
+            $query = $this->db_connection->prepare($sql);
+            $query->bindValue(':sc', $sc, PDO::PARAM_STR);
+            $query->bindValue(':stnew', $stnew, PDO::PARAM_STR);
+            $state = $query->execute();
+            return $stnew;
+        }
+        $this->err[] = MESSAGE_DATABASE_ERROR . "toggleStatus";
+        return 2;
     }
 
 
@@ -616,24 +620,29 @@ class AhpDb
     }
 
 
-    /* delete session record (project)
-     *
+    /* 
+     * delete session record (project)
      */
     public function deleteRecord($sc)
     {
         if ($this->checkSessionCode($sc)) {
-            $this->db_connection->exec("PRAGMA foreign_keys = ON;");
-            $sql = "DELETE FROM `projects` WHERE `project_sc` = :project_sc;";
-            $query = $this->db_connection->prepare($sql);
-            $query->bindValue(':project_sc', $sc, PDO::PARAM_STR);
-            $deleteStatus = $query->execute();
-            if (!$deleteStatus) {
-                $this->err[] = DB_DELETE_ERROR;
+            try{
+                $this->db_connection->exec("PRAGMA foreign_keys = ON;");
+                $sql = "DELETE FROM `projects` WHERE `project_sc` = :project_sc;";
+                $query = $this->db_connection->prepare($sql);
+                $query->bindValue(':project_sc', $sc, PDO::PARAM_STR);
+                $deleteStatus = $query->execute();
+                if (!$deleteStatus) {
+                    $this->err[] = DB_DELETE_ERROR;
+                }
+                return true;
+            } catch (PDOException $e) {
+            $this->err[] = $this->ahpDbTxt->err['dbWrite'] . $e;
+            return false;
             }
-            return $deleteStatus;
         } else {
             $this->err[] = DB_NOTHING_TO_DELETE;
-            return 0;
+            return false;
         }
     }
 

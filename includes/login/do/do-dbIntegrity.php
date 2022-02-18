@@ -36,8 +36,8 @@ $ahpAdmin = new AhpAdmin();
 // --- HTML ---
 
 $title="Database Integrity";
-$version = substr('$LastChangedDate: 2022-02-03 14:55:25 +0800 (Thu, 03 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 91 $', "$");
+$version = substr('$LastChangedDate: 2022-02-17 16:18:12 +0800 (Do, 17 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 146 $', "$");
 
 $webHtml = new WebHtml($title);
     include('../form.login-hl.php');
@@ -89,8 +89,8 @@ if ($login->isUserLoggedIn() && in_array($_SESSION['user_id'], $admin)) {
     echo "<p>$ym: <span class='res'>", $reg['I'][$ym],
     "</span> registrations, <span class='res'>", $reg['D'][$ym],
     "</span> deletions.</br>";
-    echo "<span class='res'>", ($cnt >0 ? "+" : "") ,$cnt,
-     "</span> users over the last $m months</p>";
+    echo "<span class='hl'>Total: ", ($cnt >0 ? "+" : "") ,$cnt,
+     " users over the last " . MONTHS_USER_FLOW .  " months.</span></p>";
 
     // --- top users
     echo "<h3>Top " . TOP_USERS . " Users</h3>";

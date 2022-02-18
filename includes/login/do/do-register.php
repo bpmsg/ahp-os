@@ -16,10 +16,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 include('../../config.php');
+require('../../../vendor/autoload.php');
 
-require_once('../../PHPMailer/PHPMailer.php'); // Mailer
-require_once('../../PHPMailer/SMTP.php'); // Mailer
-require_once('../../PHPMailer/Exception.php'); // Mailer
+//require_once('../../PHPMailer/PHPMailer.php'); // Mailer
+//require_once('../../PHPMailer/SMTP.php'); // Mailer
+//require_once('../../PHPMailer/Exception.php'); // Mailer
 
 /* --- Functions added to fight spam.
  *     Please see https://www.projecthoneypot.org
@@ -60,8 +61,8 @@ function get_client_ip()
 
 
 $title="User Registration";
-$version = substr('$LastChangedDate: 2022-02-14 08:56:13 +0800 (Mo, 14 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 134 $', "$");
+$version = substr('$LastChangedDate: 2022-02-18 13:52:15 +0800 (Fr, 18 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 148 $', "$");
 
 session_start();
 

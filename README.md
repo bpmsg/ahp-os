@@ -119,6 +119,7 @@ ahp-\
      |-- ahp-session-admin.php (AHP project administration)
      |-- ahp-user-recover.php (Recover user from a backup database)
      |-- index.php (entry page)
+     |-- composer.json
      |
      |-- classes-\
      |           AhpCalc (Eigenvector of DM)
@@ -147,7 +148,7 @@ ahp-\
      |            |--login ------AhpAdmin (class, extends LoginAdmin)
      |            |              form.donations
      |            (phpgraphlib)  form.edit
-     |-- docs     (PHPMailer)    form.login-hl
+     |-- docs                    form.login-hl
      |                           form.newdon
      |-- images -- AHP-icon      form.registration
      |             ahp-os-icon   form.UserAdminMenu
@@ -169,12 +170,13 @@ ahp-\
      |              es/pt    AhpGroupResXX, AhpHierarchyXX,
      |                       AhpHierXX, AhpHierginiXX, AhpNewsXX,
      |--views (html menus)   AhpPrioCalcXX, AhpSessionAdminXX
+     |--vendor (will contain phpMailer)
 ```
 ## Dependencies
 The source code includes the source of a modified `phpgraphlib` by 
 Elliott Brueggeman and `jscheck` by Gustav Eklundh to check, whether
-JavaScript is enabled for the browser. `PHPMailer`, version 6.5.3 is 
-used for email sending.
+JavaScript is enabled for the browser. `PHPMailer` in the vendor 
+directory is used for email sending.
 
 ## SQL database structure and triggers
 There are 6 tables in the database, 4 of them to store ahp data:

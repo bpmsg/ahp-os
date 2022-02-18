@@ -22,22 +22,15 @@
 *
 */
     include 'includes/config.php';
+    
+    session_start();
+
     $login = new Login();
 
     // sets the session variable for language
-    $lang = filter_input(INPUT_GET, 'lang', FILTER_SANITIZE_STRING);
-    if ($lang != null && $lang != false && in_array($lang, $languages)) {
-        $lang = strtoupper($lang);
-        setcookie('lang', $lang, time() + COOKIE_RUNTIME, "/", COOKIE_DOMAIN);
-        $_SESSION['lang'] = $lang;
-    } elseif (isset($_COOKIE['lang'])
-                && in_array(strtolower($_COOKIE['lang']), $languages)) {
-        $lang = $_COOKIE['lang'];
-    } else {
-        $lang ='EN';
-    }
     $class = 'AhpPrioCalc' . $lang;
     $ahpPrioCalc = new $class();
+    $_SESSION['lang'] = $lang;
 
     // reset in case back from edit form
     if (isset($_SESSION['REFERER'])) {
@@ -45,11 +38,11 @@
     }
 
     $version = substr(
-        '$LastChangedDate: 2022-02-11 08:19:55 +0800 (Fr, 11 Feb 2022) $',
+        '$LastChangedDate: 2022-02-17 16:18:12 +0800 (Do, 17 Feb 2022) $',
         18,
         10
     );
-    $rev = trim('$Rev: 120 $', "$");
+    $rev = trim('$Rev: 146 $', "$");
 
     $criteria = array();
     $dta = array();	// for graphic display
@@ -133,13 +126,12 @@
 
     echo "\n<!-- INTRO and GET NEW N -->\n";
     echo $ahpPrioCalc->titles1['h1title'];
-    if (!(isset($_SESSION['lang'])  || isset($_COOKIE['lang']))) {
-        echo "<p>Language: <a href='",$urlAct, "?lang=en'>English</a>
-              &nbsp;&nbsp;<a href='", $urlAct, "?lang=de'>Deutsch</a>
-              &nbsp;&nbsp;<a href='", $urlAct, "?lang=es'>Español</a>
-              &nbsp;&nbsp;<a href='", $urlAct, "?lang=pt'>Português</a>
-              </p>";
-    }
+    echo "<p>Language: <a href='",$urlAct, "?lang=en'>English</a>
+          &nbsp;&nbsp;<a href='", $urlAct, "?lang=de'>Deutsch</a>
+          &nbsp;&nbsp;<a href='", $urlAct, "?lang=es'>Español</a>
+          &nbsp;&nbsp;<a href='", $urlAct, "?lang=pt'>Português</a>
+          </p>";
+
     echo $ahpPrioCalc->titles1['h2subTitle'];
     echo "<p class='entry-content'>",$ahpPrioCalc->info['intro'],"</p>";
     echo $ahpPrioCalc->info['selC'];

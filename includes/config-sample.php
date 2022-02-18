@@ -2,7 +2,10 @@
 /*  Configuration file for AHP-OS Application
  *
  *  Copyright (C) 2022  <Klaus D. Goepel>
- *
+ * 
+ *  $Rev: 146 $
+ *  $LastChangedDate: 2022-02-17 16:18:12 +0800 (Do, 17 Feb 2022) $
+ * 
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
@@ -201,9 +204,6 @@
     $loginHeaderText = "<a href='" . SITE_URL . "'>" . APP . "</a>
         &nbsp;&nbsp;<a href='ahp-news.php'>Latest News</a>";
 
-    // --- Language settings
-    $languages = array('en','de','es','pt');
-    $lang = "EN"; // default
 
     $urlAct =  htmlspecialchars($_SERVER['PHP_SELF']);
     $myUrl =   htmlspecialchars('//' . MY_DOMAIN) . $urlAct;
@@ -252,6 +252,20 @@
             }
         }
     }
+
+    // sets the session variable for language
+
+    $languages = array('en','de','es','pt');
+    $lang = filter_input(INPUT_GET, 'lang', FILTER_SANITIZE_STRING);
+        if ($lang != null && $lang != false && in_array($lang, $languages)) {
+            $lang = strtoupper($lang);
+            setcookie('lang', $lang, time() + COOKIE_RUNTIME, "/", COOKIE_DOMAIN);
+        } elseif (isset($_COOKIE['lang'])
+            && in_array(strtolower($_COOKIE['lang']), $languages)) {
+            $lang = $_COOKIE['lang'];
+        } else {
+            $lang ='EN';
+        }
 
     // --- FUNCTIONS
 

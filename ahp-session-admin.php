@@ -5,7 +5,7 @@
  * @version 2017-04-11
  * @version 2017-09-28 last version w/o SVN
  *
- * OPEN, NEW, EXIT, VRES, GINP, HMOD, PMOD, DELP, DEL, CLOSE
+ * OPEN, NEW, EXIT, VRES, GINP, HMOD, PMOD, STATUS, EXPORT, DELP, DEL, CLOSE
  *
  *  Copyright (C) 2022  <Klaus D. Goepel>
  *
@@ -32,24 +32,10 @@ $sessionName= "";
 // todo: replace by $urlProjectImport from config file
 $urlPjImport= "ahp-project-import.php";
 
-$version = substr('$LastChangedDate: 2022-02-17 13:03:38 +0800 (Do, 17 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 143 $', "$");
+$version = substr('$LastChangedDate: 2022-02-17 16:18:12 +0800 (Do, 17 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 146 $', "$");
 
 $login = new Login();
-
-// sets the session variable for language
-$lang = filter_input(INPUT_GET, 'lang', FILTER_SANITIZE_STRING);
-    if ($lang != null && $lang != false && in_array($lang, $languages)) {
-        $lang = strtoupper($lang);
-        setcookie('lang', $lang, time() + COOKIE_RUNTIME, "/", COOKIE_DOMAIN);
-        $_SESSION['lang'] = $lang;
-    } elseif (isset($_COOKIE['lang'])
-        && in_array(strtolower($_COOKIE['lang']), $languages)) {
-        $lang = $_COOKIE['lang'];
-        $_SESSION['lang'] = $lang;
-    } else {
-        $lang ='EN';
-    }
 
 $class = 'AhpSessionAdmin' . $lang;
 $sessionAdmin = new $class();

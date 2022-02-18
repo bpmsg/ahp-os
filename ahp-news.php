@@ -23,21 +23,13 @@
 include 'includes/config.php';
 
 $login = new Login();
-// sets the session variable for language
-$lang = filter_input(INPUT_GET, 'lang', FILTER_SANITIZE_STRING);
-if ($lang != null && $lang != false && in_array($lang, $languages)) {
-    $_SESSION['lang'] = $lang =strtoupper($lang);
-} elseif (isset($_SESSION['lang'])) {
-    $lang = $_SESSION['lang'];
-} else {
-    $lang ='EN';
-}
 
 $class = 'AhpNews' . $lang;
 $ahpOs = new $class();
+$_SESSION['lang'] = $lang;
 
-$version = substr('$LastChangedDate: 2022-02-11 16:19:15 +0800 (Fr, 11 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 126 $', "$");
+$version = substr('$LastChangedDate: 2022-02-18 13:52:15 +0800 (Fr, 18 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 148 $', "$");
 
 /*
  * --- Web Page HTML OUTPUT ---
@@ -52,7 +44,7 @@ echo "<p>Language: <a href='$urlAct?lang=en'>English</a>
       </p>";
 echo "<div class='entry-content'>";
 printf($ahpOs->titles1['h2welc'], (isset($_SESSION['user_name']) ? $_SESSION['user_name'] : ""));
-printf($ahpOs->titles1['h3release'], $version, $rev);
+printf($ahpOs->titles1['h3release'], $version, $rev); require('VERSION');
 echo $ahpOs->info['news1'];
 echo $ahpOs->titles1['h3news2'];
 echo $ahpOs->info['news2'];

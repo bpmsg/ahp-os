@@ -39,24 +39,9 @@ if (!isset($_SESSION['sid'])) {
 }
 
 $login = new Login();
-// sets the session variable for language
-$lang = filter_input(INPUT_GET, 'lang', FILTER_SANITIZE_STRING);
-    if ($lang != null && $lang != false && in_array($lang, $languages)) {
-        $lang = strtoupper($lang);
-        setcookie('lang', $lang, time() + COOKIE_RUNTIME, "/", COOKIE_DOMAIN);
-        $_SESSION['lang'] = $lang;
-    } elseif (isset($_COOKIE['lang']) 
-		&& in_array(strtolower($_COOKIE['lang']), $languages)) {
-        $lang = $_COOKIE['lang'];
-        $_SESSION['lang'] = $lang;
-    } elseif (isset($_SESSION['lang']) 
-		&& in_array(strtolower($_SESSION['lang']), $languages)) {
-        $lang = $_SESSION['lang'];
-    } else {
-        $lang ='EN';
-    }
 $class = 'AhpHiergini' . $lang;
 $ahpHiergini = new $class();
+$_SESSION['lang'] = $lang;
 
 // reset in case back from edit form
 if (isset($_SESSION['REFERER'])) {
@@ -67,8 +52,8 @@ $loggedIn = $login->isUserLoggedIn();
 $msg ="";
 $subTitle = $ahpHiergini->titles['subTitle1'];
 
-$version = substr('$LastChangedDate: 2022-02-16 11:53:54 +0800 (Mi, 16 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 139 $', "$");
+$version = substr('$LastChangedDate: 2022-02-18 11:47:47 +0800 (Fr, 18 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 147 $', "$");
 
 /** get data (name, session code, description from POST parameter
 * called from ahp-hiergini page
@@ -165,7 +150,7 @@ $iniOwner = false;
         }
         if (!isset($_SESSION['sessionCode']) || $_SESSION['sessionCode']=="") {
             // generate a new session code
-            $sessCode = $ahpDb->generateSessionCode(6, 2);
+            $sessCode = $ahpDb->generateSessionCode(6, 7);
             $action = sprintf($ahpHiergini->info['act1'], $sessCode);
             $storedSessions = $ahpDb->getStoredSessions($user);
             $sessionCnt = count($storedSessions);
@@ -337,7 +322,7 @@ if (defined('SYS_MSG')) {
 echo "<p>Language: <a href='", $urlAct, "?lang=en'>English</a>
         &nbsp;&nbsp;<a href='", $urlAct, "?lang=de'>Deutsch</a>
         &nbsp;&nbsp;<a href='", $urlAct, "?lang=es'>Español</a>
-        &nbsp;&nbsp;<a href='", $urlAct, "?lang=es'>Português</a>
+        &nbsp;&nbsp;<a href='", $urlAct, "?lang=pt'>Português</a>
         </p>";
 echo "<h2>$subTitle</h2>";
 echo "<p class='msg'>$action</p>";

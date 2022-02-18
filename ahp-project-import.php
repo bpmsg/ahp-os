@@ -25,8 +25,8 @@ define('MAX_SIZE', 400000);
 
 include 'includes/config.php';
 
-$version = substr('$LastChangedDate:$', 18, 10);
-$rev = trim('$Rev:$', "$");
+$version = substr('$LastChangedDate: 2022-02-17 13:25:12 +0800 (Do, 17 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 144 $', "$");
 
 // --- FUNCTIONS
 function display_filesize($filesize)
