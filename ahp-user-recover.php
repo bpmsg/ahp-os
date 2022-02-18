@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
- *  Revision: $Rev: 132 $
+ *  Revision: $Rev: 151 $
  *
  */
 
@@ -30,7 +30,7 @@ include 'includes/config.php';
  * database successful!
  */
 //$backupDb = 'ahp-os_bck';
-$backupDb = 'ahp_os.2022-01-30.db';
+$backupDb = 'ahp_osa.2022-01-30.db';
 
 $storedUsers = array();  // users in active database
 $deletedUsers = array(); // users in backup db but not in active db
@@ -41,8 +41,8 @@ $ahpUser = array();
 $pageTitle ='AHP recover';
 $title="AHP-OS User Recovery";
 $subTitle = "User recovery from bachup database";
-$version = substr('$LastChangedDate: 2022-02-12 22:28:20 +0800 (Sa, 12 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 132 $', "$");
+$version = substr('$LastChangedDate: 2022-02-18 15:22:01 +0800 (Fr, 18 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 151 $', "$");
 
 // productive database
 $login =  new Login();
@@ -50,8 +50,21 @@ $ahpAdm = new AhpAdmin();
 $ahpDb =  new AhpDb();
 
 // backup database
-$ahpAdmBck = new AhpAdmin($backupDb);
-$ahpDbBck =  new AhpDb($backupDb);
+$errflg = false;
+$fileList = array();
+if(substr($backupDb,-3) == ".db"){
+    foreach ( glob( "db/*.*" ) as $filename){
+        $fileList[] = substr(strrchr($filename,'/'),1);
+    }
+    if(in_array($backupDb, $fileList)){
+        $ahpAdmBck = new AhpAdmin($backupDb);
+        $ahpDbBck =  new AhpDb($backupDb);
+    } else {
+        $errFlg = true;
+        $errMsg = "<span class='err'>
+            SQLITE backup database not found</span>";
+    }
+}
 
 // reset in case back from edit form
 if (isset($_SESSION['REFERER'])) {
@@ -100,17 +113,18 @@ if (isset($_POST['DEL']) || isset($_POST['OPEN']) || isset($_POST['REACT'])) {
 } elseif (isset($_POST['CLOSE'])) {
     $userName = "";
 }
+if(!$errFlg) {
+    $storedUsers  = $ahpAdm->getUserNames();
+    $deletedUsers = $ahpAdmBck->getUserNames();
+    $deletedUsers = array_diff($deletedUsers, $storedUsers);
+    $storedUsers = array_values($deletedUsers);
 
-$storedUsers  = $ahpAdm->getUserNames();
-$deletedUsers = $ahpAdmBck->getUserNames();
-$deletedUsers = array_diff($deletedUsers, $storedUsers);
-$storedUsers = array_values($deletedUsers);
-
-if ($userName !="") {
-    $i = array_search($userName, $storedUsers);
-    if ($i >0) {
-        $storedUsers[$i] = $storedUsers[0];
-        $storedUsers[0] = $userName;
+    if ($userName !="") {
+        $i = array_search($userName, $storedUsers);
+        if ($i >0) {
+            $storedUsers[$i] = $storedUsers[0];
+            $storedUsers[0] = $userName;
+        }
     }
 }
 
