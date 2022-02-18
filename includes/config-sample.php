@@ -3,8 +3,8 @@
  *
  *  Copyright (C) 2022  <Klaus D. Goepel>
  * 
- *  $Rev: 146 $
- *  $LastChangedDate: 2022-02-17 16:18:12 +0800 (Do, 17 Feb 2022) $
+ *  $Rev: 153 $
+ *  $LastChangedDate: 2022-02-18 16:44:42 +0800 (Fr, 18 Feb 2022) $
  * 
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -133,6 +133,8 @@
     } else {
         define('MY_DOMAIN', $_SERVER['SERVER_NAME']);
     }
+    
+    define('PROT', ($_SERVER['HTTPS'] ? "https://" : "http://"));
 
     define('DB_PATH', ABS_PATH . BASE . "db/");
 
@@ -162,7 +164,7 @@
     // --- Configuration for: password reset email data
     define(
         'EMAIL_PASSWORDRESET_URL',
-        htmlspecialchars('https://' . MY_DOMAIN . BASE . "includes/login/do/do-reset-pw.php")
+        htmlspecialchars( PROT . MY_DOMAIN . BASE . "includes/login/do/do-reset-pw.php")
     );
     define('EMAIL_PASSWORDRESET_FROM', "webmaster@" . MY_DOMAIN);
     define('EMAIL_PASSWORDRESET_FROM_NAME', "webmaster");
@@ -172,7 +174,7 @@
     // --- Configuration for: verification email data
     define(
         'EMAIL_VERIFICATION_URL',
-        htmlspecialchars('https://' . MY_DOMAIN . BASE .  "includes/login/do/do-register.php")
+        htmlspecialchars( PROT . MY_DOMAIN . BASE .  "includes/login/do/do-register.php")
     );
     define('EMAIL_VERIFICATION_FROM', "webmaster@" . MY_DOMAIN);
     define('EMAIL_VERIFICATION_FROM_NAME', "webmaster");
