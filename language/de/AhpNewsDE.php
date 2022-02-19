@@ -17,7 +17,8 @@ class AhpNewsDE
 );
 
     public $info = array(
-    'news1'         =>  "<p>Mit dieser version von AHP-OS ist es jetzt möglich, Projekte zu exportieren und zu importieren.
+    'news1'         =>  "<p>Mit dieser version von AHP-OS ist es jetzt möglich, <span class='hl'>Projekte zu exportieren 
+                        und zu importieren</span>.
                         Diese Funktionen sind über das Session und Projekt Menu ansprechbar. Sie können genutzt werden, 
                         um, zum Beispiel, ältere Projekte zu archivieren, oder mit anderen Nutzern von AHP-OS auszutauschen.
                         Die Speicherung erfolgt im JSON Format.</p>

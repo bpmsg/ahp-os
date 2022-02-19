@@ -318,7 +318,7 @@ class Login
                 // to prevent potential attackers showing if the user exists
 
                 // MESSAGE_USER_DOES_NOT_EXIST
-                $this->errors[] = $this->lgTxt->err['unNe'];
+                $this->errors[] = $this->lgTxt->err['pwW'];
             } elseif (($result_row->user_failed_logins >= 3)
                     && ($result_row->user_last_failed_login > (time() - 30))) {
                 // MESSAGE_PASSWORD_WRONG_3_TIMES
@@ -383,10 +383,6 @@ class Login
                 }
 
                 // OPTIONAL: recalculate the user's password hash
-                // DELETE this if-block if you like, it only exists to
-                // recalculate users's hashes when you provide a cost factor,
-                // by default the script will use a cost factor of 10 and never change it.
-                // check if the have defined a cost factor in config/hashing.php
                 if (defined('HASH_COST_FACTOR')) {
                     // check if the hash needs to be rehashed
                     if (password_needs_rehash(
@@ -655,19 +651,7 @@ class Login
                 // using PHP 5.5's password_verify()
                 if (password_verify($user_password_old, $result_row->user_password_hash)) {
 
-                    // now it gets a little bit crazy: check if we have a
-                    // constant HASH_COST_FACTOR defined (in config/hashing.php),
-                    // if so: put the value into $hash_cost_factor,
-                    // if not, make $hash_cost_factor = null
                     $hash_cost_factor = (defined('HASH_COST_FACTOR') ? HASH_COST_FACTOR : null);
-
-                    // crypt the user's password with the PHP 5.5's password_hash()
-                    // function, results in a 60 character hash string
-                    // the PASSWORD_DEFAULT constant is defined by the PHP 5.5,
-                    // or if you are using PHP 5.3/5.4, by the password hashing
-                    // compatibility library. the third parameter looks a little
-                    // bit shitty, but that's how those PHP 5.5 functions
-                    // want the parameter: as an array with, currently only used with 'cost' => XX.
                     $user_password_hash
                         = password_hash(
                             $user_password_new,
@@ -882,20 +866,7 @@ class Login
             // MESSAGE_PASSWORD_TOO_SHORT
             $this->errors[] = $this->lgTxt->err['pwS'];
         } elseif ($this->databaseConnection()) {
-            // now it gets a little bit crazy: check if we have a constant
-            // HASH_COST_FACTOR defined (in config/hashing.php),
-            // if so: put the value into $hash_cost_factor, if not, make
-            // $hash_cost_factor = null
             $hash_cost_factor = (defined('HASH_COST_FACTOR') ? HASH_COST_FACTOR : null);
-
-            // crypt the user's password with the PHP 5.5's password_hash()
-            // function, results in a 60 character hash string
-            // the PASSWORD_DEFAULT constant is defined by the PHP 5.5,
-            // or if you are using PHP 5.3/5.4, by the password hashing
-            // compatibility library. the third parameter looks a little
-            // bit shitty, but that's how those PHP 5.5 functions
-            // want the parameter: as an array with, currently only used
-            // with 'cost' => XX.
             $user_password_hash
                 = password_hash(
                     $user_password_new,

@@ -17,11 +17,12 @@ class AhpNewsEN
 );
 
     public $info = array(
-    'news1'     =>  "<p>In this latest version we have added an import and export function for projects. You can use it, for example, 
+    'news1'     =>  "<p>In this latest version we have added an <span class='hl'>import and export function</span> for projects. 
+                    You can use it, for example, 
                     to archive older projects on your computer, or exchange them with other users of AHP-OS. Projects are exported 
                     in json format. The export/import functions can be reached from the session or project menu</p>
-                    <p>AHP-OS source code is now available as <i>open source</i> under GNU GENERAL PUBLIC LICENSE Version 3 from
-                    Github.</p>",
+                    <p>AHP-OS source code is now <span class='hl'>available as open source</span> under GNU GENERAL PUBLIC 
+                    LICENSE Version 3 from Github.</p>",
     'news2'     =>  "<p>
                     We are still looking to find volunteers for a translation of all AHP-OS output into other 
                     languages. At the moment English, German, Spanish and Portugese is supported. If you are willing to support the program,

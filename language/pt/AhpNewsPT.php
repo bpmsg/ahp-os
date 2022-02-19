@@ -17,7 +17,8 @@ class AhpNewsPT
 );
 
     public $info = array(
-    'news1'     =>    "<p>Nesta versão mais recente, adicionámos uma função de importação e exportação para projetos. 
+    'news1'     =>    "<p>Nesta versão mais recente, adicionámos uma função de <span class='hl'>importação e exportação 
+                        para projetos</span>. 
                         Pode usá-lo, por exemplo, para arquivar projetos mais antigos no seu computador, ou trocá-los
                         com outros utilizadores da AHP-OS. Os projetos são exportados em formato json. As funções 
                         de exportação/importação podem ser alcançadas a partir do menu da sessão ou do projeto.</p>
