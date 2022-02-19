@@ -32,8 +32,8 @@ $sessionName= "";
 // todo: replace by $urlProjectImport from config file
 $urlPjImport= "ahp-project-import.php";
 
-$version = substr('$LastChangedDate: 2022-02-18 16:24:01 +0800 (Fr, 18 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 152 $', "$");
+$version = substr('$LastChangedDate: 2022-02-19 14:01:53 +0800 (Sa, 19 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 156 $', "$");
 
 $login = new Login();
 
@@ -231,7 +231,7 @@ if ($login->isUserLoggedIn() === true) {
                 $_SESSION['alt'] = $pd['project_alt'];
             }
             $_SESSION['description'] = $pd['project_description'];
-            $_SESSION['mod'] = $_SESSION['sid'];
+            $_SESSION['mod'] = true;
             header('HTTP/1.0 200 ok');
             header("Location: " . $urlGroupInit);
             exit();

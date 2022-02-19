@@ -40,8 +40,8 @@ $loggedIn = $login->isUserLoggedIn();
 $ahpH =    new AhpHierAlt();
 $ahp =     new AhpCalcIo(2);
 
-$version = substr('$LastChangedDate: 2022-02-11 08:19:55 +0800 (Fr, 11 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 120 $', "$");
+$version = substr('$LastChangedDate: 2022-02-19 14:01:53 +0800 (Sa, 19 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 156 $', "$");
 
 // function to set url string for form action to get new n and alternative names
 // equals file name with "1"
@@ -181,7 +181,7 @@ $checkWarn = "";
             if (isset($_SESSION['groupSession']) && !empty($_SESSION['sessionCode'])) {
                 $sessCod = $_SESSION['sessionCode'];
             } else {
-                $_SESSION['mod'] = $_SESSION['sid'];
+                $_SESSION['mod'] = true;
                 header("Location: $urlGroupInit");
                 exit();
             }

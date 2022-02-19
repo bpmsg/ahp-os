@@ -3,8 +3,8 @@
  *
  *  Copyright (C) 2022  <Klaus D. Goepel>
  * 
- *  $Rev: 153 $
- *  $LastChangedDate: 2022-02-18 16:44:42 +0800 (Fr, 18 Feb 2022) $
+ *  $Rev: 156 $
+ *  $LastChangedDate: 2022-02-19 14:01:53 +0800 (Sa, 19 Feb 2022) $
  * 
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -295,29 +295,6 @@
         return $sid;
     }
 
-    /* Checks session id with stored session id ssd
-     * @return string $sid if sid is valid
-     * @todo: delete - no longer in use
-    */
-    function checkValidSession()
-    {
-        $sid="";
-        $ssd="";
-        $sid = session_id();
-        if ($sid != "") {
-            $sid = md5($sid . $_SERVER['HTTP_USER_AGENT']);
-
-            if (isset($_SESSION['sid'])) {
-                $ssd = $_SESSION['sid'];
-            }
-            if ($sid == $ssd) {
-                return $sid;
-            }
-        }
-        closeSession();
-        die("INVALID SESSION, SESSION EXPIRED! 
-            -&nbsp;&nbsp;<a href=" . SITE_URL . ">Back</a>");
-    }
 
     /* Close session */
     function closeSession()

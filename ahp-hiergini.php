@@ -52,8 +52,8 @@ $loggedIn = $login->isUserLoggedIn();
 $msg ="";
 $subTitle = $ahpHiergini->titles['subTitle1'];
 
-$version = substr('$LastChangedDate: 2022-02-19 09:16:04 +0800 (Sa, 19 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 155 $', "$");
+$version = substr('$LastChangedDate: 2022-02-19 14:01:53 +0800 (Sa, 19 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 156 $', "$");
 
 /** get data (name, session code, description from POST parameter
 * called from ahp-hiergini page
@@ -260,7 +260,7 @@ $iniOwner = false;
                 $errMsg .= $ahpDb->getErrors();
             }
         } else { // no mod - input pairwise comparisons
-            $_SESSION['groupSession'] = $_SESSION['sid'];
+            $_SESSION['groupSession'] = true;
             // check for complete judgment
         }
 
@@ -322,7 +322,7 @@ if (defined('SYS_MSG')) {
 $webHtml->displayLanguageSelection();
 echo "<h2>$subTitle</h2>";
 echo "<p class='msg'>$action</p>";
-if (empty($_SESSION['groupSession']) && !isset($_SESSION['mod'])) {
+if (!isset($_SESSION['groupSession']) && !isset($_SESSION['mod'])) {
     echo $ahpHiergini->info['intro'];
 }
 

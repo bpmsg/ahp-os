@@ -25,11 +25,9 @@
 class WebHtml
 {
     /*
-    * @param string $pageUrl Url of the page to build up
-    * @param boolean $pwk Tracking with Piwik. Includes pwl_klaus.php if set
-    * @param boolean $share Social networks Facebook, Trigger
-    * @return void
-    * @todo merge webHtmlHeader()
+    * Start webpage output
+    * @para string $pageTitle
+    * @para int $width
     */
     public function __construct($pageTitle="", $width=900)
     {
@@ -86,64 +84,4 @@ class WebHtml
           </p>";
 
     }
-    
-    
-    // --------------------------------------------------------------------------
-    // --- These are general functions, but not used in AHP-OS, todo: delete? ---
-    // --------------------------------------------------------------------------
-
-    /* Session Closing - closes open php session
-     * To be called before any html output
-     */
-    public function sessionClose()
-    {
-        session_unset();
-        session_destroy();
-        session_write_close();
-        setcookie(session_name(), '', 0, '/');
-        //	session_regenerate_id(true);
-        return;
-    }
-
-    /** Measures session time based on $_SESSION['tstart']
-     * @return float time in minutes
-     */
-    public function sessionTime()
-    {
-        $st = gettimeofday(true);
-        if (isset($_SESSION['tstart'])) {
-            return round(bcsub($st, $_SESSION['tstart'], 6)/60., 1);
-        }
-        return 0.0;
-    }
-
-    /* timer to measure execution time of scripts */
-    public function timer_start()
-    {
-        $this->timeparts = explode(" ", microtime());
-        $this->starttime = $this->timeparts[1] . substr($this->timeparts[0], 1);
-        return $this->starttime;
-    }
-
-    public function time_end()
-    {
-        $this->timeparts = explode(" ", microtime());
-        $this->endtime = $this->timeparts[1].substr($this->timeparts[0], 1);
-        return bcsub($this->endtime, $this->starttime, 6);
-    }
-
-    // strip any special characters from form fields
-    public function stripStringInput($data)
-    {
-        $bad = array( "\t","\n","\r","\0","\x0B",);
-        if (is_string($data)) {
-            $data = trim($data);
-            $data = stripslashes($data);
-            $data = htmlspecialchars($data);
-            $data = str_replace($bad, "", $data);
-            return $data;
-        }
-        return "";
-    }
-    // -- end general functions
 } // end WebHtml class

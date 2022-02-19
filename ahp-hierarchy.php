@@ -48,8 +48,8 @@ if (isset($_SESSION['REFERER'])) {
 }
 $loggedIn = $login->isUserLoggedIn();
 
-$version = substr('$LastChangedDate: 2022-02-16 09:47:49 +0800 (Mi, 16 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 138 $', "$");
+$version = substr('$LastChangedDate: 2022-02-19 14:01:53 +0800 (Sa, 19 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 156 $', "$");
 
 $defaultHierarchy = "AHP-Project:Crit-1,Crit-2,Crit-3;";
 
@@ -247,7 +247,7 @@ $leave = false;
                 $sessCod = $_SESSION['sessionCode'];
             } else {
                 $sid = startNewSession();
-                $_SESSION['mod'] = $_SESSION['sid'];
+                $_SESSION['mod'] = true;
                 if ($hierMode) {
                     $_SESSION['hText'] = $text;
                     unset($_SESSION['pwc']);
