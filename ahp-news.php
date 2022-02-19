@@ -28,8 +28,8 @@ $class = 'AhpNews' . $lang;
 $ahpOs = new $class();
 $_SESSION['lang'] = $lang;
 
-$version = substr('$LastChangedDate: 2022-02-19 09:16:04 +0800 (Sa, 19 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 155 $', "$");
+$version = substr('$LastChangedDate: 2022-02-19 18:06:35 +0800 (Sa, 19 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 159 $', "$");
 $rev = file_get_contents('VERSION');
 
 /*
@@ -45,6 +45,9 @@ $webHtml->displayLanguageSelection();
 
 echo "<div class='entry-content'>";
 printf($ahpOs->titles1['h2welc'], (isset($_SESSION['user_name']) ? $_SESSION['user_name'] : ""));
+if (defined('SYS_MSG')) {
+    echo "<p class='hl'>" . SYS_MSG . "</p>";
+}
 printf($ahpOs->titles1['h3release'], "", $rev);
 echo $ahpOs->info['news1'];
 echo $ahpOs->titles1['h3news2'];

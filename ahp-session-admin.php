@@ -32,8 +32,8 @@ $sessionName= "";
 // todo: replace by $urlProjectImport from config file
 $urlPjImport= "ahp-project-import.php";
 
-$version = substr('$LastChangedDate: 2022-02-19 14:01:53 +0800 (Sa, 19 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 156 $', "$");
+$version = substr('$LastChangedDate: 2022-02-19 18:06:35 +0800 (Sa, 19 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 159 $', "$");
 
 $login = new Login();
 
@@ -331,7 +331,7 @@ echo '<script src="js/ahp-session-admin.js"></script>';
 echo $sessionAdmin->titles['h1title'];
 
 if (defined('SYS_MSG')) {
-    echo "<p class='err'>" . SYS_MSG . "</p>";
+    echo "<p class='hl'>" . SYS_MSG . "</p>";
 }
 
 if (!isset($_SESSION['lang'])) {
