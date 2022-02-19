@@ -52,8 +52,8 @@ $loggedIn = $login->isUserLoggedIn();
 $msg ="";
 $subTitle = $ahpHiergini->titles['subTitle1'];
 
-$version = substr('$LastChangedDate: 2022-02-18 11:47:47 +0800 (Fr, 18 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 147 $', "$");
+$version = substr('$LastChangedDate: 2022-02-19 09:16:04 +0800 (Sa, 19 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 155 $', "$");
 
 /** get data (name, session code, description from POST parameter
 * called from ahp-hiergini page
@@ -319,11 +319,7 @@ if (defined('SYS_MSG')) {
     echo "<p class='err'>" . SYS_MSG . "</p>";
 }
 
-echo "<p>Language: <a href='", $urlAct, "?lang=en'>English</a>
-        &nbsp;&nbsp;<a href='", $urlAct, "?lang=de'>Deutsch</a>
-        &nbsp;&nbsp;<a href='", $urlAct, "?lang=es'>Español</a>
-        &nbsp;&nbsp;<a href='", $urlAct, "?lang=pt'>Português</a>
-        </p>";
+$webHtml->displayLanguageSelection();
 echo "<h2>$subTitle</h2>";
 echo "<p class='msg'>$action</p>";
 if (empty($_SESSION['groupSession']) && !isset($_SESSION['mod'])) {

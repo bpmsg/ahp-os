@@ -28,23 +28,24 @@ $class = 'AhpNews' . $lang;
 $ahpOs = new $class();
 $_SESSION['lang'] = $lang;
 
-$version = substr('$LastChangedDate: 2022-02-18 13:52:15 +0800 (Fr, 18 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 148 $', "$");
+$version = substr('$LastChangedDate: 2022-02-19 09:16:04 +0800 (Sa, 19 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 155 $', "$");
+$rev = file_get_contents('VERSION');
 
 /*
  * --- Web Page HTML OUTPUT ---
  */
 $webHtml = new WebHtml($ahpOs->titles1['pageTitle']);
+
 include('includes/login/form.login-hl.php');
+
 echo $ahpOs->titles1['h1title'];
-echo "<p>Language: <a href='$urlAct?lang=en'>English</a>
-       &nbsp;&nbsp;<a href='$urlAct?lang=de'>German</a>
-       &nbsp;&nbsp;<a href='$urlAct?lang=es'>Español</a>
-       &nbsp;&nbsp;<a href='$urlAct?lang=pt'>Português</a>
-      </p>";
+
+$webHtml->displayLanguageSelection();
+
 echo "<div class='entry-content'>";
 printf($ahpOs->titles1['h2welc'], (isset($_SESSION['user_name']) ? $_SESSION['user_name'] : ""));
-printf($ahpOs->titles1['h3release'], $version, $rev); require('VERSION');
+printf($ahpOs->titles1['h3release'], "", $rev);
 echo $ahpOs->info['news1'];
 echo $ahpOs->titles1['h3news2'];
 echo $ahpOs->info['news2'];

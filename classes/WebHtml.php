@@ -77,6 +77,17 @@ class WebHtml
     }
 
 
+    /* Display of language selection */
+    public function displayLanguageSelection(){
+        echo "<p>Language: <a href='", $urlAct, "?lang=en'>English</a>
+           &nbsp;&nbsp;<a href='", $urlAct, "?lang=de'>Deutsch</a>
+           &nbsp;&nbsp;<a href='", $urlAct, "?lang=es'>Español</a>
+           &nbsp;&nbsp;<a href='", $urlAct, "?lang=pt'>Português</a>
+          </p>";
+
+    }
+    
+    
     // --------------------------------------------------------------------------
     // --- These are general functions, but not used in AHP-OS, todo: delete? ---
     // --------------------------------------------------------------------------

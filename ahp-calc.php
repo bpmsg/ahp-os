@@ -38,11 +38,11 @@
     }
 
     $version = substr(
-        '$LastChangedDate: 2022-02-17 16:18:12 +0800 (Do, 17 Feb 2022) $',
+        '$LastChangedDate: 2022-02-19 09:16:04 +0800 (Sa, 19 Feb 2022) $',
         18,
         10
     );
-    $rev = trim('$Rev: 146 $', "$");
+    $rev = trim('$Rev: 155 $', "$");
 
     $criteria = array();
     $dta = array();	// for graphic display
@@ -126,11 +126,7 @@
 
     echo "\n<!-- INTRO and GET NEW N -->\n";
     echo $ahpPrioCalc->titles1['h1title'];
-    echo "<p>Language: <a href='",$urlAct, "?lang=en'>English</a>
-          &nbsp;&nbsp;<a href='", $urlAct, "?lang=de'>Deutsch</a>
-          &nbsp;&nbsp;<a href='", $urlAct, "?lang=es'>Español</a>
-          &nbsp;&nbsp;<a href='", $urlAct, "?lang=pt'>Português</a>
-          </p>";
+    $webHtml->displayLanguageSelection();
 
     echo $ahpPrioCalc->titles1['h2subTitle'];
     echo "<p class='entry-content'>",$ahpPrioCalc->info['intro'],"</p>";

@@ -28,8 +28,8 @@ include 'includes/config.php';
 
 session_start();
 
-$version = substr('$LastChangedDate: 2022-02-17 16:18:12 +0800 (Do, 17 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 146 $', "$");
+$version = substr('$LastChangedDate: 2022-02-19 09:16:04 +0800 (Sa, 19 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 155 $', "$");
 
 $class = 'Ahp' . $lang;
 $ahpOs = new $class();
@@ -74,11 +74,8 @@ if (!empty($login->errors) || !empty($login->messages)) {
     echo $login->getErrors();
 }
 
-echo "<p>Language: <a href='", $urlAct, "?lang=en'>English</a>
-		   &nbsp;&nbsp;<a href='", $urlAct, "?lang=de'>Deutsch</a>
-		   &nbsp;&nbsp;<a href='", $urlAct, "?lang=es'>Español</a>
-		   &nbsp;&nbsp;<a href='", $urlAct, "?lang=pt'>Português</a>
-		  </p>";
+$webHtml->displayLanguageSelection();
+
 if (DONATIONS) {
     echo "<p>Donation (please \"Send\", not \"Request\"): 
     <a href='https://paypal.me/ahpDonation'>paypal.me/ahpDonation</a></p>";
