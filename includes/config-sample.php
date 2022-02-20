@@ -3,8 +3,8 @@
  *
  *  Copyright (C) 2022  <Klaus D. Goepel>
  * 
- *  $Rev: 156 $
- *  $LastChangedDate: 2022-02-19 14:01:53 +0800 (Sa, 19 Feb 2022) $
+ *  $Rev: 162 $
+ *  $LastChangedDate: 2022-02-20 10:18:07 +0800 (So, 20 Feb 2022) $
  * 
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -268,6 +268,7 @@
         } else {
             $lang ='EN';
         }
+
 
     // --- FUNCTIONS
 

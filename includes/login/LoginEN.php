@@ -1,4 +1,4 @@
-    <?php
+<?php
     /* used for both login and registration */
 
     class LoginEN
@@ -109,4 +109,4 @@
         "tbEdTd4"	=>	"Registered since:",
         "tbEdTd5"	=>	"Remember Cookie:"
     );
-    }
+}
