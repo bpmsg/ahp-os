@@ -4,8 +4,8 @@
  * Contains functions for html and file i/o
  * Extends AHP base class
  *
- * $LastChangedDate: 2022-02-15 14:53:37 +0800 (Di, 15 Feb 2022) $
- * $Rev: 136 $
+ * $LastChangedDate: 2022-02-22 09:43:17 +0800 (Di, 22 Feb 2022) $
+ * $Rev: 166 $
  *
  * Main methods:
  * set_txtbuf(), txtDownload($fname, $txt)
@@ -37,14 +37,14 @@
 
 class AhpCalcIo extends AhpCalc
 {
-    /** Class Constants */
+    /* Class Constants */
 
     public const NEWL = "\n";      // for csv file export
     public const ENCL = '"';
 
     private $colors;
 
-    /** AHP i-o properties */
+    /* AHP i-o properties */
     public function __construct($n)
     {
         parent::__construct($n);
@@ -52,7 +52,7 @@ class AhpCalcIo extends AhpCalc
         $this->colors = new AhpColors();
     }
 
-    /** download results as csv file
+    /* Download results as csv file
     * @param string $fname download filename
     * @param string %txt Text String to Download
     * @return int 0 for error, 1 for ok
@@ -80,7 +80,7 @@ class AhpCalcIo extends AhpCalc
     }
 
 
-    /** hierarchy text for use in ahp hierarchy module
+    /* Hierarchy text for use in ahp hierarchy module
     * generates a text string of a branch with syntax required by AHP hierarchy
     * node = AHP header, leafs = AHP criteria
     *
@@ -97,7 +97,7 @@ class AhpCalcIo extends AhpCalc
     }
 
 
-    /** Text Printout in csv format for download
+    /* Text Printout in csv format for download
     * assembles txt string in csv format
     *
     * @return string $txtbuf csv string
@@ -139,7 +139,7 @@ class AhpCalcIo extends AhpCalc
     }
 
 
-    /** Function to get the rank of an array
+    /* Function to get the rank of an array
     *
     * @param array of values
     * @return array $rk reverse rank of values
@@ -160,7 +160,7 @@ class AhpCalcIo extends AhpCalc
     }
 
 
-    /** Function to get the reverse rank of an array
+    /* Function to get the reverse rank of an array
     *
     * @param array of values
     * @return array $rk reverse rank of values
@@ -181,7 +181,9 @@ class AhpCalcIo extends AhpCalc
     }
 
 
-    /** Vector printout as table: criteria, weight, ranking */
+    /* 
+     * Vector printout as table: criteria, weight, ranking 
+     */
     public function printVector($names, $vector, $reverse, $tol=array())
     {
         global $colors;
@@ -199,7 +201,7 @@ class AhpCalcIo extends AhpCalc
         }
         $n = count($vector);
         $csc = $this->colors->hueMap($vector, $rgbBaseColor, $rgbEndColor);
-        // get ranking
+        // --- get ranking
         $rk = ($reverse ? $this->get_rrank($vector) : $this->get_rank($vector));
         echo "\n<!-- VECTOR PRINT -->\n";
         echo "<table id='vTbl' >";
@@ -208,7 +210,7 @@ class AhpCalcIo extends AhpCalc
         if ($tflg) {
             echo "<th>(+)</th><th>(-)</th>";
         }
-        echo "</tr><tbody>";
+        echo "</tr>\n<tbody>";
         for ($i = 0; $i < $n; $i++) {
             $rstyle = (($i+1) % 2 ? 'class="odd"' : 'class="even"');
             $style = $csc[$i];
@@ -217,7 +219,8 @@ class AhpCalcIo extends AhpCalc
             echo "<td class='ra var'>$names[$i]</td>";
             echo "<td class='ca' >";
             printf($pctBfmt, $vector[$i]*100);
-            echo "</td><td class='ca' style='background-color:$style;' >" . $rk[$i] . "</td>";
+            echo "</td><td class='ca' style='background-color:$style;' >"
+                . $rk[$i] . "</td>";
             if ($tflg) {
                 echo "<td class='ca' >";
                 printf($pctBfmt, 100 *($tol['max'][$i]-$vector[$i]));
@@ -225,14 +228,16 @@ class AhpCalcIo extends AhpCalc
                 printf($pctBfmt, 100 *($vector[$i] - $tol['min'][$i]));
                 echo "</td>";
             }
-            echo "</tr>";
+            echo "</tr>\n";
         }
-        echo "	</tbody></table>";
+        echo "</tbody></table>";
         return 0;
     }
 
 
-    // Printout matrix as table
+    /* 
+     * Printout matrix as table
+     */
     public function print_matrix($matrix)
     {
         $matrixelfmt = "<td class='sm res'>%01.2f</td>";
@@ -247,13 +252,14 @@ class AhpCalcIo extends AhpCalc
             for ($j = 0; $j < $n_col; $j++) {
                 printf($matrixidfmt, ($j+1));
             }
-            echo "</tr>";
+            echo "\n</tr>";
             for ($row = 0; $row < $n_row; $row++) {
                 echo "<tr>";
                 printf($matrixidfmt, ($row+1));
                 for ($col = 0; $col < $n_col; $col++) {
                     ($row == $col ? printf($matrixdgfmt, $matrix[$row][$col])
                     : printf($matrixelfmt, $matrix[$row][$col]));
+                    echo "\n";
                 }
                 echo "</tr>";
             }
@@ -263,7 +269,7 @@ class AhpCalcIo extends AhpCalc
     }
 
 
-    /** prints evm result information in 2 columns
+    /* Prints evm result information in 2 columns
     * number of comarisons, CR, and EV and number of iterarions
     */
     public function evm_info()
@@ -273,7 +279,7 @@ class AhpCalcIo extends AhpCalc
         printf($this->ahpCalcTxt->res['npc'], $this->npc);
         printf($this->ahpCalcTxt->res['cr'], $this->cr_alo*100);
         echo "</div>";
-        echo "<div style='align:left;padding:20px;display:table-cell;vertical-align:top;'>";
+        echo "\n<div style='align:left;padding:20px;display:table-cell;vertical-align:top;'>";
         printf($this->ahpCalcTxt->res['ev'], $this->evm_eval);
         printf($this->ahpCalcTxt->res['it'], $this->evm_it, $this->evm_dt);
         echo "</div>";
@@ -281,19 +287,19 @@ class AhpCalcIo extends AhpCalc
     }
 
 
-    /** HTML output of priority vector and decision matrix in 2 columns
-    * @uses evm_info()
+    /* HTML output of priority vector and decision matrix in 2 columns
+    *  @uses evm_info()
     */
     public function showResult()
     {
-        // LEFT COLUMN
-        echo "<div style='width:40%;height:auto;float:left;padding:20px;'>";
+        // --- LEFT COLUMN
+        echo "\n<div style='width:40%;height:auto;float:left;padding:20px;'>";
         echo $this->ahpCalcTxt->titles['h3ResP'];
         echo $this->ahpCalcTxt->info['resP'];
         $this->printVector($this->criteria, $this->evm_evec, true, $this->evm_tol);
         echo "</div>";
-        // RIGHT COLUMN
-        echo "<div style='align:left;padding:20px;'>";
+        // --- RIGHT COLUMN
+        echo "\n<div style='align:left;padding:20px;'>";
         echo $this->ahpCalcTxt->titles['h3ResDm'];
         echo $this->ahpCalcTxt->info['resDm'];
         $this->print_matrix($this->dm);
@@ -304,7 +310,7 @@ class AhpCalcIo extends AhpCalc
     }
 
 
-    /** html display to get new names
+    /* html display to get new names
     * used in ahp calculator and ahp os
     *
     * @param int $n             Number of names/criteria/alternatives
@@ -316,11 +322,12 @@ class AhpCalcIo extends AhpCalc
     */
     public function ahpHtmlGetNewNames($n, $t, $urlAction, $nmax, $errCod)
     {
+        echo "\n<!-- Get new names -->\n";
         echo "<form method='GET' action='$urlAction'>";
         printf($this->ahpCalcTxt->info['cNbr'], $nmax);
-        echo "<input type='hidden' value='$t' name='t' >";
-        echo "<input type='text' maxlength='3' size='3' value='$n' name='n'>";
-        echo "<input type='submit' value='Go' name='new' >&nbsp;&nbsp;";
+        echo "\n<input type='hidden' value='$t' name='t' >";
+        echo "\n<input type='text' maxlength='3' size='3' value='$n' name='n'>";
+        echo "\n<input type='submit' value='Go' name='new' >&nbsp;&nbsp;";
         switch ($errCod) {
             case 0:
                 echo "OK"; break;
@@ -331,12 +338,12 @@ class AhpCalcIo extends AhpCalc
                 echo $this->ahpCalcTxt->msg['def'];
                 break;
         }
-        echo "</form>";
+        echo "\n</form>";
         return;
     }
 
 
-    /** Get form input for names of criteria/alternatives
+    /* Get form input for names of criteria/alternatives
     *
     * @param string $act form action address
     * @param int $n number of names (criteria/alternatives)
@@ -361,7 +368,7 @@ class AhpCalcIo extends AhpCalc
             $titleField = '';
         }
         echo "<form method='GET' action='$act' ><input type='hidden' name ='n' value='$n' >
-                <table>";
+            <table>";
         echo "<tr><td></td>";
         echo "<td>
             <input type='text' maxlength='" . WLMAX . "' size='" . WLMAX
@@ -382,4 +389,4 @@ class AhpCalcIo extends AhpCalc
         echo "</table></form>";
         return;
     }
-} // end class AhpCalcIo
+}

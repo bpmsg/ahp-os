@@ -1,52 +1,48 @@
 <form method='POST' action='ahp-hiergini.php'>
-
-<fieldset>
-	<legend><?php echo $ahpHiergini->mnu['lgd1']; ?></legend>
-	<p><?php echo $ahpHiergini->mnu['sc']; ?>
-		<br><input type='text' size='8' style='font-weight:bold;' name='sc' value='<?php echo $sessCode; ?>'
-		<?php echo ( $iniOwner ? " disabled" : ""); ?>>
-		<br><small><?php echo $ahpHiergini->info['siSc']; ?></small>
-	</p>
-	<p><?php echo $ahpHiergini->mnu['nm']; ?>
-		<br><input type='text' size='30' name='name' value='<?php echo $user; ?>' <?php echo ( $loggedIn ? " disabled" : ""); ?> >
-		<br><small>
-		<?php echo ($loggedIn ? sprintf($ahpHiergini->info['siNm1'],$urlAct) : $ahpHiergini->info['siNm2']); ?>
-		</small>
-	</p>
-</fieldset>
+    <fieldset>
+        <legend><?php echo $ahpHiergini->mnu['lgd1']; ?></legend>
+        <p><?php echo $ahpHiergini->mnu['sc']; ?>
+            <br><input type='text' size='8' style='font-weight:bold;' name='sc' value='<?php echo $sessCode; ?>'
+            <?php echo ( $iniOwner ? " disabled" : ""); ?>>
+            <br><small><?php echo $ahpHiergini->info['siSc']; ?></small>
+        </p>
+        <p><?php echo $ahpHiergini->mnu['nm']; ?>
+            <br><input type='text' size='30' name='name' value='<?php echo $user; ?>' <?php echo ( $loggedIn ? " disabled" : ""); ?> >
+            <br><small>
+            <?php echo ($loggedIn ? sprintf($ahpHiergini->info['siNm1'],$urlAct) : $ahpHiergini->info['siNm2']); ?>
+            </small>
+        </p>
+    </fieldset>
 
 <?php if($iniOwner){ ?>
-	<p><?php echo $ahpHiergini->info['pName']; ?>
-		<br><input type='text' size='45' name='project' value='<?php echo $prjct . ($iniOwner ? "" : " disabled") ; ?>' />
-	</p>
-	<p><?php echo $ahpHiergini->info['pStat']; ?></p>
-	<p><?php echo $ahpHiergini->info['pDescr']; ?>
-		<br>
-		<textarea name='description' rows='8' cols='78' <?php echo ($iniOwner ? "" : " disabled"); ?> 
-		placeholder='' ><?php echo trim($descr); ?>
-		</textarea>
-		<?php echo $ahpHiergini->info['descr']; ?>
-	</p>	
+    <p><?php echo $ahpHiergini->info['pName']; ?>
+    <br><input type='text' size='45' name='project' value='<?php echo $prjct . ($iniOwner ? "" : " disabled") ; ?>' />
+    </p>
+    <p><?php echo $ahpHiergini->info['pStat']; ?></p>
+    <p><?php echo $ahpHiergini->info['pDescr']; ?>
+    <br><textarea name='description' rows='8' cols='78' <?php echo ($iniOwner ? "" : " disabled"); ?> 
+        placeholder='' ><?php echo trim($descr); ?></textarea>
+    <?php echo $ahpHiergini->info['descr']; ?></p>    
 <?php } ?>
 
 <?php echo $ahpHiergini->titles['h2siMnu']; ?>
-<fieldset>
-	<legend><?php echo $ahpHiergini->mnu['lgd2']; ?></legend>
-	<div style='display:block;float:left;'>
-		<?php if($errMsg=="") {
-			echo "&nbsp;&nbsp;<input class='btnr' type='submit' value='", $ahpHiergini->mnu['btn1'], "' name='SUBMIT' >"; 
-		} else {
-			echo "<input class='btnr' type='submit' value='", $ahpHiergini->mnu['btn2'],"' name='CHECK' >";
-			echo "&nbsp;&nbsp;<input type='submit' value='",$ahpHiergini->mnu['btn1'], "' name='SUBMIT' disabled='' >"; 
-		}
-	if($viewFlg) 
-			echo "&nbsp;&nbsp;<input type='submit' value='", $ahpHiergini->mnu['btn3'], "' name='VIEW' >"; 
-	?>
-	</div>
-	<div style='display:block;float:right;'>
-		<input type='submit' value='<?php echo $ahpHiergini->mnu['btn4']; ?>' name='reset' >
-		&nbsp;&nbsp;<input type='submit' value='<?php echo $ahpHiergini->mnu['btn5']; ?>' name='CANCEL' >
-	</div>
-	<div style='clear: both;'></div>
-</fieldset>
+    <fieldset>
+        <legend><?php echo $ahpHiergini->mnu['lgd2']; ?></legend>
+        <div style='display:block;float:left;'>
+        <?php if($errMsg=="") {
+            echo "&nbsp;&nbsp;<input class='btnr' type='submit' value='", $ahpHiergini->mnu['btn1'], "' name='SUBMIT' >"; 
+        } else {
+            echo "<input class='btnr' type='submit' value='", $ahpHiergini->mnu['btn2'],"' name='CHECK' >";
+            echo "&nbsp;&nbsp;<input type='submit' value='",$ahpHiergini->mnu['btn1'], "' name='SUBMIT' disabled='' >"; 
+        }
+        if($viewFlg) 
+            echo "&nbsp;&nbsp;<input type='submit' value='", $ahpHiergini->mnu['btn3'], "' name='VIEW' >"; 
+        ?>
+        </div>
+        <div style='display:block;float:right;'>
+        <input type='submit' value='<?php echo $ahpHiergini->mnu['btn4']; ?>' name='reset' >
+            &nbsp;&nbsp;<input type='submit' value='<?php echo $ahpHiergini->mnu['btn5']; ?>' name='CANCEL' >
+        </div>
+        <div style='clear: both;'></div>
+    </fieldset>
 </form>

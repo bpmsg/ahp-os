@@ -2,8 +2,8 @@
 /**
 * Analytic Hierarchy Process database functions for ahp
 *
-* $LastChangedDate: 2022-02-18 11:47:47 +0800 (Fr, 18 Feb 2022) $
-* $Rev: 147 $
+* $LastChangedDate: 2022-02-22 09:43:17 +0800 (Di, 22 Feb 2022) $
+* $Rev: 166 $
 *
 * @author Klaus D. Goepel
 * @copyright 2014-2017 Klaus D. Goepel
@@ -60,8 +60,6 @@
 * private function displayParticipantTable($part)
 *       - called by displayProjectDetails
 * private function displaySessionTable($name)
-*
-* private function getMatrixFromPwc($pwc) Same function as in ahp class!
 *
 * --- CSV export functions ---
 * public  function exportProjectDetails($sc, $ds)

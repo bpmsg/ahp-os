@@ -1,6 +1,12 @@
 <?php
 /* Analytic Hierarchy Process base AHP class 2014-01-02
  *
+ * Solves eigenvector of decision matrix based on pairwise
+ * comparisons of n criteria
+ *
+ * @TODO: rework the whole error handling according to the other
+ * AHP-OS classes
+ *
  * Pairwise comparisons are submitted via the webform get_pair_comp()
  * as an array of $pwc['A'] and $pwc['Intense']. $pwc['A'] can have
  * the values 1 or 0, meaning A preferred vs B ("0") or B preferred
@@ -22,11 +28,8 @@
  * Final results are passed using get_evm() using an array with keys
  * 'evm_evec', 'evm_err', 'evm_eval' and 'cr'.
  *
- * $LastChangedDate: 2022-02-11 08:19:55 +0800 (Fr, 11 Feb 2022) $
- * $Rev: 120 $
- *
- * Solves eigenvector of decision matrix based on pairwise
- * comparisons of n criteria
+ * $LastChangedDate: 2022-02-22 09:43:17 +0800 (Di, 22 Feb 2022) $
+ * $Rev: 166 $
  *
  * Copyright (C) 2022  <Klaus D. Goepel>
  *
@@ -47,29 +50,29 @@
 class AhpCalc
 {
     /* Class Constants */
-    public const ERR = 1.E-7;  /* accepted error for eigenvalue calculation */
-    public const ITMAX = 20;   /* max. number of iterations for power method */
-    public const CRTH = 0.1;   /* threshold for consistency ratio */
-    public const NMIN = 2;     /* min number of criteria/alternatives */
+    public const ERR = 1.E-7;   // accepted error for eigenvalue calculation
+    public const ITMAX = 20;    // max. number of iterations for power method
+    public const CRTH = 0.1;    // threshold for consistency ratio
+    public const NMIN = 2;      // min number of criteria/alternatives
 
     /** AHP properties */
-    public $header;			     /* header: e.g. goal */
-    public $n;
-    public $npc; 		     /* number of criteria & pairwise comparisons */
-    public $criteria = array();	 /* criteria names */
-    public $pwc = array(); 	     /* pairwise comparison array */
-    public $dm = array();        /* decision matrix */
-    public $evm_evec;
-    public $evm_eval; /* eigenvector and eigenvalue (Saaty) */
-    public $evm_err;
-    public $evm_tol;   /* absolute error for eigenvector method */
-    public $evm_it;
-    public $evm_dt;     /* no of iterations and delta for power method */
-    public $cr_ahp;
-    public $cr_alo;     /* consistency ratio Saaty and Alonso */
+    public $header;	            // header: e.g. goal
+    public $n;                  // number of criteria
+    public $npc;                // number of pairwise comparisons
+    public $criteria = array(); // criteria names
+    public $pwc = array(); 	    // pairwise comparison array
+    public $dm = array();       // decision matrix
+    public $evm_evec;           // eigenvector of the decision matrix
+    public $evm_eval;           // eigenvalue of the decision matrix (Saaty)
+    public $evm_err;            // error calculation according Tomashevskii
+    public $evm_tol;            // absolute error for eigenvector method
+    public $evm_it;             // no of iterations for power method
+    public $evm_dt;             // delta for power method
+    public $cr_ahp;             // consistency ratio Saaty
+    public $cr_alo;             // consistency ratio Alonso-Lamata
+    public $ahpCalcTxt;         // language class
 
-    private $dm_string = array();
-    public $ahpCalcTxt;     /* language class */
+    private $dm_string = array(); // decision matrix string array
 
     /* Methods */
 
@@ -123,10 +126,10 @@ class AhpCalc
         }
 
         $nOpt = array(
-     'options' => array(
+        'options' => array(
         'min_range' => self::NMIN,
         'max_range' =>$nmax,)
-    );
+        );
         $err=0;
 
         // first set default n and alternative names
@@ -224,8 +227,9 @@ class AhpCalc
 
 
     /* Get decision matrix from pwc array
-     * @return array $dm decision matrix nxn, 0 on error
-     * todo: is defined as private function in ahpDbClass too!
+     * Is a combination of setDms() and setDm()
+     * todo: simplify to get rid of setDms() and setDm()
+     * @return decision matrix array $dm, 0 on error
      */
     public function getMatrixFromPwc($pwc)
     {
@@ -248,6 +252,7 @@ class AhpCalc
         for ($i = 0; $i < $n; $i++) {
             $dm[] = array_fill(0, $n, 1.);
         }
+
         $m = 0;
         for ($i = 0; $i< $n-1; $i++) {
             for ($j = $i+1; $j < $n; $j++) {
@@ -264,7 +269,9 @@ class AhpCalc
     }
 
 
-    /* Get pwc from decision matrix */
+    /* Get pwc from decision matrix
+     * This function is not in use: TODO delete?
+     */
     private function getPwcFromMatrix($dm)
     {
         $pwc = array();
@@ -283,7 +290,7 @@ class AhpCalc
     }
 
 
-    /* Function to fill the npc pairwise comparisons with values
+    /* Function to fill the npc pairwise comparisons with values from
      * @param  array $para contains pairwise comparisons ['A'],['Intense']
      * $dm_string linear array with npc pairwise comparisons of values
      * (1/9 ... 1 ... 9)
@@ -307,7 +314,8 @@ class AhpCalc
     }
 
 
-    /* Fill decision matrix using array of pairwise comparisons
+    /* Fill decision matrix $this->dm from $this->dm_string using array
+     * of pairwise comparisons
      * @param array $dmS Array with result of pairwise comparisons
      */
     private function setDm()
@@ -336,7 +344,7 @@ class AhpCalc
     {
         if (count($v1) != count($v2)) {
             echo "<span class='err'>error in v_norm - 
-				vectors have different dimensions</span>";
+                 vectors have different dimensions</span>";
         }
         $d = 0.0;
         foreach ($v1 as $i => $val1) {
@@ -364,16 +372,19 @@ class AhpCalc
     }
 
 
-    /* Find the dominant eigenvalue using power method */
+    /* Find the dominant eigenvalue using power method
+     * Larsen, R. (2013). Elementary linear algebra. Boston,
+     * MA: Cengage Learning.
+     */
     private function set_evm_evec()
     {
         // getting start vector $v_gi
         for ($i=0; $i< $this->n; $i++) {
             $v_gi[$i] = array_sum($this->dm[$i])/$this->n ;
         }
-        // scaling
+        // --- Scaling
         $v_si = $this->vScale($v_gi, max($v_gi));
-        // Iteration
+        // --- Iteration
         for ($it = 1; $it< self::ITMAX; $it++) {
             for ($i=0; $i < $this->n; $i++) {
                 $v_it[$i]=0.;
@@ -390,7 +401,7 @@ class AhpCalc
         }
         $this->evm_it =$it;
         $this->evm_dt = $delta;
-        // Normalize
+        // --- Normalize
         $v_n = array_sum($v_it);
         $v_it = $this->vScale($v_it, $v_n);
         $this->evm_evec = $v_it;
@@ -416,6 +427,9 @@ class AhpCalc
     /* Get proposal of consistent judgments for top 3 inconsistencies
      * @return array with top 3 inconsistencies, value A/B n as proposal
      * for consistent judgment
+     * See Saaty, T.L. (2003). Decision-making with the AHP: Why is the
+     * principal eigenvector necessary. European Journal of Operational
+     * Research, 145, 85–91.
      */
     private function get_inconsistency()
     {
@@ -442,7 +456,11 @@ class AhpCalc
 
 
     /* Calculation of absolute error for eigenvector method
-     * to be called after ev calculation
+     * See: Tomashevskii, I. L. (2015). Eigenvector ranking method as
+     * a measuring tool: formulas for errors, European Journal of
+     * Operational Research, Volume 240, Issue 3, 1 February 2015,
+     * Pages 774-780
+     * To be called after ev calculation
      */
     private function setEvmErrors()
     {
@@ -466,7 +484,11 @@ class AhpCalc
     }
 
 
-    /* Calculate Alonso CR */
+    /* Calculate Alonso CR
+     * Alonso, Lamata, (2006). Consistency in the analytic hierarchy
+     * process: a new approach. International Journal of Uncertainty,
+     * Fuzziness and Knowledge based systems, Vol 14, No 4, 445-459.
+     */
     private function setAlonsoCr()
     {
         $this->cr_alo = ($this->evm_eval - $this->n)
@@ -474,7 +496,9 @@ class AhpCalc
     }
 
 
-    /* Calculate Saaty CR */
+    /* Calculate Saaty CR
+     * $ri = random index for matrices n = 3 x 3 to 10 x 10
+     */
     private function setSaatyCr()
     {
         $ri = array(
@@ -505,12 +529,12 @@ class AhpCalc
     public function set_evm($pwc)
     {
         $this->setDms($pwc);   // Convert pwc to float values
-    $this->setDm();        // Fill decision matrix
-    $this->set_evm_evec(); // Solve dominant Eigenvector (normalized)
-    $this->setEvmEval();   // Calculation of eigenvalue and consistency ratio
-    $this->setEvmErrors(); // calculate errors of weights
-    $this->setAlonsoCr();  // calculate CR using Alonso linear fit for RI
-    $this->setSaatyCr();   // calculate Saaty CR
+        $this->setDm();        // Fill decision matrix
+        $this->set_evm_evec(); // Solve dominant Eigenvector (normalized)
+        $this->setEvmEval();   // Calculation of eigenvalue and consistency ratio
+        $this->setEvmErrors(); // calculate errors of weights
+        $this->setAlonsoCr();  // calculate CR using Alonso linear fit for RI
+        $this->setSaatyCr();   // calculate Saaty CR
     }
 
 
@@ -571,7 +595,7 @@ class AhpCalc
     public function get_pair_comp($act, $submit, $errPost, $compTxt, $pwc)
     {
         $rb_style = "display:inline-block;text-align:center;color:grey;";
-        $rb_hl =    "class='rbhl'"; // highlight radio button
+        $rb_hl =    "class='rbhl'"; // --- highlight radio button
         $crok = false;
         if ($compTxt=="") {
             $compTxt = $this->ahpCalc->info['pwcAB'];
@@ -587,10 +611,10 @@ class AhpCalc
         }
         echo "\n<script src='js/btnred.js'></script>";
         echo "\n<form method='POST' action='$act'><div class='ofl'>
-	 <table id='cTbl'>";
+                <table id='cTbl'>";
         printf($this->ahpCalcTxt->tbl['cTblTh'], $compTxt);
         echo "\n<tbody>";
-        $mRow = 0; // counter for pairwise comparisons, each displayed in one row
+        $mRow = 0; // --- counter for pairwise comparisons, each displayed in one row
         for ($i = 0; $i < $this->n - 1 ; $i++) {
             for ($j= $i+1; $j<$this->n; $j++) {
                 $pa_rbs = "";
@@ -598,7 +622,7 @@ class AhpCalc
                 $pi_rbs="";
                 $proposal="";
                 $mstyle=" ";
-                // if CR > threshold: mark rows with highest inconsistency
+                // --- if CR > threshold: mark rows with highest inconsistency
                 if (!$crok) {
                     switch ($mRow) {
                     case $cs_k[0]:
@@ -613,37 +637,37 @@ class AhpCalc
                         $mstyle = "class='col3'";
                         $proposal = $cs_i[$cs_k[2]];
                         break;
-                }
+                    }
                     $pi_rbs = ltrim($proposal, "(AB)");
                     $pa_rbs = (mb_substr($proposal, -2, 1)== "A" ? $rb_hl : "") ;
                     $pb_rbs = (mb_substr($proposal, -2, 1)== "B" ? $rb_hl : "") ;
                 }
                 echo  "\n<tr>";
                 echo "<td class='ca' $mstyle>", $mRow+1, "</td>";
-                // A
+                // --- A
                 echo "<td>";
                 echo "<span $pa_rbs>
-				<input class='onclk1' type='radio' name='A[", $mRow, "]' value='0'",
+                <input class='onclk1' type='radio' name='A[$mRow]' value='0'",
                     ($pwc['A'][$mRow] == 0 ? " checked" : ""), "/>","</span>",
                     "<label> ", $this->criteria[$i], "</label></td>";
-                // B
-                echo	"<td>";
+                // --- B
+                echo    "<td>";
                 echo "<span $pb_rbs >
-				<input class='onclk1' type='radio' name='A[", $mRow, "]' value='1'",
+                <input class='onclk1' type='radio' name='A[$mRow]' value='1'",
                     ($pwc['A'][$mRow] == 1 ? " checked" : ""), ">","</span>",
                   "<label>" . $this->criteria[$j] . "</label></td>";
-                // Intensity 1
+                // --- Intensity 1
                 echo "<td class='ac' style='font-size:smaller;'>",
-                "<span ",	($pi_rbs == 1 ? $rb_hl : ""), ">",
-                "<input type='radio' class='onclk1' name='Intense[".$mRow."]' 
-				value='1'", ($pwc['Intense'][$mRow] == 1 ? ' checked' : ''), ">",
+                "<span ",    ($pi_rbs == 1 ? $rb_hl : ""), ">",
+                "<input type='radio' class='onclk1' name='Intense[$mRow]' 
+                value='1'", ($pwc['Intense'][$mRow] == 1 ? ' checked' : ''), ">",
                 "<label>1</label></span></td>";
                 echo "<td class='ca' style='min-width:250px;font-size:smaller;' >";
-                // Intensities 2 to 9
+                // --- Intensities 2 to 9
                 for ($rb=2; $rb<10; $rb++) {
                     echo  "<span ",($pi_rbs == $rb ? $rb_hl : ""), ">",
-                    "<input type='radio' class='onclk1' name='Intense[", $mRow, "]' 
-				value='$rb'", ($pwc['Intense'][$mRow] == $rb ? ' checked' : ''), ">",
+                    "<input type='radio' class='onclk1' name='Intense[$mRow]' 
+                value='$rb'", ($pwc['Intense'][$mRow] == $rb ? ' checked' : ''), ">",
                     "<label>$rb</label></span>";
                 }
                 echo "</td>";
@@ -653,31 +677,33 @@ class AhpCalc
                 }
                 echo "</tr>";
                 unset($pi_rbs,$pa_rbs,$pb_rbs);
-                // every 10th row a blank row
+                // --- every 10th row a blank row
                 $mRow++;
             }
             echo "\n<tr><td colspan='5'></td></tr>";
         }
         echo "\n<tr><td class='sm' colspan='5'> CR = <span class='res'>",
         round($this->cr_alo * 100, 1), "% </span>";
-        // 	display result depending message
+
+        // --- display result depending message
         switch ($errPost) {
-        case 1:
-            echo $this->ahpCalcTxt->msg['sPwc']; break; // start pwc
-        case 2:
-            echo $this->ahpCalcTxt->err['ePwc']; break; // eror
-        default:
-            echo($crok ?
-                $this->ahpCalcTxt->msg['ok'] : $this->ahpCalcTxt->err['adjPwc']);
-    }
+            case 1:
+                echo $this->ahpCalcTxt->msg['sPwc']; break; // start pwc
+            case 2:
+                echo $this->ahpCalcTxt->err['ePwc']; break; // erorr
+            default:
+                echo($crok ?
+                    $this->ahpCalcTxt->msg['ok'] : $this->ahpCalcTxt->err['adjPwc']);
+        }
+
         echo "</td></tr>";
 
         // Calculation and submission
         echo "<tr><td colspan='2' class='la'>";
         printf($this->ahpCalcTxt->mnu['btnChk'], ($crok ? "" : "class='btnr'"));
         echo "</td>";
-        echo "<td colspan='2'>";
-        echo "<td class='ca'>";
+        echo "<td colspan='2'><td class='ca'>";
+
         if ($errPost === 0 && is_array($submit)) {
             $cfm = false;
             if ($submit['var'] == "calc") {
@@ -694,13 +720,13 @@ class AhpCalc
                 ($crok ? " class='btnr'" : ""),
                 ($cfm ? " onclick='return cfmdef()'" : "")
             );
-            echo 	"<script src='js/cfmdef.js' ></script>";
+            echo "<script src='js/cfmdef.js' ></script>";
             if ($submit['var'] == "download") {
                 echo "&nbsp;<input type='checkbox' name='csv' value='0' ><small>",
                 $this->ahpCalcTxt->mnu['btnDl'], "</small>";
             }
         }
-        echo	"</td></tr>";
+        echo    "</td></tr>";
         echo "\n</tbody>\n</table></div>\n</form>";
         return $errPost;
     }

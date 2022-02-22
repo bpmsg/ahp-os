@@ -1,29 +1,29 @@
 <!-- NEW HIERARCHY -->
 <div id='new-hier' style='margin-left:auto;margin-right:auto;'>
-	<p>
-		<small><?php echo $ahpHier->info['txtfld']; ?></small><br>
-		<textarea name='hierarchy' rows='8' cols='78'  ><?php echo $text; ?></textarea>
-		<?php if(!$loggedIn) echo $ahpHier->info['synHelp']; ?><br>
-	</p>
-	<div>
-		<fieldset>
-			<legend><?php echo $ahpHier->mnu['lgd11']; ?></legend>
-			<div style='display:block;float:left;padding:4px;'>
-			<input type='submit' value='<?php echo $ahpHier->mnu['btn11']; ?>' name='h_submit' >
-			<?php		if($loggedIn) {
-				echo "&nbsp;&nbsp;<input type='submit' value='" . $ahpHier->mnu['btn12'] . "' name='save' >
-				&nbsp;&nbsp;<input type='submit' value='" . $ahpHier->mnu['btn13'] . "' name='download' >
-				<small><input type='checkbox' name='csv' value='0'>
-				<label>" . $ahpHier->mnu['lbl11'] .  "</label></small>";
-			} ?>
-			</div>
-			<div style='padding:2px;float:right;'>
-				&nbsp;&nbsp;<input type='submit' value='<?php echo $ahpHier->mnu['btn14']; ?>' name='prio' >
-				&nbsp;&nbsp;<input type='submit' value='<?php echo $ahpHier->mnu['btn15']; ?>' name='reset' >
-				&nbsp;&nbsp;<input type='submit' value='<?php echo $ahpHier->mnu['btn16']; ?>' name='exit' >
-			</div>
-		</fieldset>
-	</div>
-	<?php if(!$loggedIn) echo $ahpHier->info['nlg']; else echo $ahpHier->info['lgi'];?>
+    <p>
+        <small><?php echo $ahpHier->info['txtfld']; ?></small><br>
+        <textarea name='hierarchy' rows='8' cols='78'  ><?php echo $text; ?></textarea>
+        <?php if(!$loggedIn) echo $ahpHier->info['synHelp']; ?><br>
+    </p>
+    <div>
+        <fieldset>
+            <legend><?php echo $ahpHier->mnu['lgd11']; ?></legend>
+            <div style='display:block;float:left;padding:4px;'>
+            <input type='submit' value='<?php echo $ahpHier->mnu['btn11']; ?>' name='h_submit' >
+            <?php        if($loggedIn) {
+                echo "&nbsp;&nbsp;<input type='submit' value='" . $ahpHier->mnu['btn12'] . "' name='save' >
+                &nbsp;&nbsp;<input type='submit' value='" . $ahpHier->mnu['btn13'] . "' name='download' >
+                <small><input type='checkbox' name='csv' value='0'>
+                <label>" . $ahpHier->mnu['lbl11'] .  "</label></small>";
+            } ?>
+            </div>
+            <div style='padding:2px;float:right;'>
+                &nbsp;&nbsp;<input type='submit' value='<?php echo $ahpHier->mnu['btn14']; ?>' name='prio' >
+                &nbsp;&nbsp;<input type='submit' value='<?php echo $ahpHier->mnu['btn15']; ?>' name='reset' >
+                &nbsp;&nbsp;<input type='submit' value='<?php echo $ahpHier->mnu['btn16']; ?>' name='exit' >
+            </div>
+        </fieldset>
+    </div>
+    <?php if(!$loggedIn) echo $ahpHier->info['nlg']; else echo $ahpHier->info['lgi'];?>
 </div>
 
