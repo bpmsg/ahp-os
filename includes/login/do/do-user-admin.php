@@ -25,16 +25,11 @@
 include '../../config.php';
 require('../../../vendor/autoload.php');
 
-// --- SENDING MAIL WHEN USER IS DEACTVATED
-//require_once('../../PHPMailer/PHPMailer.php'); // Mailer
-//require_once('../../PHPMailer/SMTP.php'); // Mailer
-//require_once('../../PHPMailer/Exception.php'); // Mailer
-
 session_start();
 
 $title= "User Administration";
-$version = substr('$LastChangedDate: 2022-02-18 14:21:29 +0800 (Fr, 18 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 150 $', "$");
+$version = substr('$LastChangedDate: 2022-02-23 14:26:09 +0800 (Mi, 23 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 168 $', "$");
 
 $lang = (isset($_SESSION['lang']) ? $_SESSION['lang'] : "EN");
 
@@ -220,8 +215,10 @@ include('../../login/' . 'form.login-hl.php');
 echo "<h1>$title</h1>";
 if ($loggedIn) {
     echo "<small><a href='do-log.php'>Log</a>
-		&nbsp;&nbsp;<a href='do-dbIntegrity.php'>Database</a></small>";
-    if (DONATIONS) {
+        &nbsp;&nbsp;<a href='do-dbIntegrity.php'>Database</a></small>";
+    if(! SELFREG) {
+        echo "<small>&nbsp;&nbsp;<a href='do-register.php'>Register new user</a></small>";}
+    if(DONATIONS) {
         echo "<small>&nbsp;&nbsp;<a href='do-donor-admin.php'>Donations</a></small>";
     }
     echo "<h2>Registered Users</h2>";

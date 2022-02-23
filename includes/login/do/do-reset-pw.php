@@ -23,8 +23,8 @@ require('../../../vendor/autoload.php');
 //require_once('../../PHPMailer/SMTP.php'); // Mailer
 //require_once('../../PHPMailer/Exception.php'); // Mailer
 
-$version = substr('$LastChangedDate: 2022-02-18 13:52:15 +0800 (Fr, 18 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 148 $', "$");
+$version = substr('$LastChangedDate: 2022-02-23 14:26:09 +0800 (Mi, 23 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 168 $', "$");
 
 // create a login object. when this object is created, it will 
 // do all login/logout stuff automatically
@@ -45,7 +45,7 @@ $login = new Login();
 
     // Login header has only a link back from the referring website
     echo "<div style='display:block;float:left;padding:2px;'>",
-            "<a href='" . SITE_URL . "'>AHP-OS Home</a></div>";
+            "<a href='" . SITE_URL . "'>" . APP . " Home</a></div>";
     echo "<div style='padding:2px;float:right;'><a href='$url'>back</a></div>";
     echo "<div style='clear:both;'></div>";
   echo "<h1>",$login->lgTxt->titles['h1pwR'],"</h1>";

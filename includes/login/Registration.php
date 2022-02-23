@@ -143,8 +143,8 @@ class Registration
 
         if ($formToken != $_SESSION['formToken']) {
             $this->errors[] = "Form input error";
-        } elseif (CPTTXT && isset($_SESSION['captcha'])
-                && !in_array(md5(strtolower(trim($captcha))), $_SESSION['captcha'])) {
+        } elseif (CAPTCHA && CPTTXT && !in_array(md5(strtolower(trim($captcha))),
+            $_SESSION['captcha'])) {
             // MESSAGE_CAPTCHA_WRONG;
             $this->errors[] = $this->rgTxt->err['wCp'];
         } elseif (CAPTCHA && !CPTTXT && md5(strtolower($captcha)) != $_SESSION['captcha']) {

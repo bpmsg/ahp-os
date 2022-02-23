@@ -3,8 +3,8 @@
  *
  *  Copyright (C) 2022  <Klaus D. Goepel>
  * 
- *  $Rev: 167 $
- *  $LastChangedDate: 2022-02-23 09:04:00 +0800 (Mi, 23 Feb 2022) $
+ *  $Rev: 168 $
+ *  $LastChangedDate: 2022-02-23 14:26:09 +0800 (Mi, 23 Feb 2022) $
  * 
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -30,24 +30,29 @@
  */
 
 
-/*  When updating the productive system:
+/*  
+ ***********************************************************
+ *  When updating the productive system:
  *  you can still do testing with your local IP 'MY_IP'
+ ***********************************************************
  */
-    define('UPDATE', false);
-    define('MY_IP', "192.168.1.112");
+    define('UPDATE', false);            // --- maintenance
+    define('MY_IP', "192.168.1.112");   // --- your IP
+    define('DEBUG', false);             // --- Debug on/off
 
-    // --- Display a system message before maintenance
+    // --- Display a system message
     // define( 'SYS_MSG', "Please logout, system maintenance in 30 min!");
-
 
     // --- ini_set('error_reporting', E_ERROR | E_WARNING);
     ini_set('error_reporting', E_ALL & ~E_NOTICE);
     ini_set('display_errors', 1); // --- Set to 0 for productive env!
     ini_set('log_errors', 1);
 
-    define('DEBUG', false);      // --- Debug on/off
-
-/*  Mail settings */
+/*
+ ***********************************************************
+ *  Mail settings 
+ ***********************************************************
+ */
 
     define('EMAIL_USE_SMTP', true);
     define('EMAIL_SMTP_HOST', "ssl://mail.example.com");
@@ -57,12 +62,17 @@
     define('EMAIL_SMTP_PORT', 465);
     define('EMAIL_SMTP_ENCRYPTION', "ssl");
 
-/*  Database: "sqlite" or "mysql"
+/*
+ ************************************************************
+ *  Database settings: "sqlite" or "mysql"
+ *  NOTE: When using sqlite, ensure directory and file is 
+ *  writeable!
+ ************************************************************
  */
     define('DB_TYPE', "sqlite");
     define('DBNAME', "ahp_os");
 
-    define('DBUSER', "ahp-os"); // for mysql
+    define('DBUSER', "ahp-os"); // --- for mysql
     define('DBPASS', "ahp-os-mariaDB-password");
 
     if (DB_TYPE == "mysql") {
@@ -74,31 +84,41 @@
     }
 
 
-/*  Comment link from your blog and/or contact link,
- *  comment out if you don't want to provide
+/*
+ ************************************************************
+ *  Optional Comment link from your blog and/or contact link
+ *  Comment out if you don't want to provide
+ ************************************************************
  */
-    // define('CMTLNK', "//example.com/feedback/");     // Comments
-    // define('CNTLNK', "//example.com/contact-form/"); // Contact form
+    // define('CMTLNK', "//example.com/feedback/"); // --- Comments
+    // define('CNTLNK', "//example.com/contact-form/"); // --- Contact
 
-
-/*  Optional - Self registration and registration email.
- *  For intranet you can set CAPTCHA and REGISTRATION_EMAIL to false.
- *  SELFREG, CAPTCHA, REGISTRATION_EMAIL
+/*
+ ************************************************************
+ *  Optional Self registration and registration email.
+ *  For intranet you can set CAPTCHA and REGISTRATION_EMAIL 
+ *  to false.
+ ************************************************************ 
  */
     define('SELFREG', true); // --- Whether user can self register
-    define('CAPTCHA', true); // --- set false for intranet, true for web
-    define('CPTTXT', false); // --- when true, text instead of img captcha
-    define('REGISTRATION_EMAIL', true);
+    define('CAPTCHA', false); // --- set false for intranet, true for web
+    define('CPTTXT',  true); // --- when true, text instead of img captcha
+    define('REGISTRATION_EMAIL', false);
 
 
-/*  Spam honeypot - set to '' if not used. Please see
- *  https://www.projecthoneypot.org/ for details
+/*
+ ************************************************************
+ *  Optional Spam honeypot - set to '' if not used. Please 
+ *  see https://www.projecthoneypot.org/ for more details
+ ************************************************************
  */
     define('HONEYPOT', '');
     define('HPAPIKEY', '');
 
-
-/*  enable additional functions for user donations
+/*
+ ************************************************************
+ *  Optional enable additional functions for user donations
+ ************************************************************
  */
     define('DONATIONS', false);
 
@@ -143,14 +163,14 @@
     define('ORG', "BPMSG");           // Company
 
 
-    // --- PROGRAM LIMITS - TXTMAX, NODE_CNT, LEAF_MAX, LEVEL_MAX are defined in AhpHier.php
-    define('WLMAX', 45);     // Definition for word length of nodes and leafs in ahp
-    define('ROUND', 6);     // rounding of results when exporting as csv
-    define('CRITMAX', 20);     // max number of criteria
-    define('ALTAHP', 16);     // max number of alternatives for AHP evaluation
-    define('ALTYN', 10);     // max number of alternatives for yes/no evaluation
+    // --- PROGRAM LIMITS - TXTMAX, NODE_CNT, LEAF_MAX, LEVEL_MAX 
+    //     are defined in AhpHier.php
+    define('WLMAX', 45);      // word length of nodes and leafs in ahp
+    define('ROUND', 6);       // rounding of results when exporting as csv
+    define('CRITMAX', 20);    // max number of criteria
+    define('ALTAHP', 16);     // max number of alternatives
     define('SESSIONLMT', 50); // max number of sessions
-    define('NVAR', 1000);    // Variation of judgments per node for Monte-Carlo Simulation
+    define('NVAR', 1000);     // Variations per node for Monte-Carlo Simulation
 
     // --- STATISTICS
     define('REGDAYS', 1);     // number of registrations the last REGDAYS days
@@ -166,7 +186,7 @@
     define('EMAIL_PASSWORDRESET_SUBJECT', APP . " Password reset");
     define('EMAIL_PASSWORDRESET_CONTENT', "Please click on this link to reset your password:");
 
-    // --- Configuration for: verification email data
+    // --- Configuration for verification email data
     define(
         'EMAIL_VERIFICATION_URL',
         htmlspecialchars( PROT . MY_DOMAIN . BASE .  "includes/login/do/do-register.php")
@@ -177,18 +197,18 @@
     define('EMAIL_VERIFICATION_CONTENT', "Please click on this link and then login to activate your account:\n");
     define('EMAIL_VERIFICATION_INFO', "\nIf you don't activate and login within the next 24 hours, the activation link and your registration will expire, and you need to register again.");
 
-    // --- Configuration for: reactivation email data
+    // --- Configuration for reactivation email data
     define('EMAIL_REACTIVATION_SUBJECT', APP . " Account reactivation");
     define('EMAIL_REACTIVATION_CONTENT', "Your " . APP . " user account was deactivated. Click on the link below and login, if you want to reactivate:\n");
     define('EMAIL_REACTIVATION_INFO', "\nIf you don't reactivate within the next 48 hours, your account and user data will be deleted. \nThank You.");
 
-    // --- Configuration for: Hashing strength @see http://stackoverflow.com/q/4443476/1114320
+    // --- Configuration for password hashing strength
     define('HASH_COST_FACTOR', "10");
 
-    // --- Admin, register
-    define('ADMIN_ID', 1); // --- user id(s) of administrators for user accounts
+    // --- Admin user id
+    define('ADMIN_ID', 1);
 
-    define('URL_HOME', "//" . MY_DOMAIN) ; // --- Home link url
+    define('URL_HOME', "//" . MY_DOMAIN) ;       // --- Home link url
     define('SITE_URL', "//" . MY_DOMAIN . BASE); // --- Site link url
 
     if (version_compare(PHP_VERSION, '5.5.0', '<')) {
@@ -205,9 +225,11 @@
     $urlAct =  htmlspecialchars($_SERVER['PHP_SELF']);
     $myUrl =   htmlspecialchars('//' . MY_DOMAIN) . $urlAct;
 
+    // --- Headline when not logged in
     $hlNoLogin = "<div style='display:block;float:left'><a href='"
-        . URL_HOME . "'>Home</a>&nbsp;&nbsp;<a href='ahp-news.php'>Latest News</a></div>
-        <div style='display:block;float:right'><a href='" . SITE_URL . "'>" . APP . "</a>"
+        . URL_HOME . "'>Home</a>&nbsp;&nbsp;<a href='ahp-news.php'>
+            Latest News</a></div><div style='display:block;float:right'>
+            <a href='" . SITE_URL . "'>" . APP . "</a>"
         . "</div><div style='clear:both'></div>";
 
     // --- css style sheet
@@ -217,7 +239,7 @@
         $s = microtime(true);
     }
 
-    $urlHome = '//'. MY_DOMAIN . ':' . $_SERVER['SERVER_PORT'] ;		// Home
+    $urlHome = '//'. MY_DOMAIN . ':' . $_SERVER['SERVER_PORT'] ; // Home
 
     $urlAhp  = 'ahp.php';               // AHP start page
     $urlAhpH = 'ahp-hierarchy.php';     // Create/display hierarchy
@@ -249,14 +271,14 @@
             }
         }
     }
-
+    
+    // --- Switch to maintenance webpage when updating
     if (UPDATE && $_SERVER['REMOTE_ADDR'] != MY_IP) {
         require 'maintenance.html';
         exit;
     }
 
-    // sets the session variable for language
-
+    // --- sets the session variable for language
     $languages = array('en','de','es','pt');
     $lang = filter_input(INPUT_GET, 'lang', FILTER_SANITIZE_STRING);
         if ($lang != null && $lang != false && in_array($lang, $languages)) {

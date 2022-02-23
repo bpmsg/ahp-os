@@ -57,8 +57,8 @@ function get_client_ip()
 
 
 $title="User Registration";
-$version = substr('$LastChangedDate: 2022-02-23 09:04:00 +0800 (Mi, 23 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 167 $', "$");
+$version = substr('$LastChangedDate: 2022-02-23 14:26:09 +0800 (Mi, 23 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 168 $', "$");
 
 session_start();
 
@@ -67,7 +67,7 @@ $block = false;
 if (defined('HPAPIKEY') && !empty('HPAPIKEY')) {
     $ip = get_client_ip();
     $res = my_httpbl_check($ip);
-    if (!($res == "ok" || isset($_COOKIE['notabot']))
+    if ($res != "ok" || !isset($_COOKIE['notabot'])
             && $res[0] == 127 && $res[2] >20) {
         $block = true;
         $_SESSION['block'] = $ip;
@@ -125,7 +125,9 @@ $webHtml = new WebHtml($registration->rgTxt->titles['h1reg'], 600);
     echo "<div style='padding:2px;float:right;'><a href='$url'>back</a></div>";
     echo "<div style='clear:both;'></div>";
     echo "<h1>",$registration->rgTxt->titles['h1reg'],"</h1>";
-    if (SELFREG && !$block) {
+    if ((SELFREG && !$block) 
+        || (!SELFREG && in_array($_SESSION['user_id'], $admin))) 
+    {
         $formToken = $_SESSION['formToken'] = uniqid();
         if (DEBUG) {
             echo "<p class='msg'>Execution time $reg_t mS</p>";
@@ -150,7 +152,7 @@ $webHtml = new WebHtml($registration->rgTxt->titles['h1reg'], 600);
             echo "<div class='ca'><p><a href='" . SITE_URL .  "'>"
             . $registration->rgTxt->wrd['cont'] . "</a></p></div>";
         }
-    } elseif (! SELFREG) {
+    } elseif (!SELFREG) {
         echo "<p class='msg'>",$registration->rgTxt->info['nReg'],"</p>";
     } else {
         echo "<script src='../../../js/letmein.js'></script><p class='err'>Sorry!</p>";

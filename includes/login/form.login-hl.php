@@ -23,7 +23,9 @@ if ($login->isUserLoggedIn() === true) { ?>
 		<input type="checkbox" id="user_rememberme" name="user_rememberme" title="Remember me" value="1" tabindex="3" >
 		<input type="submit"  name="login" value="Log in" >
 		&nbsp;<small>(<a href="<?php echo BASE . 'includes/login/do/do-reset-pw.php'; ?>"><?php echo $login->lgTxt->wrd['hlFg']; ?></a>)</small>
-    &nbsp;<a href="<?php echo BASE . 'includes/login/do/do-register.php'; ?>"><?php echo $login->lgTxt->wrd['hlReg']; ?></a>
+        <?php if(SELFREG){ ?>
+            &nbsp;<a href="<?php echo BASE . 'includes/login/do/do-register.php'; ?>"><?php echo $login->lgTxt->wrd['hlReg']; ?></a>
+        <?php } ?>
 	</div>
 	</form>
 <?php } ?>
