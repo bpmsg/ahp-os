@@ -18,10 +18,6 @@
 include('../../config.php');
 require('../../../vendor/autoload.php');
 
-//require_once('../../PHPMailer/PHPMailer.php'); // Mailer
-//require_once('../../PHPMailer/SMTP.php'); // Mailer
-//require_once('../../PHPMailer/Exception.php'); // Mailer
-
 /* --- Functions added to fight spam.
  *     Please see https://www.projecthoneypot.org
  */
@@ -61,8 +57,8 @@ function get_client_ip()
 
 
 $title="User Registration";
-$version = substr('$LastChangedDate: 2022-02-18 13:52:15 +0800 (Fr, 18 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 148 $', "$");
+$version = substr('$LastChangedDate: 2022-02-23 09:04:00 +0800 (Mi, 23 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 167 $', "$");
 
 session_start();
 
@@ -125,7 +121,7 @@ $registration = new Registration();
 // --- MAIN
 $webHtml = new WebHtml($registration->rgTxt->titles['h1reg'], 600);
     echo "<div style='display:block;float:left;padding:2px;'>",
-                "<a href='" . SITE_URL . "'>AHP-OS Home</a></div>";
+                "<a href='" . SITE_URL . "'>" . APP . " Home</a></div>";
     echo "<div style='padding:2px;float:right;'><a href='$url'>back</a></div>";
     echo "<div style='clear:both;'></div>";
     echo "<h1>",$registration->rgTxt->titles['h1reg'],"</h1>";

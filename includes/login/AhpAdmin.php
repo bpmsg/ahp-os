@@ -307,7 +307,7 @@ class AhpAdmin extends LoginAdmin
     }
 
 
-    /*
+    /* Todo: Copy basic function to LoginAdmin
      * Checks database integrity - sqlite only
      * @return array of rows with database information
      */

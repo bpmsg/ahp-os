@@ -3,8 +3,8 @@
  *
  *  Copyright (C) 2022  <Klaus D. Goepel>
  * 
- *  $Rev: 162 $
- *  $LastChangedDate: 2022-02-20 10:18:07 +0800 (So, 20 Feb 2022) $
+ *  $Rev: 167 $
+ *  $LastChangedDate: 2022-02-23 09:04:00 +0800 (Mi, 23 Feb 2022) $
  * 
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -106,11 +106,6 @@
 // -------------------------------------------------------------------
 // --- NO NEED TO EDIT ANYTHING BELOW, IF NOT ABSOLUTELY NECESSARY ---
 // -------------------------------------------------------------------
-
-    if (UPDATE && $_SERVER['REMOTE_ADDR'] != MY_IP) {
-        require 'maintenance.html';
-        exit;
-    }
 
     // --- DIRECTORIES (PATH)
     define('ABS_PATH', $_SERVER['DOCUMENT_ROOT']);
@@ -253,6 +248,11 @@
                 require $file;
             }
         }
+    }
+
+    if (UPDATE && $_SERVER['REMOTE_ADDR'] != MY_IP) {
+        require 'maintenance.html';
+        exit;
     }
 
     // sets the session variable for language

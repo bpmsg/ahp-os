@@ -682,6 +682,59 @@ class LoginAdmin extends Login
     }
 
 
+    /* 
+     * Checks database integrity - sqlite only
+     * @return array of rows with database information
+     */
+    public function checkDbIntegrity()
+    {
+        $res = array();
+        $tmp = array();
+        $fileList = array();
+        // for mariaDb all tables have to be checked
+        $tables = array( "users","audit");
+        $res = array( "0" => array("Database type: " => $this->db_type));
+
+        if ($this->db_type == 'sqlite') {
+            // --- sqlite
+            $res[] = array("Path: " => DB_PATH);
+            $res[] = array("Filename: " => $this->db_name . ".db");
+            $res[] = array("Last access: " => date("M d Y H:i:s.", filemtime(DB_PATH)));
+            $res[] = array("Size: " => filesize(DB_PATH . $this->db_name . ".db")/1024);
+            if ($this->dataBaseConnection()) {
+                $vers = $this->db_connection->getAttribute(PDO::ATTR_SERVER_VERSION);
+                $res[] = array("DB Version: " => $vers);
+                $query = $this->db_connection->prepare("PRAGMA integrity_check;");
+                $query->execute();
+                $res = array_merge($res, $query->fetchAll(PDO::FETCH_ASSOC));
+            } else {
+                $res[] = array("Integrity check: " => MESSAGE_DATABASE_ERROR);
+            }
+        } elseif ($this->db_type == 'mysql') {
+            // --- mariadb (mysql)
+            $res[] = array("Database name: " => $this->db_name);
+            $res[] = array("Host:" => DBHOST);
+            if ($this->dataBaseConnection()) {
+                $vers = $this->db_connection->getAttribute(PDO::ATTR_SERVER_VERSION);
+                $res[] = array("DB Version: " => $vers);
+                $sql = "CHECK TABLE " . implode(",", $tables) . " EXTENDED;";
+                $query = $this->db_connection->prepare($sql);
+                $query->execute();
+                $tmp = $query->fetchall(PDO::FETCH_ASSOC);
+                $res[] = array("Tables to check: " => count($tables));
+                for ($i=0; $i<count($tables); $i++) {
+                    $res[] = array($tmp[$i]['Table'] . ": " => $tmp[$i]['Msg_text']);
+                }
+            } else {
+                $res[] = array("Integrity check: " => MESSAGE_DATABASE_ERROR);
+            }
+        } else {
+            $res[] = array("Error: " => $this->db_type_INVALID);
+        }
+        return $res;
+    }
+
+
     /* HTML output of audit log
     *  either all users (%) or for specific user id
     */
@@ -723,7 +776,7 @@ class LoginAdmin extends Login
     public function displayUserTable($users)
     {
         if (!empty($users)) {
-            echo "<table>";
+            echo "\n<div class='ofl'><table>";
             echo "<tr>","<th>Nr</th><th>User Id</th>","<th>User</th>",
                 "<th>E-mail</th>",
                 "<th>Registration</th>", "<th>Last</th>","</tr>";

@@ -1,7 +1,13 @@
 <?php
 
+
 /* Sample Page with WebHtml class */
 include 'includes/config.php';
+
+$class = 'app' . $lang;
+$ahpOs = new $class();
+$_SESSION['lang'] = $lang;
+
 $login = new Login();
 // reset in case back from edit form
 if (isset($_SESSION['REFERER'])) {
