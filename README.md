@@ -4,7 +4,7 @@ AHP-OS is a php program package for the Analytic Hierarchy Process, a
 mathematical tool to support rational decision making. It is an online
 tool written in php with a web browser interface, where users can 
 register, login and define their own decision hierarchies.
-Example: [link](https://bpmsg.com/ahp/)
+Example: [bpmsg.com/ahp](https://bpmsg.com/ahp/)
 
 Php package (c) Klaus D Goepel, 2013-2022
 
@@ -19,7 +19,7 @@ Php package (c) Klaus D Goepel, 2013-2022
   judgments,
 * Partial judgments,
 * A posteriori application of different AHP judgment scales,
-* Group decision making using weighted geometric mean aggregation of
+* Group decision making using weighted geometric mean aggregation of 
  individual judgments (WGM-AIJ),
 * Group consensus calculation based on Shannon α and β-entropy,
 * Weight uncertainty estimation using Monte Carlo simulation,
@@ -27,7 +27,8 @@ Php package (c) Klaus D Goepel, 2013-2022
 * Weighted sum model (WSM) and weighted product model (WPM) for the
   aggregation of alternatives,
 * Export of input and result data as comma separated value (CSV) files
-  for further processing or presentation in a spreadsheet program.
+  for further processing or presentation in a spreadsheet program,
+* Export/Import of AHP-Projects as json text files.
 
 ### Languages
 Currently language files for English, German, Spanish and Portugese 
@@ -119,6 +120,7 @@ ahp-\
      |-- ahp-project-import.php (Import project from json file)
      |-- ahp-session-admin.php (AHP project administration)
      |-- ahp-user-recover.php (Recover user from a backup database)
+     |-- maintenance.php
      |-- index.php (entry page)
      |-- composer.json
      |
@@ -156,15 +158,15 @@ ahp-\
      |                           Login.php (class)
      |--js -- ahp-group          LoginAdmin.php (class, extends Login)
      |        ahp-session-admin  LoginDE/EN/ES/PT (language texts)
-     |        btnr               Registration.php (class)
+     |        btnred             Registration.php (class)
      |        cfm                |
-     |        cfdef               \
+     |        cfmdef              \
      |        delcfm               do -do-dbIntegrity
      |        lvecfm                   do-donor-admin
      |        sh-part                  do-edit
      |        webFont                  do-log
      |        letmein                  do-register
-     |                                 do-reset-pw
+     |        jQuery.3.6.0             do-reset-pw
      |                                 do-user-admin (user administr.)
      |
      |--language -- de/en -- AhpCalcXX, AhpDbXX, AhpXX, AhpGroupXX
