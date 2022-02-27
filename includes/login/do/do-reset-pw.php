@@ -19,19 +19,14 @@
 include '../../config.php';
 require('../../../vendor/autoload.php');
 
-//require_once('../../PHPMailer/PHPMailer.php'); // Mailer
-//require_once('../../PHPMailer/SMTP.php'); // Mailer
-//require_once('../../PHPMailer/Exception.php'); // Mailer
-
-$version = substr('$LastChangedDate: 2022-02-23 14:26:09 +0800 (Mi, 23 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 168 $', "$");
+$version = substr('$LastChangedDate: 2022-02-24 07:15:49 +0800 (Do, 24 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 170 $', "$");
 
 // create a login object. when this object is created, it will 
 // do all login/logout stuff automatically
 // so this single line handles the entire login process.
 session_start();
 
-$lang = (isset($_SESSION['lang']) ? $_SESSION['lang'] : "EN");
 $login = new Login();
 
     if (!isset($_SESSION['REFERER']) && isset($_SERVER['HTTP_REFERER'])) {

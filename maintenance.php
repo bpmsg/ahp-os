@@ -1,8 +1,9 @@
 <?php
 /* Maintenance */
+require_once 'includes/config.php';
 
-$version = substr('$LastChangedDate: 2022-02-23 09:04:00 +0800 (Mi, 23 Feb 2022) $',18,10);
-$rev = trim('$Rev: 167 $', "$");
+$version = substr('$LastChangedDate: 2022-02-27 13:29:54 +0800 (So, 27 Feb 2022) $',18,10);
+$rev = trim('$Rev: 173 $', "$");
 
 /* --- Web Page HTML OUTPUT --- */
 $webHtml = new WebHtml( APP . " Maintenance");

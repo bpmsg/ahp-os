@@ -42,14 +42,10 @@ $lang = (isset($_SESSION['lang']) ? $_SESSION['lang'] : "EN");
 $class = 'AhpHierarchy' . $lang;
 $ahpHier = new $class();
 
-// reset in case back from edit form
-if (isset($_SESSION['REFERER'])) {
-    unset($_SESSION['REFERER']);
-}
 $loggedIn = $login->isUserLoggedIn();
 
-$version = substr('$LastChangedDate: 2022-02-20 10:18:07 +0800 (So, 20 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 162 $', "$");
+$version = substr('$LastChangedDate: 2022-02-26 12:40:14 +0800 (Sa, 26 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 172 $', "$");
 
 $defaultHierarchy = "AHP-Project:Crit-1,Crit-2,Crit-3;";
 

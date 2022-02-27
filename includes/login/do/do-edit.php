@@ -24,17 +24,17 @@ include '../../config.php';
 
 session_start();
 
-$version = substr('$LastChangedDate: 2022-02-11 08:19:55 +0800 (Fr, 11 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 120 $', "$");
+$version = substr('$LastChangedDate: 2022-02-26 12:40:14 +0800 (Sa, 26 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 172 $', "$");
 
-$lang = (isset($_SESSION['lang']) ? $_SESSION['lang'] : "EN");
 $login = new Login();
-    if (!isset($_SESSION['REFERER']) && isset($_SERVER['HTTP_REFERER'])) {
+
+//    if (!isset($_SESSION['REFERER']) && isset($_SERVER['HTTP_REFERER'])) {
         $_SESSION['REFERER'] = htmlspecialchars($_SERVER['HTTP_REFERER']);
         $url = $_SESSION['REFERER'];
-    } else {
-        $url = SITE_URL;
-    }
+//    } else {
+//        $url = SITE_URL;
+//    }
   // --- MAIN
   $webHtml = new WebHtml($login->lgTxt->titles['h1edit'], 800);
         include('../form.login-hl.php');

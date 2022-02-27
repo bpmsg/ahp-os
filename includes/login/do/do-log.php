@@ -20,12 +20,11 @@
 include '../../config.php';
 
 $title= "User Account Log Table";
-$version = substr('$LastChangedDate: 2022-02-11 08:19:55 +0800 (Fr, 11 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 120 $', "$");
+$version = substr('$LastChangedDate: 2022-02-24 07:15:49 +0800 (Do, 24 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 170 $', "$");
 
 session_start();
 
-$lang = (isset($_SESSION['lang']) ? $_SESSION['lang'] : "EN");
 $login = new Login();
 if (isset($_SESSION['REFERER'])) {
     unset($_SESSION['REFERER']);

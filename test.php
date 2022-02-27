@@ -1,24 +1,19 @@
 <?php
-
-
 /* Sample Page with WebHtml class */
+
 include 'includes/config.php';
 
-$class = 'app' . $lang;
+$class = 'Ahp' . $lang;
 $ahpOs = new $class();
 $_SESSION['lang'] = $lang;
 
 $login = new Login();
-// reset in case back from edit form
-if (isset($_SESSION['REFERER'])) {
-    unset($_SESSION['REFERER']);
-}
 
 $pageTitle ='AHP Sample Test Page';
 $title = "AHP Sample Test Page";
 $subTitle = "Test page for development purposes";
-$version = substr('$LastChangedDate: 2019-08-25 09:22:09 +0800 (Sun, 25 Aug 2019) $', 18, 10);
-$rev = trim('$Rev: 35 $', "$");
+$version = substr('$LastChangedDate: 2022-02-27 13:29:54 +0800 (So, 27 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 173 $', "$");
 
 /* --- Web Page HTML OUTPUT --- */
 $webHtml = new WebHtml($pageTitle);

@@ -66,6 +66,8 @@ class WebHtml
                 echo "<p>Session variables</p>";
                 displayArray($_SESSION);
             }
+                echo "<p>Server variables</p>";
+                displayArray($_SERVER['HTTP_REFERER']);
             if (isset($_POST)) {
                 echo "<p>Post variables</p>";
                 displayArray($_POST);

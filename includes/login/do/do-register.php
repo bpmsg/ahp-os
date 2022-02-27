@@ -57,8 +57,8 @@ function get_client_ip()
 
 
 $title="User Registration";
-$version = substr('$LastChangedDate: 2022-02-23 14:26:09 +0800 (Mi, 23 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 168 $', "$");
+$version = substr('$LastChangedDate: 2022-02-24 07:15:49 +0800 (Do, 24 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 170 $', "$");
 
 session_start();
 
@@ -96,13 +96,6 @@ if (isset($_SESSION['reg_s'])) {
 }
 $_SESSION['reg_s'] = microtime(true);
 
-if (isset($_COOKIE['lang'])  && in_array(strtolower($_COOKIE['lang']), $languages)) {
-    $_SESSION['lang'] = $lang = $_COOKIE['lang'];
-} elseif (isset($_SESSION['lang'])) {
-    $lang = $_SESSION['lang'];
-} else {
-    $lang = "EN";
-}
 
 $registration = new Registration();
 

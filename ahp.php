@@ -28,8 +28,8 @@ include 'includes/config.php';
 
 session_start();
 
-$version = substr('$LastChangedDate: 2022-02-19 18:06:35 +0800 (Sa, 19 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 159 $', "$");
+$version = substr('$LastChangedDate: 2022-02-26 12:40:14 +0800 (Sa, 26 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 172 $', "$");
 
 $class = 'Ahp' . $lang;
 $ahpOs = new $class();
@@ -39,11 +39,6 @@ $js = new JsCheck();
 $login = new Login();
 
 $loggedIn = $login->IsUserLoggedIn();
-
-// reset in case back from edit form
-if (isset($_SESSION['REFERER'])) {
-    unset($_SESSION['REFERER']);
-}
 
 /*
  * --- Web Page HTML OUTPUT ---
