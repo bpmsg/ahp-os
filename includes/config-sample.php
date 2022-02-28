@@ -3,8 +3,8 @@
  *
  *  Copyright (C) 2022  <Klaus D. Goepel>
  * 
- *  $Rev: 168 $
- *  $LastChangedDate: 2022-02-23 14:26:09 +0800 (Mi, 23 Feb 2022) $
+ *  $Rev: 177 $
+ *  $LastChangedDate: 2022-02-28 13:59:16 +0800 (Mo, 28 Feb 2022) $
  * 
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -90,7 +90,7 @@
  *  Comment out if you don't want to provide
  ************************************************************
  */
-    // define('CMTLNK', "//example.com/feedback/"); // --- Comments
+    // define('CMTLNK', "//example.com/feedback/");     // --- Comments
     // define('CNTLNK', "//example.com/contact-form/"); // --- Contact
 
 /*
@@ -100,9 +100,9 @@
  *  to false.
  ************************************************************ 
  */
-    define('SELFREG', true); // --- Whether user can self register
-    define('CAPTCHA', false); // --- set false for intranet, true for web
-    define('CPTTXT',  true); // --- when true, text instead of img captcha
+    define('SELFREG', true);  //  Whether user can self register
+    define('CAPTCHA', false); //  set false for intranet, true for web
+    define('CPTTXT',  true);  //  when true, text instead of img captcha
     define('REGISTRATION_EMAIL', false);
 
 
@@ -149,6 +149,7 @@
         define('MY_DOMAIN', $_SERVER['SERVER_NAME']);
     }
     
+    // --- Protocol http or https
     define('PROT', ($_SERVER['HTTPS'] ? "https://" : "http://"));
 
     define('DB_PATH', ABS_PATH . BASE . "db/");
@@ -292,58 +293,6 @@
         }
 
 
-    // --- FUNCTIONS
+    // --- General FUNCTIONS    
+    $phpUtil = new PhpUtil();
 
-    /* Compares current session id (sid) with $_SESSION['sid']
-     * If $_SESSION['sid'] is not set, starts a new session
-    * @return string $sid session id
-    */
-    function startNewSession()
-    {
-        $sid = session_id();
-        if (isset($_SERVER['HTTP_USER_AGENT'])) {
-            $sid = md5($sid . $_SERVER['HTTP_USER_AGENT']);
-        } else {
-            $sid = md5($sid . "any rubbish text whatever");
-        }
-        if (isset($_SESSION['sid'])) {
-            if ($sid != $_SESSION['sid']) {
-                unset($_SESSION['sid']);
-                die("Invalid session");
-            }
-        } else {
-            $_SESSION['sid'] = $sid;
-            $_SESSION['tstart'] = gettimeofday(true);
-        }
-        return $sid;
-    }
-
-
-    /* Close session */
-    function closeSession()
-    {
-        session_unset();
-        session_destroy();
-        session_write_close();
-        setcookie(session_name(), '', 0, '/');
-    }
-
-    /* Makes arrays easily readable for debugging purposes */
-    function displayArray($array)
-    {
-        if (is_array($array)) {
-            echo "<p>";
-            foreach ($array as $key => $val) {
-                echo "<span style='color:blue'>$key: </span>";
-                if (is_array($val)) {
-                    print_r($val);
-                } else {
-                    echo "$val";
-                }
-                echo "<br>";
-            }
-            echo "</p>";
-        } else {
-            echo "<p>$array</p>";
-        }
-    }

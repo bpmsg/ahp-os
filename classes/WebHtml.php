@@ -64,13 +64,11 @@ class WebHtml
             );
             if (isset($_SESSION)) {
                 echo "<p>Session variables</p>";
-                displayArray($_SESSION);
+                $phpUtil->displayArray($_SESSION);
             }
-                echo "<p>Server variables</p>";
-                displayArray($_SERVER['HTTP_REFERER']);
             if (isset($_POST)) {
                 echo "<p>Post variables</p>";
-                displayArray($_POST);
+                $phpUtil->displayArray($_POST);
             }
         }
         include ABS_PATH  . BASE . "includes" . DIRECTORY_SEPARATOR . "footer.html";

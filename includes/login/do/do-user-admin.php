@@ -28,8 +28,8 @@ require('../../../vendor/autoload.php');
 session_start();
 
 $title= "User Administration";
-$version = substr('$LastChangedDate: 2022-02-23 14:26:09 +0800 (Mi, 23 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 168 $', "$");
+$version = substr('$LastChangedDate: 2022-02-27 14:35:52 +0800 (So, 27 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 176 $', "$");
 
 $lang = (isset($_SESSION['lang']) ? $_SESSION['lang'] : "EN");
 
@@ -54,10 +54,6 @@ $urlSessionAdmin = BASE . $urlSessionAdmin;
 $login =    new Login();
 $userDb =   new LoginAdmin();
 $ahpAdmin = new AhpAdmin();
-
-if (isset($_SESSION['REFERER'])) {
-    unset($_SESSION['REFERER']);
-}
 
 if ($login->isUserLoggedIn() && in_array($_SESSION['user_id'], $admin)) {
     $loggedIn = true;

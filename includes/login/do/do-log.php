@@ -14,39 +14,37 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *
+
  */
 
-include '../../config.php';
+    include '../../config.php';
+    define('LOGMAX', 50);
 
-$title= "User Account Log Table";
-$version = substr('$LastChangedDate: 2022-02-24 07:15:49 +0800 (Do, 24 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 170 $', "$");
+    $title= "User Account Log Table";
+    $version = substr('$LastChangedDate: 2022-02-27 14:35:52 +0800 (So, 27 Feb 2022) $', 18, 10);
+    $rev = trim('$Rev: 176 $', "$");
 
-session_start();
+    session_start();
 
-$login = new Login();
-if (isset($_SESSION['REFERER'])) {
-    unset($_SESSION['REFERER']);
-}
+    $login = new Login();
 
-if ($login->isUserLoggedIn() && in_array($_SESSION['user_id'], $admin)) {
-    $webHtml = new WebHtml($title);
-    $ahpDb = new LoginAdmin();
+    if ($login->isUserLoggedIn() && in_array($_SESSION['user_id'], $admin)) {
+        $webHtml = new WebHtml($title);
+        $ahpDb = new LoginAdmin();
 
-    // --- MAIN
-    include('../form.login-hl.php');
-    echo "<h1>$title</h1>";
+        // --- MAIN
+        include('../form.login-hl.php');
+        echo "<h1>$title</h1>";
 
-    // --- Log --- all users, 25 lines max.
-    $ahpDb->displayLogTable("%", 50);
-    echo '<p></p>';
-    echo $ahpDb->getErrors();
-    echo '<p></p>';
-    echo "<p><a href='do-user-admin.php'>back</a></p>";
-    $webHtml->webHtmlFooter($version);
-} else {
-    $url = (isset($_SESSION['REFERER']) ? $_SESSION['REFERER'] : SITE_URL);
-    header("Location: " . "$url");
-    exit();
-}
+        // --- Log --- all users, 25 lines max.
+        $ahpDb->displayLogTable("%", LOGMAX );
+        echo '<p></p>';
+        echo $ahpDb->getErrors();
+        echo '<p></p>';
+        echo "<p><a href='do-user-admin.php'>back</a></p>";
+        $webHtml->webHtmlFooter($version);
+    } else {
+        $url = (isset($_SESSION['REFERER']) ? $_SESSION['REFERER'] : SITE_URL);
+        header("Location: " . "$url");
+        exit();
+    }

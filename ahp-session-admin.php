@@ -32,8 +32,8 @@ $sessionName= "";
 // todo: replace by $urlProjectImport from config file
 $urlPjImport= "ahp-project-import.php";
 
-$version = substr('$LastChangedDate: 2022-02-19 18:06:35 +0800 (Sa, 19 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 159 $', "$");
+$version = substr('$LastChangedDate: 2022-02-28 13:59:16 +0800 (Mo, 28 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 177 $', "$");
 
 $login = new Login();
 
@@ -58,7 +58,7 @@ $ahpH =     new AhpHierAlt();
 
 if ($login->isUserLoggedIn() === true) {
     // the user is logged in.
-    $sid  = startNewSession();
+    $sid  = $phpUtil->startNewSession();
     $name = $_SESSION['name'] = $_SESSION['user_name'];
 
     /*

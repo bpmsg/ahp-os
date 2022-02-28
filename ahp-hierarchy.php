@@ -44,8 +44,8 @@ $ahpHier = new $class();
 
 $loggedIn = $login->isUserLoggedIn();
 
-$version = substr('$LastChangedDate: 2022-02-26 12:40:14 +0800 (Sa, 26 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 172 $', "$");
+$version = substr('$LastChangedDate: 2022-02-28 13:59:16 +0800 (Mo, 28 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 177 $', "$");
 
 $defaultHierarchy = "AHP-Project:Crit-1,Crit-2,Crit-3;";
 
@@ -242,7 +242,7 @@ $leave = false;
             if (isset($_SESSION['groupSession']) && !empty($_SESSION['sessionCode'])) {
                 $sessCod = $_SESSION['sessionCode'];
             } else {
-                $sid = startNewSession();
+                $sid = $phpUtil->startNewSession();
                 $_SESSION['mod'] = true;
                 if ($hierMode) {
                     $_SESSION['hText'] = $text;

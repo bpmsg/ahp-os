@@ -35,7 +35,7 @@ include 'includes/config.php';
 
 session_start();
 if (!isset($_SESSION['sid'])) {
-    $sid = startNewSession();
+    $sid = $phpUtil->startNewSession();
 }
 
 $login = new Login();
@@ -52,8 +52,8 @@ $loggedIn = $login->isUserLoggedIn();
 $msg ="";
 $subTitle = $ahpHiergini->titles['subTitle1'];
 
-$version = substr('$LastChangedDate: 2022-02-19 18:06:35 +0800 (Sa, 19 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 159 $', "$");
+$version = substr('$LastChangedDate: 2022-02-28 13:59:16 +0800 (Mo, 28 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 177 $', "$");
 
 /** get data (name, session code, description from POST parameter
 * called from ahp-hiergini page
@@ -281,7 +281,7 @@ $iniOwner = false;
             $ahpH->closeHier();
         } else {
             $url = $urlAhp;
-            closeSession();
+            $phpUtil->closeSession();
         }
         header("Location: " . $url);
         exit();

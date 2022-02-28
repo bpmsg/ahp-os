@@ -18,55 +18,17 @@
 include('../../config.php');
 require('../../../vendor/autoload.php');
 
-/* --- Functions added to fight spam.
- *     Please see https://www.projecthoneypot.org
- */
-
-
-/* Spam query function project honeypot */
-function my_httpbl_check($ip)
-{
-    $request = HPAPIKEY . "."
-    . implode(".", array_reverse(explode(".", $ip)))
-    . ".dnsbl.httpbl.org";
-    $result = explode(".", gethostbyname($request));
-    return($result[0] == 127 ? $result : "ok");
-}
-
-/* Get clients IP address */
-function get_client_ip()
-{
-    $ipaddress = '';
-    if ($_SERVER['HTTP_CLIENT_IP']) {
-        $ipaddress = $_SERVER['HTTP_CLIENT_IP'];
-    } elseif ($_SERVER['HTTP_X_FORWARDED_FOR']) {
-        $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
-    } elseif ($_SERVER['HTTP_X_FORWARDED']) {
-        $ipaddress = $_SERVER['HTTP_X_FORWARDED'];
-    } elseif ($_SERVER['HTTP_FORWARDED_FOR']) {
-        $ipaddress = $_SERVER['HTTP_FORWARDED_FOR'];
-    } elseif ($_SERVER['HTTP_FORWARDED']) {
-        $ipaddress = $_SERVER['HTTP_FORWARDED'];
-    } elseif ($_SERVER['REMOTE_ADDR']) {
-        $ipaddress = $_SERVER['REMOTE_ADDR'];
-    } else {
-        $ipaddress = '';
-    }
-    return $ipaddress;
-}
-
-
 $title="User Registration";
-$version = substr('$LastChangedDate: 2022-02-24 07:15:49 +0800 (Do, 24 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 170 $', "$");
+$version = substr('$LastChangedDate: 2022-02-28 13:59:16 +0800 (Mo, 28 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 177 $', "$");
 
 session_start();
 
 // --- First check for suspicious IP
 $block = false;
 if (defined('HPAPIKEY') && !empty('HPAPIKEY')) {
-    $ip = get_client_ip();
-    $res = my_httpbl_check($ip);
+    $ip = $phpUtil->get_client_ip();
+    $res = $phpUtil->my_httpbl_check($ip);
     if ($res != "ok" || !isset($_COOKIE['notabot'])
             && $res[0] == 127 && $res[2] >20) {
         $block = true;

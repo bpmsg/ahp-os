@@ -19,12 +19,9 @@
 include '../../config.php';
 require('../../../vendor/autoload.php');
 
-$version = substr('$LastChangedDate: 2022-02-24 07:15:49 +0800 (Do, 24 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 170 $', "$");
+$version = substr('$LastChangedDate: 2022-02-27 14:35:52 +0800 (So, 27 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 176 $', "$");
 
-// create a login object. when this object is created, it will 
-// do all login/logout stuff automatically
-// so this single line handles the entire login process.
 session_start();
 
 $login = new Login();

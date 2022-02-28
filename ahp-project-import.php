@@ -25,26 +25,8 @@ define('MAX_SIZE', 400000);
 
 include 'includes/config.php';
 
-$version = substr('$LastChangedDate: 2022-02-17 13:25:12 +0800 (Do, 17 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 144 $', "$");
-
-// --- FUNCTIONS
-function display_filesize($filesize)
-{
-    if (is_numeric($filesize)) {
-        $decr = 1024;
-        $step = 0;
-        $prefix = array('Byte','KB','MB','GB','TB','PB');
-
-        while (($filesize / $decr) > 0.9) {
-            $filesize = $filesize / $decr;
-            $step++;
-        }
-        return round($filesize, 1).' '.$prefix[$step];
-    } else {
-        return 'NaN';
-    }
-}
+$version = substr('$LastChangedDate: 2022-02-28 13:59:16 +0800 (Mo, 28 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 177 $', "$");
 
 $login = new Login();
 
@@ -52,20 +34,6 @@ if ($login->isUserLoggedIn() === false) {
     header('HTTP/1.0 200');
     header("Location: " . $urlAhp);
 }
-
-// sets the session variable for language
-$lang = filter_input(INPUT_GET, 'lang', FILTER_SANITIZE_STRING);
-    if ($lang != null && $lang != false && in_array($lang, $languages)) {
-        $lang = strtoupper($lang);
-        setcookie('lang', $lang, time() + COOKIE_RUNTIME, "/", COOKIE_DOMAIN);
-        $_SESSION['lang'] = $lang;
-    } elseif (isset($_COOKIE['lang'])
-            && in_array(strtolower($_COOKIE['lang']), $languages)) {
-        $lang = $_COOKIE['lang'];
-        $_SESSION['lang'] = $lang;
-    } else {
-        $lang ='EN';
-    }
 
 $class = 'AhpSessionAdmin' . $lang;
 $sessionAdmin = new $class();
@@ -80,6 +48,7 @@ if (isset($_POST['CANCEL'])) {
     header('HTTP/1.0 200');
     header("Location: " . $urlSessionAdmin);
 }
+
 // --- check for upload/import
 if (isset($_FILES['file'])) {
     $file_name = $_FILES['file']['name'];
@@ -94,7 +63,7 @@ if (isset($_FILES['file'])) {
     } elseif (!in_array($file_ext, $extensions)) {
         $err[]="$file_ext extension is not allowed.";
     } elseif ($file_size > MAX_SIZE) {
-        $err[]="File size must not exceed " . display_filesize(MAX_SIZE) . '.';
+        $err[]="File size must not exceed " . $phpUtil->display_filesize(MAX_SIZE) . '.';
     } elseif (preg_match('/^[a-zA-Z0-9-_()\s]+\.ext$/', $file_name)) {
         $err[]="Invalid filename.";
     } else {
@@ -184,11 +153,6 @@ if (isset($_FILES['file'])) {
     $err[] = "Invalid file";
 }
 
-// reset in case back from edit form
-if (isset($_SESSION['REFERER'])) {
-    unset($_SESSION['REFERER']);
-}
-
 
 $pageTitle ="AHP-OS Import";
 $title = "AHP-OS Project Import";
@@ -207,7 +171,7 @@ $webHtml = new WebHtml($pageTitle, 800);
     echo "<p>Import a project from an AHP-OS project JSON file. 
          Extension has to be <span class='res'>"
          . implode(", ", $extensions) . "</span> size must not exceed 
-         <span class='res'>" . display_filesize(MAX_SIZE) . "</span>. 
+         <span class='res'>" . $phpUtil->display_filesize(MAX_SIZE) . "</span>. 
          Project description will be appended with the original session 
          code, author (if no yourself) and date/time of the original 
          project</p>";

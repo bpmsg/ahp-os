@@ -133,6 +133,7 @@ ahp-\
      |           AhpHier (Decision hierarchies)
      |           AhpHierAlt (extends AhpHier for alternatives)
      |           (JsCheck) by Gustav Eklundh
+     |           PhpUtil (General functions)
      |           WebHtml (header/footer for html output)
      |-- db -\ 
      |        ahp_os.db (sqlite database when used)

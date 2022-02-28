@@ -23,8 +23,8 @@
 include '../../config.php';
 
 $title="BPMSG Donations";
-$version = substr('$LastChangedDate: 2022-02-11 08:19:55 +0800 (Fr, 11 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 120 $', "$");
+$version = substr('$LastChangedDate: 2022-02-27 14:35:52 +0800 (So, 27 Feb 2022) $', 18, 10);
+$rev = trim('$Rev: 176 $', "$");
 
 $para = array(
     'trNo'	=>	0,
@@ -244,7 +244,7 @@ function validateFormData($trD = array())
             );
             if ($flag == true) {
                 $msg .= "<span class='msg'><br>New Donation inserted 
-						into donation table. </span>";
+                    into donation table. </span>";
             } else {
                 $err .= "<span class='err'>Data could not be written. </span>";
             }
@@ -271,36 +271,35 @@ function validateFormData($trD = array())
     }
 
 // --- MAIN ---
-$webHtml = new WebHtml($title);
+    $webHtml = new WebHtml($title);
     include('../form.login-hl.php');
-echo "<h1>$title</h1>";
-if ($loggedIn === true && in_array($_SESSION['user_id'], $admin)) {
-    if (DONATIONS) {
-        echo "<p>",$msg . $ahpAdmin->getErrors() . "</p>";
-        echo "<form method='POST' action='$urlAct'>";
-        // Insert new donation/Update existing
-        if (isset($_POST['INS']) || isset($_POST['CHKID']) 
-        || isset($_POST['CLR']) || (isset($_POST['UPDT']) && $err !="")) {
-            $formToken = $_SESSION['formToken'] = uniqid();
-            // show donation insert form
-            echo "<h3>Donation</h3>";
-            include '../form.newdon.html' ;
-            echo "<p>" . $err . "</p>";
+    echo "<h1>$title</h1>";
+    if ($loggedIn === true && in_array($_SESSION['user_id'], $admin)) {
+        if (DONATIONS) {
+            echo "<p>",$msg . $ahpAdmin->getErrors() . "</p>";
+            echo "<form method='POST' action='$urlAct'>";
+            // Insert new donation/Update existing
+            if (isset($_POST['INS']) || isset($_POST['CHKID']) 
+            || isset($_POST['CLR']) || (isset($_POST['UPDT']) && $err !="")) {
+                $formToken = $_SESSION['formToken'] = uniqid();
+                // show donation insert form
+                echo "<h3>Donation</h3>";
+                include '../form.newdon.html' ;
+                echo "<p>" . $err . "</p>";
+            } else {
+                echo '<h3>Donations ' . $year . '</h3>';
+                $donors = $ahpAdmin->getAllDonors($yr);
+                $ahpAdmin->displayDonorTable($donors);
+                echo "<h3>Menu</h3>";
+                include '../form.donations.html' ;
+            }
+            echo "</form>";
         } else {
-            echo '<h3>Donations ' . $year . '</h3>';
-            $donors = $ahpAdmin->getAllDonors($yr);
-            $ahpAdmin->displayDonorTable($donors);
-            echo "<h3>Menu</h3>";
-            include '../form.donations.html' ;
+            echo "<p>",$msg . $ahpAdmin->getErrors() . "</p>";
+            echo '<p>This feature is disabled in the config file.</p>';
         }
-        echo "</form>";
     } else {
-        echo "<p>",$msg . $ahpAdmin->getErrors() . "</p>";
-        echo '<p>This feature is disabled in the config file.</p>';
+        echo '<h2>Please login</h2>';
+        echo '<p>You need to be registered to access this website.</p>';
     }
-} else {
-    echo '<h2>Please login</h2>';
-    echo '<p>You need to be registered to access this website.</p>';
-}
-//--- END
-$webHtml->webHtmlFooter($version);
+    $webHtml->webHtmlFooter($version);
