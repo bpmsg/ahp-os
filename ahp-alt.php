@@ -31,17 +31,13 @@ $lang = (isset($_SESSION['lang']) ? $_SESSION['lang'] : "EN");
 $class = 'AhpPrioCalc' . $lang;
 $ahpPrioCalc = new $class();
 
-// reset in case back from edit form
-if (isset($_SESSION['REFERER'])) {
-    unset($_SESSION['REFERER']);
-}
 $loggedIn = $login->isUserLoggedIn();
 
 $ahpH =    new AhpHierAlt();
 $ahp =     new AhpCalcIo(2);
 
-$version = substr('$LastChangedDate: 2022-02-19 14:01:53 +0800 (Sa, 19 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 156 $', "$");
+$version = substr('$LastChangedDate: 2022-03-01 11:44:47 +0800 (Di, 01 Mär 2022) $', 18, 10);
+$rev = trim('$Rev: 178 $', "$");
 
 // function to set url string for form action to get new n and alternative names
 // equals file name with "1"

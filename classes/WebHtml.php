@@ -54,6 +54,7 @@ class WebHtml
 
         if (DEBUG) {
             echo "<hr>";
+            $phpUtil = new PhpUtil();
             $e = microtime(true);
             echo "Execution time: ",round(1000*(microtime(true)-$s), 1)," mSec<br>";
             printf(

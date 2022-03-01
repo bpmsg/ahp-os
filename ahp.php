@@ -28,8 +28,8 @@ include 'includes/config.php';
 
 session_start();
 
-$version = substr('$LastChangedDate: 2022-02-26 12:40:14 +0800 (Sa, 26 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 172 $', "$");
+$version = substr('$LastChangedDate: 2022-03-01 11:44:47 +0800 (Di, 01 Mär 2022) $', 18, 10);
+$rev = trim('$Rev: 178 $', "$");
 
 $class = 'Ahp' . $lang;
 $ahpOs = new $class();
@@ -50,10 +50,10 @@ if (!(isset($_SESSION['javascript']) && $_SESSION['javascript'])) {
 }
 // $js->checkJsByCookies();
 $loginHeaderText = "<a href=".$urlHome.">BPMSG Home</a>&nbsp;&nbsp;
-				<a href='ahp-news.php'>Latest News</a>";
+                    <a href='ahp-news.php'>Latest News</a>";
 if ($js->isJsActivated() === false) {
     $loginHeaderText .= "<span class='err'>&nbsp;For full functionality 
-				please allow JavaScript! </span>";
+                    please allow JavaScript! </span>";
 } else {
     $loginHeaderText .= "<span class='msg'>&nbsp;&nbsp;Java is enabled. </span>";
 }
@@ -104,7 +104,7 @@ if (!$loggedIn) {
         printf($ahpOs->info['contact'], CMTLNK);
     }
     echo "<small>The AHP-OS package is realized in php and available from the author 
-	on <a href='https://github.com/bpmsg/ahp-os' target='_blank' >Github</a>.</small>";
+        on <a href='https://github.com/bpmsg/ahp-os' target='_blank' >Github</a>.</small>";
 } elseif (in_array($_SESSION['user_id'], $admin)) {
     echo "<small><a href='includes/login/do/do-user-admin.php'>AHP-OS admin</a></small>";
 }

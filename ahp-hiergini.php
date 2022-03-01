@@ -43,17 +43,13 @@ $class = 'AhpHiergini' . $lang;
 $ahpHiergini = new $class();
 $_SESSION['lang'] = $lang;
 
-// reset in case back from edit form
-if (isset($_SESSION['REFERER'])) {
-    unset($_SESSION['REFERER']);
-}
 $loggedIn = $login->isUserLoggedIn();
 
 $msg ="";
 $subTitle = $ahpHiergini->titles['subTitle1'];
 
-$version = substr('$LastChangedDate: 2022-02-28 13:59:16 +0800 (Mo, 28 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 177 $', "$");
+$version = substr('$LastChangedDate: 2022-03-01 11:44:47 +0800 (Di, 01 Mär 2022) $', 18, 10);
+$rev = trim('$Rev: 178 $', "$");
 
 /** get data (name, session code, description from POST parameter
 * called from ahp-hiergini page

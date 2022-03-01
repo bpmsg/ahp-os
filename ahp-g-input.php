@@ -30,15 +30,10 @@
     $class = 'AhpGroupRes' . $lang;
     $ahpGroupRes = new $class();
 
-    // reset in case back from edit form
-    if (isset($_SESSION['REFERER'])) {
-        unset($_SESSION['REFERER']);
-    }
-
     $loggedIn = $login->isUserLoggedIn();
 
-    $version = substr('$LastChangedDate: 2022-02-11 08:19:55 +0800 (Fr, 11 Feb 2022) $', 18, 10);
-    $rev = trim('$Rev: 120 $', "$");
+    $version = substr('$LastChangedDate: 2022-03-01 11:44:47 +0800 (Di, 01 Mär 2022) $', 18, 10);
+    $rev = trim('$Rev: 178 $', "$");
 
 
 // --- START ---
@@ -46,10 +41,10 @@ $errMsg = "";
 $checkWarn ="";
 $altNum = 0;
 $hierMode = true;
-$part = array();  // List of participants
-$partCnt = 0;		  // number of participants
-$nodes = array();	// hierarchy nodes (priority vectors)
-$dm = array();    // decision matrix;
+$part = array();    // List of participants
+$partCnt = 0;       // number of participants
+$nodes = array();   // hierarchy nodes (priority vectors)
+$dm = array();      // decision matrix;
 $psel = array();
 $owner = false;
 $ahpH = new AhpHier();

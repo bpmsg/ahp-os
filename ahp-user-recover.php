@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
- *  Revision: $Rev: 152 $
+ *  Revision: $Rev: 178 $
  *
  */
 
@@ -41,8 +41,8 @@ $ahpUser = array();
 $pageTitle ='AHP recover';
 $title="AHP-OS User Recovery";
 $subTitle = "User recovery from bachup database";
-$version = substr('$LastChangedDate: 2022-02-18 16:24:01 +0800 (Fr, 18 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 152 $', "$");
+$version = substr('$LastChangedDate: 2022-03-01 11:44:47 +0800 (Di, 01 Mär 2022) $', 18, 10);
+$rev = trim('$Rev: 178 $', "$");
 
 // productive database
 $login =  new Login();
@@ -64,11 +64,6 @@ if(substr($backupDb,-3) == ".db"){
         $errMsg = "<span class='err'>
             SQLITE backup database not found</span>";
     }
-}
-
-// reset in case back from edit form
-if (isset($_SESSION['REFERER'])) {
-    unset($_SESSION['REFERER']);
 }
 
 /* --- MENU ACTIONS --- */

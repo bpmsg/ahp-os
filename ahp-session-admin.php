@@ -32,17 +32,14 @@ $sessionName= "";
 // todo: replace by $urlProjectImport from config file
 $urlPjImport= "ahp-project-import.php";
 
-$version = substr('$LastChangedDate: 2022-02-28 13:59:16 +0800 (Mo, 28 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 177 $', "$");
+$version = substr('$LastChangedDate: 2022-03-01 11:44:47 +0800 (Di, 01 Mär 2022) $', 18, 10);
+$rev = trim('$Rev: 178 $', "$");
 
 $login = new Login();
 
 $class = 'AhpSessionAdmin' . $lang;
 $sessionAdmin = new $class();
 
-if (isset($_SESSION['REFERER'])) {
-    unset($_SESSION['REFERER']);
-}
 unset($_SESSION['alt']);
 unset($_SESSION['altNum']);
 if (isset($_SESSION['groupSession'])) {
@@ -335,11 +332,7 @@ if (defined('SYS_MSG')) {
 }
 
 if (!isset($_SESSION['lang'])) {
-    echo "<p>Language: <a href='", $urlAct, "?lang=en'>English</a>
-        &nbsp;&nbsp;<a href='", $urlAct, "?lang=de'>Deutsch</a>
-        &nbsp;&nbsp;<a href='", $urlAct, "?lang=es'>Español</a>
-        &nbsp;&nbsp;<a href='", $urlAct, "?lang=pt'>Português</a>
-        </p>";
+    $webHtml->displayLanguageSelection();
 }
 if ($errMsg !="") {
     echo "<p class='err'>", $errMsg, "</p>";
