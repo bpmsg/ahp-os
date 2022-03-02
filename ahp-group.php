@@ -36,16 +36,11 @@
     $class = 'AhpGroupRes' . $lang;
     $ahpGroupRes = new $class();
     $uid = (isset($_SESSION['user_id']) ? $_SESSION['user_id'] : "");
-
-    // reset in case back from edit form
-    if (isset($_SESSION['REFERER'])) {
-        unset($_SESSION['REFERER']);
-    }
-
+    
     $loggedIn = $login->isUserLoggedIn();
 
-    $version = substr('$LastChangedDate: 2022-02-11 08:19:55 +0800 (Fr, 11 Feb 2022) $', 18, 10);
-    $rev = trim('$Rev: 120 $', "$");
+    $version = substr('$LastChangedDate: 2022-03-02 11:18:51 +0800 (Mi, 02 Mär 2022) $', 18, 10);
+    $rev = trim('$Rev: 179 $', "$");
 
     // --- START ---
     $errMsg = "";

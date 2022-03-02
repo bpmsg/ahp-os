@@ -3,8 +3,8 @@
  *
  *  Copyright (C) 2022  <Klaus D. Goepel>
  * 
- *  $Rev: 177 $
- *  $LastChangedDate: 2022-02-28 13:59:16 +0800 (Mo, 28 Feb 2022) $
+ *  $Rev: 179 $
+ *  $LastChangedDate: 2022-03-02 11:18:51 +0800 (Mi, 02 Mär 2022) $
  * 
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -31,10 +31,10 @@
 
 
 /*  
- ***********************************************************
+ ***********************************************************************
  *  When updating the productive system:
  *  you can still do testing with your local IP 'MY_IP'
- ***********************************************************
+ ***********************************************************************
  */
     define('UPDATE', false);            // --- maintenance
     define('MY_IP', "192.168.1.112");   // --- your IP
@@ -49,9 +49,9 @@
     ini_set('log_errors', 1);
 
 /*
- ***********************************************************
+ ***********************************************************************
  *  Mail settings 
- ***********************************************************
+ ***********************************************************************
  */
 
     define('EMAIL_USE_SMTP', true);
@@ -63,11 +63,11 @@
     define('EMAIL_SMTP_ENCRYPTION', "ssl");
 
 /*
- ************************************************************
+ ***********************************************************************
  *  Database settings: "sqlite" or "mysql"
  *  NOTE: When using sqlite, ensure directory and file is 
  *  writeable!
- ************************************************************
+ ***********************************************************************
  */
     define('DB_TYPE', "sqlite");
     define('DBNAME', "ahp_os");
@@ -85,20 +85,20 @@
 
 
 /*
- ************************************************************
+ ***********************************************************************
  *  Optional Comment link from your blog and/or contact link
  *  Comment out if you don't want to provide
- ************************************************************
+ ***********************************************************************
  */
     // define('CMTLNK', "//example.com/feedback/");     // --- Comments
     // define('CNTLNK', "//example.com/contact-form/"); // --- Contact
 
 /*
- ************************************************************
+ ***********************************************************************
  *  Optional Self registration and registration email.
  *  For intranet you can set CAPTCHA and REGISTRATION_EMAIL 
  *  to false.
- ************************************************************ 
+ ***********************************************************************
  */
     define('SELFREG', true);  //  Whether user can self register
     define('CAPTCHA', false); //  set false for intranet, true for web
@@ -107,25 +107,25 @@
 
 
 /*
- ************************************************************
+ ***********************************************************************
  *  Optional Spam honeypot - set to '' if not used. Please 
  *  see https://www.projecthoneypot.org/ for more details
- ************************************************************
+ ***********************************************************************
  */
     define('HONEYPOT', '');
     define('HPAPIKEY', '');
 
 /*
- ************************************************************
+ ***********************************************************************
  *  Optional enable additional functions for user donations
- ************************************************************
+ ***********************************************************************
  */
     define('DONATIONS', false);
 
 
-// -------------------------------------------------------------------
-// --- NO NEED TO EDIT ANYTHING BELOW, IF NOT ABSOLUTELY NECESSARY ---
-// -------------------------------------------------------------------
+// ---------------------------------------------------------------------
+// --- NO NEED TO EDIT ANYTHING BELOW, IF NOT ABSOLUTELY NECESSARY   ---
+// ---------------------------------------------------------------------
 
     // --- DIRECTORIES (PATH)
     define('ABS_PATH', $_SERVER['DOCUMENT_ROOT']);
@@ -245,8 +245,8 @@
     $urlAhp  = 'ahp.php';               // AHP start page
     $urlAhpH = 'ahp-hierarchy.php';     // Create/display hierarchy
     $urlAhpC = 'ahp-hiercalc.php';      // AHP calculation for hierarchy
-    $urlAlt  = 'ahp-alt.php';	        // Create/display Alternatives
-    $urlAhpA = 'ahp-altcalc.php';	    // AHP calculation for Alternatives
+    $urlAlt  = 'ahp-alt.php';           // Create/display Alternatives
+    $urlAhpA = 'ahp-altcalc.php';       // AHP calculation for Alternatives
     $urlGroupInit = 'ahp-hiergini.php'; // Initiate group sessions
     $urlGroupRes  = 'ahp-group.php';    // Display group results
     $urlGinput    = 'ahp-g-input.php';  // Displays group input data
