@@ -2,8 +2,8 @@
 /*
 * General PHP utilities useful for several program packages
 *
-* $LastChangedDate:$
-* $Rev:$
+* $LastChangedDate: 2022-03-19 12:13:56 +0800 (Sa, 19 Mär 2022) $
+* $Rev: 180 $
 * 
 *   public function get_client_ip() get ip
 *   public function my_httpbl_check($ip)

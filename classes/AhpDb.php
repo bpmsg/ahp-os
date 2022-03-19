@@ -2,8 +2,8 @@
 /**
 * Analytic Hierarchy Process database functions for ahp
 *
-* $LastChangedDate: 2022-02-22 09:43:17 +0800 (Di, 22 Feb 2022) $
-* $Rev: 166 $
+* $LastChangedDate: 2022-03-19 12:13:56 +0800 (Sa, 19 Mär 2022) $
+* $Rev: 180 $
 *
 * @author Klaus D. Goepel
 * @copyright 2014-2017 Klaus D. Goepel
@@ -808,8 +808,8 @@ class AhpDb
         $pwcConv = $this->convertPwcToString($pwc);
         $timestamp = time();
         if ($this->dataBaseConnection()) {
-            $rslt = $this->checkPwcCons($sc);
             // --- temporary trying to find a possible bug
+            $rslt = $this->checkPwcCons($sc);
             if (!empty($rslt)) {
                 // Something wrong
                 trigger_error("submitGroupData 1st consistency check $sc", E_USER_WARNING);
@@ -829,7 +829,7 @@ class AhpDb
                 // there are already pwcs submitted for nodes
                 try {
                     foreach ($pwcUpdNod as $node) {
-                        $this->db_connection->exec("PRAGMA foreign_keys = ON;");
+                        // $this->db_connection->exec("PRAGMA foreign_keys = ON;");
                         $sql = "SELECT pwc_ab, pwc_intense FROM pwc 
                                 WHERE project_sc = :sc AND pwc_part = :part 
                                 AND pwc_node = :nod;";
@@ -841,6 +841,7 @@ class AhpDb
                         $pwcOld = $query->fetch(PDO::FETCH_ASSOC);
                         if (is_array($pwcConv[$node]) && !empty(array_diff($pwcConv[$node], $pwcOld))) {
                             // Update pwc
+                            $this->db_connection->exec("PRAGMA foreign_keys = ON;"); // --- added
                             $sql = "UPDATE pwc SET pwc_timestamp = :ts, pwc_ab = :ab, pwc_intense = :it
                                     WHERE project_sc = :sc AND pwc_part = :part AND pwc_node = :nod;";
                             $query = $this->db_connection->prepare($sql);
@@ -859,11 +860,18 @@ class AhpDb
                         }
                         unset($pwcConv[$node]);
                     }
+                    // --- temporary trying to find a possible bug
+                    $rslt = $this->checkPwcCons($sc);
+                    if (!empty($rslt)) {
+                        // Something wrong
+                        trigger_error("submitGroupData pwc check after update $sc, updCnt $updCnt", E_USER_WARNING);
+                    }
                 } catch (PDOException $e) {
                     $this->err[] = $this->ahpDbTxt->err['dbUpd'] . $e;
                     return array();
                 }
             }
+            
             if (count($pwcNewNod)>0) {
                 // write new judgments
                 try {
@@ -888,18 +896,18 @@ class AhpDb
                             return array();
                         }
                     }
+                    // --- temporary trying to find a possible bug
+                    $rslt = $this->checkPwcCons($sc);
+                    if (!empty($rslt)) {
+                        // Something wrong
+                        trigger_error("submitGroupData pwc check after insert $sc, insCnt $insCnt", E_USER_WARNING);
+                    }
                 } catch (PDOException $e) {
                     $this->err[] = $this->ahpDbTxt->err['dbWrite'] . $e;
                     return array();
                 }
             } else { // no pwcs to insert
                 $insCnt = 0;
-            }
-            $rslt = $this->checkPwcCons($sc);
-            // --- temporary trying to find a possible bug
-            if (!empty($rslt)) {
-                // Something wrong
-                trigger_error("submitGroupData consistency check after insert $sc", E_USER_WARNING);
             }
             return array( 'upd' => $updCnt, 'ins' => $insCnt);
         }
@@ -1007,7 +1015,7 @@ class AhpDb
                         $rslt[$pCnt]['user'] =  $user;
                         $rslt[$pCnt]['sc'] = $sc;
                         $rslt[$pCnt]['nodes'] = $dn;
-                        $rslt[$pCnt++]['type'] = ($aflg ? "a" : "h");
+                        $rslt[$pCnt++]['type'] = ($aflg ? " (A)" : " (H)");
                     }
                 }
                 unset($ahpH);
