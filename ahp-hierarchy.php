@@ -44,8 +44,8 @@ $ahpHier = new $class();
 
 $loggedIn = $login->isUserLoggedIn();
 
-$version = substr('$LastChangedDate: 2022-02-28 13:59:16 +0800 (Mo, 28 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 177 $', "$");
+$version = substr('$LastChangedDate: 2022-03-19 13:33:03 +0800 (Sa, 19 Mär 2022) $', 18, 10);
+$rev = trim('$Rev: 181 $', "$");
 
 $defaultHierarchy = "AHP-Project:Crit-1,Crit-2,Crit-3;";
 
@@ -207,20 +207,25 @@ $leave = false;
         if (isset($_POST['AHP'])) {
             $node = key($_POST['AHP']);
             $crit = $ahpH->getTreeNode($ahpH->hierarchy, $node);
-            if (is_array($crit)) {
+            if (!is_array($crit)) {
+                // --- Something wrong
+                trigger_error(
+                    "ahp-hierarchy.php - user: " . ($loggedIn ? $_SESSION['user_name'] : "not logged in") 
+                    . " H: " . $text . " Nd: " . $node, 
+                    E_USER_NOTICE);
+                $limitError = "Sorry, something went wrong. Please re-submit hierarchy or restart browser";                
+            } else {
                 $n = count($crit);
-            } else {
-                trigger_error("H: " . $text . "Nd: " . $node, E_USER_NOTICE);
-            }
-            $_SESSION['hText'] = $text;
-            if ($n > CRITMAX) {
-                $limitError = "More than" . CRITMAX . "criteria, please modify hierarchy";
-            } else {
-                session_write_close();
-                // -- redirect to AHP calculation
-                $url = $ahp->getUrlCode($urlAhpC, $n, $node, $crit);
-                header("Location: $url");
-                die();
+                $_SESSION['hText'] = $text;
+                if ($n <= CRITMAX) {
+                    session_write_close();
+                    // -- redirect to AHP calculation
+                    $url = $ahp->getUrlCode($urlAhpC, $n, $node, $crit);
+                    header("Location: $url");
+                    die();
+                } else {
+                    $limitError = "More than" . CRITMAX . "criteria, please modify hierarchy";
+                }
             }
         }
 

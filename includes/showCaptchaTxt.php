@@ -8,7 +8,7 @@
 $version = substr('$LastChangedDate: 2022-02-06 09:58:40 +0800 (Sun, 06 Feb 2022) $', 18, 10);
 $rev = trim('$Rev: 106 $', "$");
 
-$cptUrl = 'http://api.textcaptcha.com/bpmsg.com.json';
+$cptUrl = 'http://api.textcaptcha.com/' . MY_DOMAIN . '.json';
 $cpt = json_decode(file_get_contents($cptUrl), true);
 
 // --- TODO: extend fallback challenge

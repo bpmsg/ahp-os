@@ -13,8 +13,8 @@
  *
  * With exportHierarchyTable($ds)csv output is generated for download.
  *
- * $LastChangedDate: 2022-02-16 20:13:04 +0800 (Mi, 16 Feb 2022) $
- * $Rev: 141 $
+ * $LastChangedDate: 2022-03-19 13:33:03 +0800 (Sa, 19 Mär 2022) $
+ * $Rev: 181 $
  *
  * @package AHP online
  * @author Klaus D. Goepel
@@ -377,7 +377,8 @@ class AhpHier
         foreach ($this->priorities as $k => $v) {
             $this->pLoc = array_merge($this->priorities[$k], $this->pLoc);
         }
-        reset($this->priorities);
+        if(!is_null($this->priorities))
+            reset($this->priorities);
         return 0;
     }
 
@@ -438,7 +439,8 @@ class AhpHier
                 $this->pGlb[$v] *= $this->priorities[$ka[$i-1]][$ka[$i]];
             }
         }
-        reset($this->priorities);
+        if(!is_null($this->priorities))
+            reset($this->priorities);
         // check value between 0 and 1
         $cnt = array_sum($this->pGlb);
         if (abs($cnt - 1.) > self::CALC_TOL) {
