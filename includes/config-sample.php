@@ -3,8 +3,8 @@
  *
  *  Copyright (C) 2022  <Klaus D. Goepel>
  * 
- *  $Rev: 179 $
- *  $LastChangedDate: 2022-03-02 11:18:51 +0800 (Mi, 02 Mär 2022) $
+ *  $Rev: 182 $
+ *  $LastChangedDate: 2022-03-20 09:27:18 +0800 (So, 20 Mär 2022) $
  * 
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -275,7 +275,7 @@
     
     // --- Switch to maintenance webpage when updating
     if (UPDATE && $_SERVER['REMOTE_ADDR'] != MY_IP) {
-        require 'maintenance.html';
+        require 'maintenance.php';
         exit;
     }
 
