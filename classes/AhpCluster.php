@@ -4,8 +4,8 @@
  * Contains functions for group decision cluster analysis
  * Extends AHPGroup class
  *
- * $LastChangedDate: 2022-04-02 17:51:07 +0800 (Sa, 02 Apr 2022) $
- * $Rev: 190 $
+ * $LastChangedDate: 2022-04-03 13:47:14 +0800 (So, 03 Apr 2022) $
+ * $Rev: 192 $
  *
  * @package AHP
  * @author Klaus D. Goepel
@@ -189,14 +189,27 @@ class AhpCluster extends AhpGroup
         return $thf;
     }
 
+    /*
+     *  callback comparison function for usort in cluster()
+     */
+    private function cmp($a, $b){
+        $asum = 0.;
+        $bsum = 0.;
+        $asum = array_sum($this->bMat[$a]);
+        $bsum = array_sum($this->bMat[$b]);
+        if($asum == $bsum)
+            return 0;
+        return ($asum < $bsum) ? 1 : -1;
+    }
+
 
     /*
      * Main Cluster Algorithm
      */
     public function cluster($thrsh = 0.8)
     {
-        $els = array();
-        $elu = array();
+        $els = array();                 // clustered samples
+        $elu = array();                 // unclustered samples
         $this->srt = array();
         $this->border = array();       
         $brd = array();
@@ -214,6 +227,9 @@ class AhpCluster extends AhpGroup
                 $this->srt = array_merge($this->srt, $elAll);
                 break;
             }
+            // --- sort $els cluster from high to low similarity
+            usort($els[$cl], array($this, 'cmp'));
+            
             $this->srt = array_merge($this->srt, $els[$cl]);
             $elAll = array_diff($elAll, $els[$cl]);
             // --- remove clustered elements from matrix
@@ -244,7 +260,7 @@ class AhpCluster extends AhpGroup
 
     /*
      * Find row in similarity matrix with highest number of elements
-     * having S* > threshold
+     * having S or S* > threshold
      */
     private function getRowCnt(&$cMat, $thrsh = 0.8)
     {

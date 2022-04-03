@@ -9,8 +9,8 @@ define('PCNT_MAX', 150);    // Max sample count to display matrix
 
 include 'includes/config.php';
 
-$version = substr('$LastChangedDate: 2022-04-02 17:51:07 +0800 (Sa, 02 Apr 2022) $', 18, 10);
-$rev = trim('$Rev: 190 $', "$");
+$version = substr('$LastChangedDate: 2022-04-03 14:16:14 +0800 (So, 03 Apr 2022) $', 18, 10);
+$rev = trim('$Rev: 193 $', "$");
 
 $err = array();
 $extensions = array("json", "JSON");
@@ -259,7 +259,7 @@ if ($login->isUserLoggedIn() === false) {
                 echo "<span class='res'>", sizeof($brnk['cluster'][$icl]),
                     "</span> Members:<br> <span class='var sm'>";
                 foreach ($brnk['cluster'][$icl] as $ip => $p) {
-                    echo " $p - ", $ahpCluster->samples[$ip+1], ",";
+                    echo " $p - ", $ahpCluster->samples[$p], ",";
                 }
                 echo "</span></li>";
             }

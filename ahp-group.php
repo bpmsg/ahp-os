@@ -39,8 +39,8 @@
     
     $loggedIn = $login->isUserLoggedIn();
 
-    $version = substr('$LastChangedDate: 2022-04-02 09:39:56 +0800 (Sa, 02 Apr 2022) $', 18, 10);
-    $rev = trim('$Rev: 189 $', "$");
+    $version = substr('$LastChangedDate: 2022-04-03 13:47:14 +0800 (So, 03 Apr 2022) $', 18, 10);
+    $rev = trim('$Rev: 192 $', "$");
 
     // --- START ---
     $errMsg = "";
@@ -449,7 +449,7 @@ if ($errMsg !="") {
         if ($pPwc > 1) {
             if ($ahpG->consens >= 0) {
                 printf($ahpGroupRes->res['consens1'], 100*$ahpG->consens);
-                echo $ahpG->consensusWording(100*$ahpG->consens1);
+                echo $ahpG->consensusWording(100*$ahpG->consens);
                 printf($ahpGroupRes->res['consens3'], 100*$ahpG->consens1);
             } else {
                 echo $ahpGroupRes->res['consens0'];
