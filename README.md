@@ -28,7 +28,8 @@ Php package (c) Klaus D Goepel, 2013-2022
   aggregation of alternatives,
 * Export of input and result data as comma separated value (CSV) files
   for further processing or presentation in a spreadsheet program,
-* Export/Import of AHP-Projects as json text files.
+* Export/Import of AHP-Projects and priorities as json text files.
+* Group consensus cluster analysis (still experimental)
 
 ### Languages
 Currently language files for English, German, Spanish and Portugese 
@@ -107,6 +108,7 @@ ahp-\
      |-- ahp.php (Main page)
      |-- ahp-calc.php (AHP priority calculator)
      |-- ahp-calc1.php
+     |-- ahp-cluster.php
      |-- ahp-hierarchy.php (AHP hierarchies)
      |-- ahp-hiercalc.php
      |-- ahp-hiergini.php
@@ -127,6 +129,7 @@ ahp-\
      |-- classes-\
      |           AhpCalc (Eigenvector of DM)
      |           AhpCalcIo (extends AhpCalc, html/csv i/o)
+     |           AhpCluster.php (group consensus cluster analysis)
      |           AhpColors (html coloring)
      |           AhpDb (database functions)
      |           AhpGroup (group result calculation)
@@ -228,3 +231,5 @@ The work is published under GNU GENERAL PUBLIC LICENSE Version 3.
 2022-01-28 - First version added to svn
 2022-02-17 - Import/Export function for projects added
              ToDo: translation, move menu to views
+2022-03-01 - Group consensus cluster analysis added
+

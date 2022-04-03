@@ -32,8 +32,8 @@ $sessionName= "";
 // todo: replace by $urlProjectImport from config file
 $urlPjImport= "ahp-project-import.php";
 
-$version = substr('$LastChangedDate: 2022-03-01 11:44:47 +0800 (Di, 01 Mär 2022) $', 18, 10);
-$rev = trim('$Rev: 178 $', "$");
+$version = substr('$LastChangedDate: 2022-03-31 19:45:01 +0800 (Do, 31 Mär 2022) $', 18, 10);
+$rev = trim('$Rev: 185 $', "$");
 
 $login = new Login();
 
@@ -85,6 +85,13 @@ if ($login->isUserLoggedIn() === true) {
         header('HTTP/1.0 200 ok');
         header("Location: " . $urlSessionAdmin);
     }
+    
+    // --- CLUSTER ANALYSIS ---
+    if (isset($_POST['CLUSTER'])) {
+        header('HTTP/1.0 200');
+        header("Location: " . 'ahp-cluster.php');            
+    }
+
 
     // --- OPEN ---
     if (isset($_POST['OPEN'])) {

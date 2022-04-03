@@ -43,6 +43,10 @@ class AhpES
                 <li><span style='cursor:help;' 
                 title='Participe en sesiones grupales de AHP para evaluar criterios o alternativas como miembro de un grupo' >
                 <a href='ahp-hiergini.php'>AHP Group Session</a></span></li>
+                <li><span style='cursor:help;' 
+                title='Analyze group consensus' >
+                <a href='ahp-cluster.php'>Group Consensus Cluster Analysis</a></span> 
+                <small>(experimental)</small></li>
                 </ol>",
   'intro13' =>  "<p style='text-align:justify;'>
                 En las opciones 2 y 3, puede exportar los resultados como archivos .csv (con los valores separados por comas) para

@@ -9,8 +9,8 @@
  * pairwise comparisons are stored. The AhpGroup class has all methods
  * to calculate and display the final results.
  *
- * $LastChangedDate: 2022-02-17 13:03:38 +0800 (Do, 17 Feb 2022) $
- * $Rev: 143 $
+ * $LastChangedDate: 2022-03-31 19:45:01 +0800 (Do, 31 Mär 2022) $
+ * $Rev: 185 $
  *
  * @author Klaus D. Goepel
  * @since 2014-01-06
@@ -332,11 +332,13 @@ class AhpGroup
                 } else { // no pwc for $name and $node
                     if ($dbE) {
                         $this->err[] = sprintf($this->ahpGroupTxt->err['dbE'], $name, $node);
+                        /* remove
                         trigger_error(
                             $this->sessionCode .
                             " No PWC for $name node: $node",
                             E_USER_WARNING
                         );
+                        */
                     }
                     $this->pwcEmpty[$node][] = $name;
                     $this->pwcCnt[$node] -= 1;
@@ -527,7 +529,7 @@ class AhpGroup
         $pbet = $pgam - $ppal;
         return $pbet;
     }
-
+    
 
     /*
      * Calculates AHP consensus indicator
@@ -542,14 +544,14 @@ class AhpGroup
     {
         // $m depends on m for adaptive, adaptive-bal scales!
         switch ($iScale) {
-        case 6: // adaptive
-        case 7: // adaptive-bal
-            $n = count($this->prio[0][$node])-1;
-            $m = $n * 9;
+            case 6: // adaptive
+            case 7: // adaptive-bal
+                $n = count($this->prio[0][$node])-1;
+                $m = $n * 9;
             break;
-        default:
+            default:
             $m = $this->ahpScale[$iScale][1] ;
-    }
+        }
         $pbet = $this->getShannonBeta($node);
         if (is_float($pbet)) {
             // calculate correction factor for AHP
@@ -587,6 +589,7 @@ class AhpGroup
      * Calculates global consensus for the hierarchy using
      * weighted average. Each level sums up to 1.
      * divided by number of levels
+     * TODO: replace by calculating consensus based on global priorities!
      */
     private function getGlbConsensus($iScale = 0)
     {
@@ -622,7 +625,7 @@ class AhpGroup
      * @param int $kPart number of participants ("samples")
      * @return float $cor correction based on gamma max and beta min entropy
      */
-    private function ahpShannonCor($nCrit, $mScale = 9, $kPart)
+    protected function ahpShannonCor($nCrit, $mScale = 9, $kPart)
     {
         $halmin = $mScale/($nCrit + $mScale - 1.);
         $halmin *= -log($halmin);
@@ -630,11 +633,11 @@ class AhpGroup
         $tmp *= -log($tmp);
         $halmin += ($nCrit - 1) * $tmp;
         // up to here same as function hamin($nCrit, $mScale = 9) below
-        $hgamax = ($nCrit - $kPart) * $tmp;
-        $tmp =  ($kPart + $mScale - 1.)/($nCrit + $mScale - 1.)/$kPart;
-        $tmp *= -log($tmp);
-        $hgamax = log($nCrit);
-        $cor = exp($hgamax-$halmin);
+        // $hgamax = ($nCrit - $kPart) * $tmp;
+        // $tmp =  ($kPart + $mScale - 1.)/($nCrit + $mScale - 1.)/$kPart;
+        // $tmp *= -log($tmp);
+        // $hgamax = log($nCrit);
+        $cor = $nCrit/exp($halmin);
         return $cor;
     }
 
@@ -929,8 +932,8 @@ class AhpGroup
         $rgbEndColor =  self::RGBEND;
         $pctBfmt = "<span class='res'>%02.1f%%</span>";
         $pCnt = count($this->pSel); // number of participants
-    $bCnt = count($this->prio[0][$node]); // number of branches
-    $branch = array_keys($this->prio[0][$node]);
+        $bCnt = count($this->prio[0][$node]); // number of branches
+        $branch = array_keys($this->prio[0][$node]);
         echo "\n<!-- AHP GROUP RESULT -->";
         $tbCnt = ceil($bCnt/self::MAXCOL);
         for ($tb = 0; $tb < $tbCnt; $tb++) {
@@ -1000,6 +1003,32 @@ class AhpGroup
             echo "</tbody>\n</table></div>\n";
         }
         return;
+    }
+
+
+    /* 
+     * JSON export of priorities by nodes and participants
+     */
+    public function getPrioJs($scale=0){
+        $names = array();
+        $pr = array();
+        $pjs  = array("Project" => $this->sessionCode);
+        $pjs += array( "Scale" => $this->ahpScale[$scale][0]);
+        // We need to reorganise the array: 1st key: Node, 2nd key: participant
+        $names = $this->pSel;
+        array_unshift($names, "Group");
+        $nodes = array_keys($this->prio[0]);
+        foreach($nodes as $node){
+            if(is_array($this->pwcN[$node])){ // only participants with pwc input
+                $prTmp = array();
+                foreach($names as $i=>$pName) {
+                    $prTmp += array($pName => $this->prio[$i][$node]);
+                }
+                $pr += array($node => $prTmp);
+            }
+        }
+        $pjs += array("Priorities" => $pr);
+        return json_encode( $pjs, JSON_PRETTY_PRINT);
     }
 
 

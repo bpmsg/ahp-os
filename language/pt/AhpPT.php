@@ -41,6 +41,10 @@ class AhpPT
                             <li><span style='cursor:help;' 
                             title='Participar de sessões de grupo AHP para avaliar critérios ou alternativas como membro de um grupo' >
                             <a href='ahp-hiergini.php'>Sessão do Grupo AHP</a></span></li>
+                            <li><span style='cursor:help;' 
+                            title='Analyze group consensus' >
+                            <a href='ahp-cluster.php'>Group Consensus Cluster Analysis</a></span> 
+                            <small>(experimental)</small></li>
                         </ol>",
     'intro13'    =>    "<p style='text-align:justify;'>
                             Para os programas 2 e 3, você pode exportar os resultados como arquivos csv (valores 

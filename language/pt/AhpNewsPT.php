@@ -17,13 +17,15 @@ class AhpNewsPT
 );
 
     public $info = array(
-    'news1'     =>    "<p>Nesta versão mais recente, adicionámos uma função de <span class='hl'>importação e exportação 
-                        para projetos</span>. 
-                        Pode usá-lo, por exemplo, para arquivar projetos mais antigos no seu computador, ou trocá-los
-                        com outros utilizadores da AHP-OS. Os projetos são exportados em formato json. As funções 
-                        de exportação/importação podem ser alcançadas a partir do menu da sessão ou do projeto.</p>
-                        <p>O código fonte AHP-OS está agora disponível como fonte aberta ao abrigo da GNU GENERAL PUBLIC 
-                        LICENSE Versão 3 a partir de O Github.</p>",
+    'news1'     =>    "<p>Esta versão mais recente do AHP-OS inclui uma funcionalidade para analisar decisões de grupo. 
+                        No âmbito da <span class='hl'>Análise do Cluster de Consenso do Grupo</span> na página principal 
+                        da AHP-OS, pode aceder à página AHP Consensus. O programa tenta agrupar um grupo de decisores 
+                        em subgrupos mais pequenos com um consenso mais elevado. Para cada par de decisores, 
+                        <span class='hl'>Shannon α e β entropia</span> é usada para calcular a semelhança de prioridades. 
+                        Esta análise pode ser útil se num grupo de quatro ou mais participantes o consenso geral do grupo 
+                        é baixo, mas você quer ver se o grupo pode ser dividido em subgrupos menores de participantes 
+                        com maior consenso.</p>
+                        <p>Mais informações <a href='https://bpmsg.com/group-consensus-cluster-analysis/' target='_blank'>aqui</a></p>",
     'news2'     =>    "<p>
                         Ainda estamos procurando voluntários para uma tradução de todos os resultados do AHP-OS para outras línguas. 
                         No momento, há suporte para Inglês, Alemão, Espanhol e Português. 

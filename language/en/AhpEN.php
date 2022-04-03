@@ -42,6 +42,10 @@ class AhpEN
                         <li><span style='cursor:help;' 
                         title='Participate in an AHP group sessions to evaluate criteria or alternatives as a member of a group' >
                         <a href='ahp-hiergini.php'>AHP Group Session</a></span></li>
+                        <li><span style='cursor:help;' 
+                        title='Analyze group consensus' >
+                        <a href='ahp-cluster.php'>Group Consensus Cluster Analysis</a></span> 
+                        <small>(experimental)</small></li>
                         </ol>",
 
     'intro13'    =>    "<p style='text-align:justify;'>

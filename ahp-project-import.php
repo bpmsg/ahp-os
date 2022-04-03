@@ -25,8 +25,8 @@ define('MAX_SIZE', 400000);
 
 include 'includes/config.php';
 
-$version = substr('$LastChangedDate: 2022-02-28 13:59:16 +0800 (Mo, 28 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 177 $', "$");
+$version = substr('$LastChangedDate: 2022-03-31 19:45:01 +0800 (Do, 31 Mär 2022) $', 18, 10);
+$rev = trim('$Rev: 185 $', "$");
 
 $login = new Login();
 
@@ -89,6 +89,7 @@ if (isset($_FILES['file'])) {
             if (json_last_error() == 0) {
                 // decoding successful
                 $msg = " decoded successfully.";
+                // TODO: check fields in project to verify correct format!
                 $text = $project['pj'][0]['project_hText'];
                 $ahpH = new AhpHier($text);
                 if (empty($ahpH->err)) {

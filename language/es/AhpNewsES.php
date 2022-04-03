@@ -18,14 +18,14 @@ class AhpNewsES
 );
 
     public $info = array(
-    'news1' =>  "<p>En esta última versión hemos añadido una función de <span class='hl'>importación y exportación para 
-                proyectos</span>. 
-                Puedes usarlo, por ejemplo, para archivar proyectos antiguos en su computadora o intercambiarlos 
-                con otros usuarios de AHP-OS. Los proyectos se exportan en formato json. Se puede acceder a las 
-                funciones de exportación/importación desde el menú de sesión o proyecto.</p>
-                <p></p>El código fuente de AHP-OS ahora está disponible como código abierto bajo GNU GENERAL PUBLIC 
-                LICENSE Versión 3 desde Github.</p>
-                </p>",
+    'news1' =>  "<p>Esta última versión de AHP-OS incluye una función para analizar las decisiones del grupo. 
+                En <span class='hl'>Análisis de clúster de consenso de grupo</span> en la página principal de AHP-OS, 
+                puede acceder a la página de consenso de AHP. El programa intenta agrupar a un grupo de tomadores de 
+                decisiones en subgrupos más pequeños con mayor consenso. Para cada par de tomadores de decisiones, 
+                <span class='hl'>Shannon α y β entropía</span> se utiliza para calcular la similitud de las prioridades. 
+                Este análisis puede ser útil si en un grupo de cuatro o más participantes el consenso general del grupo es bajo, 
+                pero desea ver si el grupo se puede dividir en subgrupos más pequeños de participantes con mayor consenso.</p>
+                <p>Más información <a href='https://bpmsg.com/group-consensus-cluster-analysis/' target='_blank'>aquí</a></p>",
     'news2' => "<p>Esta versión soporta varios idiomas para AHP-OS. Actualmente un Inglés, Alemán, Portugués y Español. 
                 Si está interesado en contribuir y traducir los archivos a su idioma,
                 por favor póngase en contacto conmigo.</p>",

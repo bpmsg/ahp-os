@@ -17,13 +17,14 @@ class AhpNewsDE
 );
 
     public $info = array(
-    'news1'         =>  "<p>Mit dieser version von AHP-OS ist es jetzt möglich, <span class='hl'>Projekte zu exportieren 
-                        und zu importieren</span>.
-                        Diese Funktionen sind über das Session und Projekt Menu ansprechbar. Sie können genutzt werden, 
-                        um, zum Beispiel, ältere Projekte zu archivieren, oder mit anderen Nutzern von AHP-OS auszutauschen.
-                        Die Speicherung erfolgt im JSON Format.</p>
-                        <p>Der gesamte AHP-OS Sourcecode steht jetzt als <i>open source</i> unter GNU GENERAL PUBLIC 
-                        LICENSE Version 3 über Github zum Download zur Verfügung.</p>",
+    'news1'         =>  "<p>Diese neueste Version von AHP-OS enthält eine Funktion zur Analyse von Gruppenentscheidungen. 
+                        Unter <span class='hl'>Group Consensus Cluster Analysis</span> auf der AHP-OS Hauptseite erreichst du 
+                        die AHP-Konsensus-Seite. Das Programm versucht, eine Gruppe von Entscheidungsträgern in kleinere Untergruppen 
+                        mit höherem Konsens zu gruppieren. Für jedes Entscheidungsträgerpaar wird über die Shannon α- und β-Entropie
+                        die Ähnlichkeit der Prioritäten berechnet. Diese Analyse kann hilfreich sein, wenn in einer Gruppe von vier 
+                        oder mehr Teilnehmern der Gesamtgruppenkonsens niedrig ist, aber du sehen möchtest, ob die Gruppe 
+                        in kleinere Untergruppen von Teilnehmern mit höherem Konsens unterteilt werden kann.</p>
+                        <p>Mehr Info <a href='https://bpmsg.com/group-consensus-cluster-analysis/' target='_blank'>hier</a></p>",
     'news2'         =>  "Wir sind immer noch auf der Suche nach Freiwilligen für die Übersetzung aller AHP-OS Text Ausgaben 
                         in andere Sprachen. Momentan werden Englisch, Deutsch, Spanisch und Portugisisch unterstützt. 
                         Wenn Du damit helfen möchtest, kontaktiere mich bitte über den Kontakt Link unten auf dieser Seite.",

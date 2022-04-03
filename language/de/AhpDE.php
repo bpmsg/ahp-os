@@ -43,6 +43,11 @@ class AhpDE
                         title='Partizipiere in AHP Gruppenentscheidungen in der Evaluierung von kriterien oder ALternativen als
                          Mitglied in der Gruppe' >
                         <a href='ahp-hiergini.php'>AHP Gruppen Session</a></span></li>
+                        <li><span style='cursor:help;' 
+                        title='Analyze group consensus' >
+                        <a href='ahp-cluster.php'>Gruppen Consensus Cluster Analyse</a></span> 
+                        <small>(experimental)</small></li>
+
                         </ol>",
     'intro13'       =>  "<p style='text-align:justify;'>
                         Für die Programme 2. und 3. können die Ergebnisdaten als csv Files (comma separated values) für

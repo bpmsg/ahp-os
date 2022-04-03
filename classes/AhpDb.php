@@ -2,8 +2,8 @@
 /**
 * Analytic Hierarchy Process database functions for ahp
 *
-* $LastChangedDate: 2022-03-19 12:13:56 +0800 (Sa, 19 Mär 2022) $
-* $Rev: 180 $
+* $LastChangedDate: 2022-03-31 19:45:01 +0800 (Do, 31 Mär 2022) $
+* $Rev: 185 $
 *
 * @author Klaus D. Goepel
 * @copyright 2014-2017 Klaus D. Goepel
@@ -1589,7 +1589,7 @@ class AhpDb
         echo "<tbody>";
         // each participant is one row
         for ($i=0; $i < $pCnt; $i++) {
-            echo "<tr ", ($i>9 ? "class='tgl'" : " "), "><td class='ca'>", $pCnt-$i, "</td>";
+            echo "<tr ", ($i>9 ? "class='tgl'" : " "), "><td class='ca'>", $i+1, "</td>";
             if (isset($_POST['ipart'])) {
                 echo "<td class='ca'><input class='onclk0' type='checkbox' name='ipart[$i]' value='1' ",
                     (isset($_POST['ipart'][$i]) ? " checked " : ""), "></td>";

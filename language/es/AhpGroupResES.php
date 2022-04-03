@@ -45,8 +45,9 @@ class AhpGroupResES
     /* Result output */
     public $res  = array(
   "cr"          =>  "Ratio de consistencia CR: <span class='res'>%02.1f%%</span>",
-  "consens1"    =>  "<p>Concenso grupal AHP: <span class='res'>%02.1f%%</span> ",
+  "consens1"    =>  "<p>Promedio concenso grupal AHP <i>S</i>*: <span class='res'>%02.1f%%</span> ",
   "consens2"    =>  " Criterio: <span class='res'>%s</span> - CR: <span class='res'>%g%%</span>",
+  "consens3"    =>  "<br>Pariente Homogeneidad <i>S</i>: <span class='res'>%02.1f%%</span>",
   "gCons"       =>  " - Concenso grupal AHP: <span class='res'>%02.1f%%</span> ",
   "consens4"    =>  "<p><small>Consenso en la evaluación de las alternativas WRT al criterio 
                     <span class='res'>%s</span>: <span class='res'>%02.1f%%</span>",
