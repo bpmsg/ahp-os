@@ -1,5 +1,26 @@
 <?php
-/* Consensus analysis */
+/* Consensus cluster analysis
+ * 
+ * Copyright (C) 2022  <Klaus D. Goepel>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * 
+ * TODO: all english texts to implement into language files
+ *       consensus menu move to views
+ *
+ */
+
 
 session_start();
 // max file size
@@ -9,8 +30,8 @@ define('PCNT_MAX', 150);    // Max sample count to display matrix
 
 include 'includes/config.php';
 
-$version = substr('$LastChangedDate: 2022-04-03 14:16:14 +0800 (So, 03 Apr 2022) $', 18, 10);
-$rev = trim('$Rev: 193 $', "$");
+$version = substr('$LastChangedDate: 2022-04-05 10:18:22 +0800 (Di, 05 Apr 2022) $', 18, 10);
+$rev = trim('$Rev: 196 $', "$");
 
 $err = array();
 $extensions = array("json", "JSON");
@@ -222,8 +243,8 @@ if ($login->isUserLoggedIn() === false) {
             </span>in the <i>AHP Group Consensus Menu</i> below.</p>";
 
         if(empty($err)){
-            $brnk = $ahpCluster->calcThreshold();
-            $ahpCluster->printThrhTable($brnk);
+            // $brnk = $ahpCluster->calcThreshold();
+            $ahpCluster->printThrhTable();
 
             // --- determine threshold
             if ($thrFl) {
@@ -232,7 +253,8 @@ if ($login->isUserLoggedIn() === false) {
             } else {
                 $threshold = $ahpCluster->findThreshold();
             }
-
+            
+            // --- Cluster
             $brnk = $ahpCluster->cluster($threshold);
             $clCnt = sizeof($brnk['cluster'])-1;
             // --- RESULT for selected node
@@ -253,13 +275,14 @@ if ($login->isUserLoggedIn() === false) {
             echo "<ul>";
             for ($icl = 0; $icl < $clCnt; $icl++) {
                 $gcons = $ahpCluster->calcGroupSim($brnk['cluster'][$icl]);
+                asort($brnk['cluster'][$icl]); // sort
                 echo "<li>Subgroup <span class='res'>",$icl+1, "</span>: ";
                 printf("%s = <span class='res'>%02.1f%%</span>", $term, 100 * $gcons);
                 printf(" (%s) among ", $ahpCluster->consensusWording(100. * $gcons));
                 echo "<span class='res'>", sizeof($brnk['cluster'][$icl]),
                     "</span> Members:<br> <span class='var sm'>";
                 foreach ($brnk['cluster'][$icl] as $ip => $p) {
-                    echo " $p - ", $ahpCluster->samples[$p], ",";
+                    echo "<span class='hl'>$p</span> - ", $ahpCluster->samples[$p], ", ";
                 }
                 echo "</span></li>";
             }

@@ -1,11 +1,11 @@
 <?php
 /*
- * Analytic Hierarchy Process i/o class
+ * Analytic Hierarchy Process Consensus cluster analysis
  * Contains functions for group decision cluster analysis
  * Extends AHPGroup class
  *
- * $LastChangedDate: 2022-04-03 13:47:14 +0800 (So, 03 Apr 2022) $
- * $Rev: 192 $
+ * $LastChangedDate: 2022-04-05 10:18:22 +0800 (Di, 05 Apr 2022) $
+ * $Rev: 196 $
  *
  * @package AHP
  * @author Klaus D. Goepel
@@ -27,13 +27,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
+ * Public Methods:
+ * 
+ * public function construct($priorities)
+ * public function betaMatrix($fct="S*",$iScale=0)
+ * public function findThreshold()                  
+ * public function cluster($thrsh = 0.8)
+ * public function calcGroupSim($cluster)
+ * public function printColorPalette()
+ * public function printThrhTable()
+ * public function printBetaMatrix()
+ * 
  */
 
 class AhpCluster extends AhpGroup
 {
-    private const CLMAX = 40;
-    private const THMIN = 0.675;
-    private const FULLMAT = 40;
+    private const CLMAX = 40;   // Max cluster iterations in cluster()
+    private const THMIN = 0.675;// Minimum threshold to search for clusters
+    private const FULLMAT = 40; // Max dimension of matrix fully displayed
 
     private $colors;
 
@@ -51,6 +62,14 @@ class AhpCluster extends AhpGroup
     private $border = array();  // Cluster borders
     private $bm;                // Minimum of similarity matrix in percent
 
+
+    /* Initiate class setting
+     * $this->sampleCnt (Number of samples = participants)
+     * $this->samples Name of samples (keys)
+     * $this->distr relative priority distribution normalized to one
+     * $this->catCnt Number of categories
+     * $this->cat Names of categories
+     */
     public function __construct($priorities)
     {
         parent::__construct($priorities['Project']);
@@ -68,7 +87,17 @@ class AhpCluster extends AhpGroup
     /*
      * Fill Similarity Matrix bMat
      * S* = AHP consensus
-     * S  = Homogeneity (for pTot)
+     * S  = Relative Homogeneity (for pTot)
+     * Setting
+     * $this->fct (S or S*)
+     * $this->iScale (int, AHP scale used)
+     * $this->bMat Similarity matrix unclustered
+     * $this->bm min value of matrix
+     * $this->csc Color palette
+     * 
+     * @uses $this->setColorPalette()
+     * @uses $this->calcBeta()
+     * @uses $this->calcSim()
      */
     public function betaMatrix($fct="S*",$iScale=0)
     {
@@ -91,11 +120,12 @@ class AhpCluster extends AhpGroup
 
     /*
      * Set color palette
+     * called by betaMatrix()
      */
     private function setColorPalette($bmin=0, $bmax=100){
         $bm = round($bmin * 100);
         $bm = ($bm > 99 ? 0 : $bm);
-        $bs = (int) ($bmax - $bm)/20;
+        $bs = (int) ($bmax - $bm)/19;
         $this->colors = new AhpColors();
         $this->csc = $this->colors->hueMap(
             range($bm, 100., $bs),
@@ -107,10 +137,11 @@ class AhpCluster extends AhpGroup
     
     
     /*
-     * Correction factor depends on scale
+     * Correction factor for AHP consensus depends on scale
+     * called from calcSim()
      */
     private function getMfromScale($iScale){
-        // $m depends on m and $n for adaptive, adaptive-bal scales!
+        // $m depends on m and n for adaptive, adaptive-bal scales!
         switch ($iScale) {
             case 6: // adaptive
             case 7: // adaptive-bal
@@ -125,6 +156,7 @@ class AhpCluster extends AhpGroup
 
     /*
      * Fill clustered Similarity Matrix clMat
+     * called from cluster()
      */
     private function clMatrix()
     {
@@ -141,7 +173,7 @@ class AhpCluster extends AhpGroup
 
     /*
      * Find threshold
-     * @para array $thf threshold, clustered and unclustered count
+     * @return optimal threshold
      */
     public function findThreshold()
     {
@@ -172,8 +204,9 @@ class AhpCluster extends AhpGroup
 
     /*
      * Calculate number of cluster and unclustered as function of threshold
+     * called from findThreshold() and printThrhTable()
      */
-    public function calcThreshold()
+    private function calcThreshold()
     {
         $thf = array();
         for ($th = 0.975; $th > self::THMIN; $th -= 0.025) {
@@ -190,7 +223,7 @@ class AhpCluster extends AhpGroup
     }
 
     /*
-     *  callback comparison function for usort in cluster()
+     *  Callback comparison function for usort in cluster()
      */
     private function cmp($a, $b){
         $asum = 0.;
@@ -289,7 +322,7 @@ class AhpCluster extends AhpGroup
      * Calculate AHP Consensus S* or Smilarity S based on Beta entropy
      * Similarity S has to be used for pTot instead of S*
      */
-    public function calcSim($beta, $pCnt)
+    private function calcSim($beta, $pCnt)
     {
         if ($this->fct == "S") {
             return (1./$beta - 1./$this->catCnt)/(1. - 1./$this->catCnt);
@@ -388,11 +421,11 @@ class AhpCluster extends AhpGroup
         echo "<thead><tr>";
         echo "<th></th>";
         foreach ($this->csc as $i=>$col){
-            echo "<th style='padding:2px;'>$i</th>";
+            echo "<th style='padding:2px;'>", $i+1, "</th>";
         }
         echo "</tr></thead>";
         echo "<tbody><tr>";
-        $stp = (100 - (int) $this->bm)/20;
+        $stp = (100 - (int) $this->bm)/19;
         echo "<th>Scale</th>";        
         foreach ($this->csc as $i=>$col){            
             $style = $this->csc[$i];
@@ -409,8 +442,9 @@ class AhpCluster extends AhpGroup
     /*
      * Display Threshold Table
      */
-    public function printThrhTable($thf)
+    public function printThrhTable()
     {
+        $thf = $this->calcThreshold();
         echo "\n<!-- Threshold Table -->";
         echo "\n<div class='ofl'><table id='thrhTbl'>";
         // --- Table Header
@@ -450,14 +484,14 @@ class AhpCluster extends AhpGroup
         echo "\n<div class='ofl'><table id='bMatTbl'>";
         // --- Header row for full matrix only
         if($this->sampleCnt < self::FULLMAT){
-            echo "<thead><tr><th style='padding:$pad;'>1</th>";
+            echo "<thead><tr><th style='padding:$pad;'>0</th>";
             for ($i=1; $i< $this->sampleCnt; $i++)
                 echo "<th style='padding:2px;'>",$this->srt[$i-1], "</th>";
             echo "</tr></thead>\n";
         }
         // --- Table body
         echo "<tbody>\n";
-        $stp = (100 - (int) $this->bm)/20;
+        $stp = (100 - (int) $this->bm)/19;
         // --- Rows
         for ($i=1; $i < $this->sampleCnt; $i++) {
             echo "<tr style='line-height:$lh;'>";
