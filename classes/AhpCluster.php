@@ -4,8 +4,8 @@
  * Contains functions for group decision cluster analysis
  * Extends AHPGroup class
  *
- * $LastChangedDate: 2022-04-05 10:18:22 +0800 (Di, 05 Apr 2022) $
- * $Rev: 196 $
+ * $LastChangedDate: 2022-04-05 15:51:03 +0800 (Di, 05 Apr 2022) $
+ * $Rev: 197 $
  *
  * @package AHP
  * @author Klaus D. Goepel
@@ -172,27 +172,45 @@ class AhpCluster extends AhpGroup
 
 
     /*
-     * Find threshold
-     * @return optimal threshold
+     * Find optimal threshold value:
+     * Minimum number of clusters and unclustered AND
+     * Consensus of first cluster > 67.5% AND
+     * At least two cluster and less than three unclustered
+     * 
+     * @return threshold value if successful or NULL if not
      */
     public function findThreshold()
     {
         $thf = $this->calcThreshold();
-        $sm = 999;
+        $sm =  999; // minimum sum of clustered + unclustered
+        $i1m = 999; // minimum index for 1 unclustered
         foreach ($thf['th'] as $i => $th) {
-            // Sum of clustered and unclustered samples
+            // --- Sum of clustered and unclustered samples
             $s = $thf['cl'][$i] + $thf['uc'][$i];
+            // --- One unclustered member
+            if( $thf['uc'][$i] == 1 
+              && $s < 4
+              && $thf['cs'][$i] > self::THMIN)
+                $i1m = min($i1m,$i);
+            // --- Two cluster or more and < 3 unclustered
             if ($s < $sm
               && $thf['cs'][$i] > self::THMIN
-              && $thf['cl'][$i] >1
-              && $thf['uc'][$i] < 5) {
+              && $thf['cl'][$i] > 1
+              && $thf['uc'][$i] < 3) {
                 $sm =  min($sm, $s);
                 $si = $i;
             }
         }
-        if ($thf['th'][$si] == null) {
-            echo "<p class='err'>Clustering is not possible</p>";
-        // --- no solution
+        // var_dump($i1m, $si);
+        if( ($si === NULL && $i1m >= 0)
+            || ($si >0 && $i1m < $si ))
+            $si = $i1m;        
+        // TODO: print output in calling program
+        if ($thf['th'][$si] == NULL) {
+            // --- no solution
+            echo 
+            "<p class='err'>Clustering is not possible, 
+            try manual threshold input.</p>";
         } else {
             echo "<p class='msg'>Consensus threshold for clustering is 
             determined as <span class='res'>",$thf['th'][$si];
@@ -250,33 +268,36 @@ class AhpCluster extends AhpGroup
         $clDone = $this->sampleCnt - 1; // w/o group result priorities
         $elAll = range(1, $clDone);     // to track unclustered elements
         $cl = 0;
-
-        do {    
-            $els[$cl] = $this->getRowCnt($cMat, $thrsh);
-            $clCnt = sizeof($els[$cl]);
-            if ($clCnt < 2) {
-                // --- unclustered
-                $elu = array_merge($elu, $elAll);
-                $this->srt = array_merge($this->srt, $elAll);
-                break;
-            }
-            // --- sort $els cluster from high to low similarity
-            usort($els[$cl], array($this, 'cmp'));
-            
-            $this->srt = array_merge($this->srt, $els[$cl]);
-            $elAll = array_diff($elAll, $els[$cl]);
-            // --- remove clustered elements from matrix
-            for ($i = 1; $i < $this->sampleCnt; $i++) {
-                for ($j = 1; $j < $this->sampleCnt; $j++) {
-                    if (in_array($j, $els[$cl]) && $i != $j) {
-                        $cMat[$i][$j] = 0.;
-                        $cMat[$j][$i] = 0.;
+        if($thrsh != NULL){ // Threshold NULL returned by findThreshold()
+            do {    
+                $els[$cl] = $this->getRowCnt($cMat, $thrsh);
+                $clCnt = sizeof($els[$cl]);
+                if ($clCnt < 2) {
+                    // --- unclustered
+                    $elu = array_merge($elu, $elAll);
+                    $this->srt = array_merge($this->srt, $elAll);
+                    break;
+                }
+                // --- sort $els cluster from high to low similarity
+                usort($els[$cl], array($this, 'cmp'));
+                
+                $this->srt = array_merge($this->srt, $els[$cl]);
+                $elAll = array_diff($elAll, $els[$cl]);
+                // --- remove clustered elements from matrix
+                for ($i = 1; $i < $this->sampleCnt; $i++) {
+                    for ($j = 1; $j < $this->sampleCnt; $j++) {
+                        if (in_array($j, $els[$cl]) && $i != $j) {
+                            $cMat[$i][$j] = 0.;
+                            $cMat[$j][$i] = 0.;
+                        }
                     }
                 }
-            }
-            $brd[] = end($els[$cl]);
-        } while ($cl++ < self::CLMAX);
-        
+                $brd[] = end($els[$cl]);
+            } while ($cl++ < self::CLMAX);
+        } else {
+            // unsorted/unclustered matrix
+            $this->srt = range(1,$this->sampleCnt,1);
+        }
         // --- fill cluster similarity matrix
         $this->clMatrix();
         $this->border[] = 0;

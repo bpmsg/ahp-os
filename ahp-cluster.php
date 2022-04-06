@@ -30,8 +30,8 @@ define('PCNT_MAX', 150);    // Max sample count to display matrix
 
 include 'includes/config.php';
 
-$version = substr('$LastChangedDate: 2022-04-05 10:18:22 +0800 (Di, 05 Apr 2022) $', 18, 10);
-$rev = trim('$Rev: 196 $', "$");
+$version = substr('$LastChangedDate: 2022-04-06 08:49:00 +0800 (Mi, 06 Apr 2022) $', 18, 10);
+$rev = trim('$Rev: 198 $', "$");
 
 $err = array();
 $extensions = array("json", "JSON");
@@ -176,8 +176,8 @@ $login = new Login();
 
     if (!$new && empty($err) || $thrFl) {
         // --- Do analysis for $priorities['Priorities'][$node]
-        $ahpCluster = new AhpCluster($priorities['Priorities'][$node]);
-        $fct = ($node == 'pTot' ? "S" : "S*");
+        $ahpCluster = new AhpCluster($priorities['Priorities'][$node]);        
+        $fct = ($node == 'pTot' && $ndCnt != 2) ? "S" : "S*";
         $ahpCluster->betaMatrix($fct,(int) $priorities['Scale'][0]);
         // --- Consensus whole group
         $gcons = $ahpCluster->calcGroupSim(range(1, $ahpCluster->sampleCnt - 1));
@@ -224,8 +224,9 @@ if ($login->isUserLoggedIn() === false) {
         echo "<h2>Input Data</h2>";
         echo "<p>Project session code: <span class='res'>",
             $priorities['Project'], "</span>
-            <br>Node: <span class='res'>$node</span>, 
-            <br>Number of categories: <span class='res'>$cCnt</span>,  
+            <br>Nodes: <span class='res'>$ndCnt</span>
+            <br>Selected Node: <span class='res'>$node</span>
+            <br>Number of categories: <span class='res'>$cCnt</span> 
             <br>Number of participants: <span class='res'>$pCnt</span>
             <br>Scale: <span class='res'>", $priorities['Scale'], "</span></p>";
         if ($gcons >0.7) {
@@ -243,7 +244,6 @@ if ($login->isUserLoggedIn() === false) {
             </span>in the <i>AHP Group Consensus Menu</i> below.</p>";
 
         if(empty($err)){
-            // $brnk = $ahpCluster->calcThreshold();
             $ahpCluster->printThrhTable();
 
             // --- determine threshold
@@ -254,13 +254,14 @@ if ($login->isUserLoggedIn() === false) {
                 $threshold = $ahpCluster->findThreshold();
             }
             
-            // --- Cluster
+            // --- Cluster Algorithm
             $brnk = $ahpCluster->cluster($threshold);
             $clCnt = sizeof($brnk['cluster'])-1;
+
             // --- RESULT for selected node
             echo "<h2>Result for Node \"$node\"</h2>";
             $term =
-             ($node == "pTot" ? "Rel. Homogeneity <i>S</i>" : "AHP Group Consensus <i>S</i>*");
+             ($node == "pTot" && $ndCnt >2) ? "Rel. Homogeneity <i>S</i>" : "AHP Group Consensus <i>S</i>*";
 
             printf(
                 "<p>%s without clustering = <span class='res'>%02.1f%%</span> (%s)</p>",
@@ -269,7 +270,9 @@ if ($login->isUserLoggedIn() === false) {
                 $ahpCluster->consensusWording(100. * $gcons)
             );
 
-            echo "<p class='msg'><span class='res'>$clCnt</span> Cluster(s):</p>";
+            echo "<p class='msg'><span class='res'>";
+            echo ($clCnt == -1) ? "0" : $clCnt;
+            echo "</span> Cluster(s):</p>";
 
             // --- clustered
             echo "<ul>";
@@ -284,7 +287,7 @@ if ($login->isUserLoggedIn() === false) {
                 foreach ($brnk['cluster'][$icl] as $ip => $p) {
                     echo "<span class='hl'>$p</span> - ", $ahpCluster->samples[$p], ", ";
                 }
-                echo "</span></li>";
+                echo "</span></li><p></p>";
             }
             echo "</ul>";
             // --- unclustered
@@ -293,7 +296,7 @@ if ($login->isUserLoggedIn() === false) {
                             sizeof($brnk['unclust']);
                 echo "</span> Member(s):<br> <span class='var sm'>";
                 foreach ($brnk['unclust'] as $ip => $p) {
-                    echo " $p - ", $ahpCluster->samples[$ip+1];
+                    echo "<span class='hl'>$p</span> - ", $ahpCluster->samples[$p]. " ";
                 }
                 echo "</span></p>";
             }
