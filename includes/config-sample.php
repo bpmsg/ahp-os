@@ -3,8 +3,8 @@
  *
  *  Copyright (C) 2022  <Klaus D. Goepel>
  * 
- *  $Rev: 182 $
- *  $LastChangedDate: 2022-03-20 09:27:18 +0800 (So, 20 Mär 2022) $
+ *  $Rev: 204 $
+ *  $LastChangedDate: 2022-04-25 07:19:19 +0800 (Mo, 25 Apr 2022) $
  * 
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -47,6 +47,8 @@
     ini_set('error_reporting', E_ALL & ~E_NOTICE);
     ini_set('display_errors', 1); // --- Set to 0 for productive env!
     ini_set('log_errors', 1);
+    // execution time extended from default 30 to 60 sec
+    ini_set('max_execution_time', 60);
 
 /*
  ***********************************************************************

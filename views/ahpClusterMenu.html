@@ -1,0 +1,40 @@
+<!--- html Menu TODO: into views --->
+<form action="<?php echo $myUrl; ?>" method="POST" enctype="multipart/form-data">
+    <input type='hidden' name='formToken' value='<?php echo $_SESSION['formToken']; ?>'>
+    <fieldset>
+        <legend>Group Consensus Menu</legend>
+        <div style='display:block;float:left;padding:2px;'>
+            <?php if($new): ?>
+                <input type='file' name='file' >
+            <?php else: ?>
+                Selected node:
+                <?php if (!empty($nodes)): $cnt = count($nodes); ?>
+                    &nbsp;&nbsp;
+                    <select name='node' maxlength='8'>
+                    <?php if ($node !=""): ?>
+                        <option value='<?php echo $node; ?>'><?php echo $node ?></option>
+                    <?php endif; ?>
+                    <?php foreach ($nodes as $val): ?>
+                        <?php if ($val != $node): ?>
+                            <option value='<?php echo $val; ?>'><?php echo $val; ?></option>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                    </select>
+                <?php endif; ?>
+            <?php endif; ?>
+            &nbsp;&nbsp;
+            <input type="submit" value="Analyze" name="submit">
+            <?php if (!$new): ?>                
+                &nbsp;&nbsp;<small>Threshold (optional): </small>
+                <input type='text' size='4' value=' ' name='thrh'>
+            <?php endif; ?>
+        </div><div style='float:right'>
+            <?php if (!$new): ?>
+                <input type='submit' name='CLEAR' value='Load new data' >
+            <?php endif; ?>
+            &nbsp;&nbsp;
+            <input type="submit" value="Done" name="CANCEL" >
+        </div>
+    </fieldset>
+    <div class='msg' style='clear:both;'></div>
+</form>

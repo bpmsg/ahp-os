@@ -62,6 +62,8 @@ tr:nth-child(odd) {background:#f2f7fc;}
 tr.even { background-color:#FAFAFA;}
 tr.odd  {background-color:#f2f7fc;}
 
+tr.nb td {border: 0}
+
 tr.header {
 	background-color:#FAFAFA;
 	color:#777;

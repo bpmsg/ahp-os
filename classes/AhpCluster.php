@@ -4,12 +4,13 @@
  * Contains functions for group decision cluster analysis
  * Extends AHPGroup class
  *
- * $LastChangedDate: 2022-04-05 15:51:03 +0800 (Di, 05 Apr 2022) $
- * $Rev: 197 $
+ * $LastChangedDate: 2022-04-30 12:26:26 +0800 (Sa, 30 Apr 2022) $
+ * $Rev: 207 $
  *
  * @package AHP
  * @author Klaus D. Goepel
  * @copyright 2022 Klaus D. Goepel
+ * @uses AhpGroup.php
  * @uses colorClass.php
  *
  * Copyright (C) 2022  <Klaus D. Goepel>
@@ -28,119 +29,55 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  * Public Methods:
- * 
- * public function construct($priorities)
- * public function betaMatrix($fct="S*",$iScale=0)
- * public function findThreshold()                  
+ *
+ * public function construct($priorities, $fct="S",$iScale=0)
+ * public function findThreshold()
  * public function cluster($thrsh = 0.8)
  * public function calcGroupSim($cluster)
  * public function printColorPalette()
  * public function printThrhTable()
  * public function printBetaMatrix()
- * 
+ *
+ *
+ * Method/Variable from AhpGroup:
+ * $ahpScale
+ * ahpShannonCor()
+ * consensusWording()
+ *
  */
 
 class AhpCluster extends AhpGroup
 {
-    private const CLMAX = 40;   // Max cluster iterations in cluster()
-    private const THMIN = 0.675;// Minimum threshold to search for clusters
-    private const FULLMAT = 40; // Max dimension of matrix fully displayed
+    private const CLMAX = 40;     // Max cluster iterations in cluster()
+    private const THMIN = 0.6875; // Minimum threshold to search for clusters
+    private const FULLMAT = 40;   // Max dimension of matrix fully displayed
 
     private $colors;
 
-    public  $sampleCnt;         // Number of samples
     private $catCnt;            // Number of categories
-    private $iScale;
-    public  $samples = array(); // Each sample is one participant
-    public  $cat = array();     // Categories
-    private $distr = array();   // Priority distribution
+    private $iScale;            // AHP scale integer (used for S*)
+    public $sampleCnt;          // Number of samples
+    public $samples = array();  // Each sample is one participant
+    public $cat = array();      // Categories
 
-    public  $bMat = array();    // Similarity Matrix
-    private $csc = array();     // color palette for similarity matrix
+    private $distr = array();   // Priority distributions normalized
+    private $bMat = array();    // Similarity Matrix
+    public $bmin;               // Minimum of bMat
+    public $bmax;               // Max of bMat
     private $clMat = array();   // Similarity Matrix after clustering
+
+    private $csc = array();     // color palette for similarity matrix
     private $srt = array();     // Indices for clustered similarity matrix
     private $border = array();  // Cluster borders
     private $bm;                // Minimum of similarity matrix in percent
 
 
-    /* Initiate class setting
-     * $this->sampleCnt (Number of samples = participants)
-     * $this->samples Name of samples (keys)
-     * $this->distr relative priority distribution normalized to one
-     * $this->catCnt Number of categories
-     * $this->cat Names of categories
-     */
-    public function __construct($priorities)
-    {
-        parent::__construct($priorities['Project']);
-        mb_internal_encoding('UTF-8');
-        $this->sampleCnt = sizeof($priorities);
-        $this->samples = array_keys($priorities);
-        foreach ($this->samples as $i => $sample) {
-            $this->distr[] = $priorities[$sample];
-        }
-        $this->catCnt = sizeof($this->distr[0]);
-        $this->cat = array_keys($this->distr[0]);
-    }
-
-
-    /*
-     * Fill Similarity Matrix bMat
-     * S* = AHP consensus
-     * S  = Relative Homogeneity (for pTot)
-     * Setting
-     * $this->fct (S or S*)
-     * $this->iScale (int, AHP scale used)
-     * $this->bMat Similarity matrix unclustered
-     * $this->bm min value of matrix
-     * $this->csc Color palette
-     * 
-     * @uses $this->setColorPalette()
-     * @uses $this->calcBeta()
-     * @uses $this->calcSim()
-     */
-    public function betaMatrix($fct="S*",$iScale=0)
-    {
-        $bmin = 1.;
-        $this->fct = $fct;
-        $this->iScale = $iScale;
-        for ($i = 1; $i < $this->sampleCnt; $i++) {
-            for ($j = $i; $j < $this->sampleCnt; $j++) {
-                $beta = $this->calcBeta($i, $j);
-                $sim = $this->calcSim($beta, 2);
-                $bmin = min($bmin, $sim);
-                $this->bMat[$i][$j] = $sim;
-                $this->bMat[$j][$i] = $sim;
-            }
-        }
-        $this->setColorPalette($bmin);
-        return $this->bMat;
-    }
-
-
-    /*
-     * Set color palette
-     * called by betaMatrix()
-     */
-    private function setColorPalette($bmin=0, $bmax=100){
-        $bm = round($bmin * 100);
-        $bm = ($bm > 99 ? 0 : $bm);
-        $bs = (int) ($bmax - $bm)/19;
-        $this->colors = new AhpColors();
-        $this->csc = $this->colors->hueMap(
-            range($bm, 100., $bs),
-            self::RGBBASE,
-            self::RGBEND
-        );
-        $this->bm = $bm;         
-    }
-    
-    
     /*
      * Correction factor for AHP consensus depends on scale
-     * called from calcSim()
+     * called from calcSim() - specific for AHP-OS
      */
-    private function getMfromScale($iScale){
+    private function getMfromScale(int $iScale)
+    {
         // $m depends on m and n for adaptive, adaptive-bal scales!
         switch ($iScale) {
             case 6: // adaptive
@@ -150,22 +87,149 @@ class AhpCluster extends AhpGroup
             default:
                 $m = $this->ahpScale[$iScale][1];
         }
-        return $m;     
+        return $m;
+    }
+
+
+    /* Initiate class
+     * $this->sampleCnt (Number of samples = participants)
+     * $this->samples Name of samples (participants)
+     * $this->distr relative priority distribution normalized to one
+     * $this->catCnt Number of categories
+     * $this->cat Names of categories
+     * $this->fct (S or S*) rel. homogeneity or AHP consensus
+     * $this->iScale (int, AHP scale used, 0 AHP 1-9)
+     *
+     * @para $priorities: array of samples (participants)
+     * with categories as key and priorities as values
+     * @para $fct: "S" for relative homogeneity, S* for AHP consensus
+     * @para int $iScale: 0 = AHP 1-9 only used for S*
+     */
+    public function __construct($priorities, $fct="S", $iScale=0)
+    {
+        //parent::__construct($priorities);
+        array_shift($priorities); // group result [0] disregarded
+        mb_internal_encoding('UTF-8');
+        $this->fct = $fct;
+        $this->iScale = $iScale;
+        $this->sampleCnt = sizeof($priorities);
+        $this->samples = array_keys($priorities);
+        foreach ($this->samples as $i => $sample) {
+            $ps = round(array_sum($priorities[$sample]), 5);
+            if ($ps != 1. && $ps != 0.) {
+                // normalize
+                foreach( $priorities[$sample] as $k => $c)
+                    $priorities[$sample][$k] /= $ps;
+            } 
+            $this->distr[] = $priorities[$sample];
+        }
+        $this->catCnt = sizeof($this->distr[0]);
+        $this->cat = array_keys($this->distr[0]);
+        $this->betaMatrix();
+        $this->srt = range(0, $this->sampleCnt-1, 1);
+        $this->clMatrix();
+    }
+
+
+    /*
+     * Fill Similarity Matrix bMat
+     * S* = AHP consensus
+     * S  = Relative Homogeneity (for pTot)
+     * Setting
+     * $this->bMat Similarity matrix unclustered
+     * $this->bm min value of matrix
+     * $this->csc Color palette
+     *
+     * @uses $this->setColorPalette()
+     * @uses $this->calcGroupSim()
+     * @uses $this->calcSim()
+     */
+    private function betaMatrix()
+    {
+        $this->bmin = 1.;
+        $this->bmax = 0.;
+        for ($i = 0; $i < $this->sampleCnt; $i++) {
+            for ($j = $i; $j < $this->sampleCnt; $j++) {
+                $res = $this->calcGroupSim(array($i,$j));
+                $sim = $res['sim'];
+                $this->bmin = min($this->bmin, $sim);
+                if($i <> $j)
+                    $this->bmax = max($this->bmax, $sim);
+                $this->bMat[$i][$j] = $sim;
+                $this->bMat[$j][$i] = $sim;
+            }
+        }
+        $this->setColorPalette();
+        return;
+    }
+
+
+    /*
+     * Aggregation function
+     * Calculate average and sd of categories for selected samples
+     */
+    public function calcAvgDistr(array $smpSel)
+    {
+        $n = sizeof($smpSel);
+        $sd = array();
+        $tmpx = array_fill(0, $this->catCnt, 0.);
+        $tmpx = array_combine($this->cat, $tmpx);
+        $tmpxx = $tmpx;
+        foreach ($smpSel as $smp) {
+            foreach ($this->distr[$smp] as $cat=>$val) {
+                $tmpx[$cat]  += $val;
+                $tmpxx[$cat] += $val * $val;
+            }
+        }
+        if ($n > 1) {
+            foreach ($tmpxx as $cat => $sxx) {
+                $sd[$cat] = sqrt(($sxx - $tmpx[$cat] * $tmpx[$cat]/$n)/($n-1));
+                $tmpx[$cat] /= $n;
+            }
+        }
+        return array('avg' => $tmpx,
+                     'sd'  => $sd);
+    }
+
+
+    /*
+     * Set color palette
+     * called by betaMatrix()
+     */
+    private function setColorPalette()
+    {
+        $bmn = floor(round(100 * $this->bmin, -1) - 5);
+        $this->bm = ($bmn > 90) ? 70 : $bmn;
+        $bs = (int) (100 - $this->bm)/19;
+        $this->colors = new AhpColors();
+        $this->csc = $this->colors->hueMap(
+            range($this->bm, 100, $bs),
+            self::RGBBASE,
+            self::RGBEND
+        );
+        /* Grayscale
+        $this->csc = array(
+            "#F8F8F8", "#F5F5F5","#F0F0F0","#E0E0E0","#E8E8E8", 
+            "#D8D8D8","#D3D3D3","#D0D0D0","#C8C8C8","#C0C0C0",
+            "#BEBEBE", "#B8B8B8","#B0B0B0","#A9A9A9","#A8A8A8", 
+            "#A0A0A0","#989898","#909090","#888888","#808080");
+            */
     }
 
 
     /*
      * Fill clustered Similarity Matrix clMat
+     * clMat is the clustered and sorted similarity matrix
      * called from cluster()
      */
     private function clMatrix()
     {
-        for ($i = 1; $i < $this->sampleCnt; $i++) {
+        for ($i = 0; $i < $this->sampleCnt; $i++) {
             for ($j = $i; $j < $this->sampleCnt; $j++) {
                 $this->clMat[$i][$j]
-                    = $this->bMat[$this->srt[$i-1]][$this->srt[$j-1]];
+                    = $this->bMat[$this->srt[$i]][$this->srt[$j]];
                 $this->clMat[$j][$i]
-                    = $this->bMat[$this->srt[$j-1]][$this->srt[$i-1]];
+                    = $this->bMat[$this->srt[$j]][$this->srt[$i]];
             }
         }
     }
@@ -176,7 +240,7 @@ class AhpCluster extends AhpGroup
      * Minimum number of clusters and unclustered AND
      * Consensus of first cluster > 67.5% AND
      * At least two cluster and less than three unclustered
-     * 
+     *
      * @return threshold value if successful or NULL if not
      */
     public function findThreshold()
@@ -184,31 +248,33 @@ class AhpCluster extends AhpGroup
         $thf = $this->calcThreshold();
         $sm =  999; // minimum sum of clustered + unclustered
         $i1m = 999; // minimum index for 1 unclustered
-        foreach ($thf['th'] as $i => $th) {
+        foreach ($thf['th'] as $i => $th) { 
             // --- Sum of clustered and unclustered samples
             $s = $thf['cl'][$i] + $thf['uc'][$i];
-            // --- One unclustered member
-            if( $thf['uc'][$i] == 1 
-              && $s < 4
-              && $thf['cs'][$i] > self::THMIN)
-                $i1m = min($i1m,$i);
-            // --- Two cluster or more and < 3 unclustered
-            if ($s < $sm
-              && $thf['cs'][$i] > self::THMIN
-              && $thf['cl'][$i] > 1
-              && $thf['uc'][$i] < 3) {
-                $sm =  min($sm, $s);
-                $si = $i;
+            // Only threshold with S > Smin
+            if ($thf['cs'][$i] > self::THMIN){
+                // --- One unclustered member and 1 cluster
+                if ($thf['uc'][$i] <= 2 && $thf['cl'][$i] == 1) {
+                    $i1m = min($i1m, $i);
+                }
+                // --- Two cluster or more and 1 or 2 unclustered
+                if ($s < $sm
+                  && $thf['cl'][$i] > 1
+                  && $thf['uc'][$i] < 3) {
+                    $sm =  min($sm, $s);
+                    $si = $i;
+                }
             }
         }
         // var_dump($i1m, $si);
-        if( ($si === NULL && $i1m >= 0)
-            || ($si >0 && $i1m < $si ))
-            $si = $i1m;        
+        if (($si === null && $i1m >= 0)
+            || ($si >0 && $i1m < $si)) {
+            $si = $i1m;
+        }
         // TODO: print output in calling program
-        if ($thf['th'][$si] == NULL) {
+        if ($thf['th'][$si] == null) {
             // --- no solution
-            echo 
+            echo
             "<p class='err'>Clustering is not possible, 
             try manual threshold input.</p>";
         } else {
@@ -229,7 +295,7 @@ class AhpCluster extends AhpGroup
         $thf = array();
         for ($th = 0.975; $th > self::THMIN; $th -= 0.025) {
             $brnk = $this->cluster($th);
-            $cons = $this->calcGroupSim($brnk['cluster'][0]);
+            $cons = $this->calcGroupSim($brnk['cluster'][0])['sim'];
             $clCnt = sizeof($brnk['cluster'])-1;
             $ucCnt = sizeof($brnk['unclust']);
             $thf['th'][] = $th;
@@ -240,36 +306,38 @@ class AhpCluster extends AhpGroup
         return $thf;
     }
 
+
     /*
      *  Callback comparison function for usort in cluster()
      */
-    private function cmp($a, $b){
-        $asum = 0.;
-        $bsum = 0.;
+    private function cmp($a, $b)
+    {
         $asum = array_sum($this->bMat[$a]);
         $bsum = array_sum($this->bMat[$b]);
-        if($asum == $bsum)
+        if ($asum == $bsum) {
             return 0;
+        }
         return ($asum < $bsum) ? 1 : -1;
     }
 
 
     /*
      * Main Cluster Algorithm
+     * @para thrsh can be NULL
      */
     public function cluster($thrsh = 0.8)
     {
         $els = array();                 // clustered samples
         $elu = array();                 // unclustered samples
-        $this->srt = array();
-        $this->border = array();       
-        $brd = array();
+        $this->srt = array();           // element indices of clustered matrix
+        $this->border = array();        // absolute border indices
+        $brd = array();                 // sample border indices
         $cMat = $this->bMat;            // temporary matrix for clustering
-        $clDone = $this->sampleCnt - 1; // w/o group result priorities
-        $elAll = range(1, $clDone);     // to track unclustered elements
-        $cl = 0;
-        if($thrsh != NULL){ // Threshold NULL returned by findThreshold()
-            do {    
+        $clDone = $this->sampleCnt;     // w/o group result priorities
+        $elAll = range(0, $clDone-1);   // to track unclustered elements
+        $cl = 0;                        // number of cluster
+        if ($thrsh != null) { // Threshold NULL returned by findThreshold()
+            do {
                 $els[$cl] = $this->getRowCnt($cMat, $thrsh);
                 $clCnt = sizeof($els[$cl]);
                 if ($clCnt < 2) {
@@ -280,12 +348,12 @@ class AhpCluster extends AhpGroup
                 }
                 // --- sort $els cluster from high to low similarity
                 usort($els[$cl], array($this, 'cmp'));
-                
+
                 $this->srt = array_merge($this->srt, $els[$cl]);
                 $elAll = array_diff($elAll, $els[$cl]);
                 // --- remove clustered elements from matrix
-                for ($i = 1; $i < $this->sampleCnt; $i++) {
-                    for ($j = 1; $j < $this->sampleCnt; $j++) {
+                for ($i = 0; $i < $this->sampleCnt; $i++) {
+                    for ($j = 0; $j < $this->sampleCnt; $j++) {
                         if (in_array($j, $els[$cl]) && $i != $j) {
                             $cMat[$i][$j] = 0.;
                             $cMat[$j][$i] = 0.;
@@ -296,13 +364,13 @@ class AhpCluster extends AhpGroup
             } while ($cl++ < self::CLMAX);
         } else {
             // unsorted/unclustered matrix
-            $this->srt = range(1,$this->sampleCnt,1);
+            $this->srt = range(0, $this->sampleCnt-1, 1);
         }
-        // --- fill cluster similarity matrix
+        // --- fill cluster similarity matrix and absolute border indices
         $this->clMatrix();
-        $this->border[] = 0;
-        foreach($brd as $pb){
-            $this->border[] = (1+array_search($pb,$this->srt));
+        $this->border[] = -1;
+        foreach ($brd as $pb) {
+            $this->border[] = (array_search($pb, $this->srt));
         }
         $this->border[] = $clDone;
         return array(
@@ -316,13 +384,14 @@ class AhpCluster extends AhpGroup
      * Find row in similarity matrix with highest number of elements
      * having S or S* > threshold
      */
-    private function getRowCnt(&$cMat, $thrsh = 0.8)
+    private function getRowCnt(array &$cMat, float $thrsh = 0.8)
     {
         $rEl = array();
         $rMax = 0;
         $iMax = 0;
-        for ($i = 1; $i < $this->sampleCnt; $i++) {
-            for ($j=1; $j < $this->sampleCnt; $j++) {
+        for ($i = 0; $i < $this->sampleCnt; $i++) {
+            $rEl[$i] = array();
+            for ($j = 0; $j < $this->sampleCnt; $j++) {
                 if ($cMat[$i][$j] > $thrsh) {
                     $rEl[$i][] = $j;
                 }
@@ -340,58 +409,21 @@ class AhpCluster extends AhpGroup
 
 
     /*
-     * Calculate AHP Consensus S* or Smilarity S based on Beta entropy
+     * Calculate AHP Consensus S* or Smilarity S or Horn index H
+     * based on Beta diversity
      * Similarity S has to be used for pTot instead of S*
      */
-    private function calcSim($beta, $pCnt)
+    private function calcSim(float $beta, int $p)
     {
         if ($this->fct == "S") {
             return (1./$beta - 1./$this->catCnt)/(1. - 1./$this->catCnt);
+        } elseif ($this->fct == "H") {
+            return log(2/$beta,2);
         } else {
-            // ToDO: reflect correct scale!
             $m = $this->getMfromScale($this->iScale);
-            $cor = $this->ahpShannonCor($this->catCnt, $m, $pCnt);
+            $cor = $this->ahpShannonCor($this->catCnt, $m, $p);
             return (1/$beta - 1/$cor)/(1 - 1/$cor);
         }
-    }
-
-
-    /*
-     * Calculate Beta Hill Number based on Alpha and Gamma Entropy
-     * for a pair $k, $l
-     */
-    private function calcBeta($k, $l)
-    {
-        return $this->calcGamma($k, $l)/$this->calcAlpha($k, $l);
-    }
-
-
-    /*
-     *  Calculate Alpha entropy for a pair $k, $l
-     */
-    private function calcAlpha($k, $l)
-    {
-        $pk = 0.;
-        $pl = 0.;
-        foreach ($this->distr[$k] as $i => $pcat) {
-            $pk -= $pcat * log($pcat);
-            $pl -= $this->distr[$l][$i] * log($this->distr[$l][$i]);
-        }
-        return exp(($pk + $pl)/2.);
-    }
-
-
-    /*
-     *  Calculate Gamma entropy for a pair $k, $l
-     */
-    private function calcGamma($k, $l)
-    {
-        $pm = 0.;
-        foreach ($this->distr[$k] as $i => $pcat) {
-            $pavg = ($pcat + $this->distr[$l][$i])/2.;
-            $pm -= $pavg * log($pavg);
-        }
-        return exp($pm);
     }
 
 
@@ -399,13 +431,21 @@ class AhpCluster extends AhpGroup
      * Calculates Shannon beta entropy as gamma - alpha entropy
      * for cluster. $cluster contains the indices of the samples
      * $this->distr[] is the priority distribution
-     * $ppal = alpha entropy, $pgam = gamma entropy, $pbet = beta entropy
+     * $ppal = alpha entropy,
+     * $pgam = gamma entropy,
+     * $pbet = beta entropy
+     *
      * @uses calcSim()
+     * @return alpha, beta, gamma entropy and
+     * rel. homogeneity or consensus
+     * null when cluster has 1 element only
      */
-    public function calcGroupSim($cluster)
+    public function calcGroupSim(array $cluster)
     {
-        $cCnt = $this->catCnt; // number of categories
-        $pCnt = sizeof($cluster);
+        $cCnt = $this->catCnt;      // number of categories
+        $pCnt = sizeof($cluster);   // number of samples
+        if($pCnt <2)
+            return null;
         $ppAvg = array_fill_keys($this->cat, 0.);
         $ppal = 0.;
         // loop through participants
@@ -414,41 +454,47 @@ class AhpCluster extends AhpGroup
             // loop through criteria
             foreach ($this->distr[$k] as $cat=>$p) {
                 $ps += $p;
-                $ppLn -= $p * log($p);
+                if ($p > 0.) {
+                    $ppLn -= $p * log($p);
+                }
                 $ppAvg[$cat] += $p;
             }
             $ppal += $ppLn;
         }
         $ppal /= $pCnt;
-
         $pgam = 0.;
         foreach ($this->cat as $c) {
             $pavg = $ppAvg[$c]/$pCnt;
-            $pgam -= $pavg * log($pavg);
+            if ($pavg > 0.) {
+                $pgam -= $pavg * log($pavg);
+            }
         }
-        $beta = exp($pgam - $ppal);
+        $pbet = $pgam - $ppal;
+        $beta = exp($pbet);
+        $gam = exp($pgam);
         $s = $this->calcSim($beta, $pCnt);
-        return $s;
+        return array('alpha'=> $ppal,
+                     'beta' => $pbet,
+                     'gamma'=> $pgam,
+                     'sim'  => $s
+                    );
     }
 
 
-    /* 
+    /*
      * Print color palette as scale
      */
-    public function printColorPalette(){
+    public function printColorPalette()
+    {
         $pctBfmt = "<span class='sm res'>%02.0f%%</span>";
         echo "\n<!-- Threshold Table -->";
-        echo "\n<div class='ofl'><table id='thrhTbl'>";    
-        echo "<thead><tr>";
-        echo "<th></th>";
-        foreach ($this->csc as $i=>$col){
-            echo "<th style='padding:2px;'>", $i+1, "</th>";
-        }
-        echo "</tr></thead>";
+        echo "\n<div class='ofl'>
+        <table id='thrhTbl' style='border-collapse:collapse;'>";
+        // -no header
         echo "<tbody><tr>";
         $stp = (100 - (int) $this->bm)/19;
-        echo "<th>Scale</th>";        
-        foreach ($this->csc as $i=>$col){            
+        echo "<th>Scale</th>";
+        foreach ($this->csc as $i=>$col) {
             $style = $this->csc[$i];
             echo "<td class='ca sm' 
                 style='padding:2px;background-color:$style;'>";
@@ -456,9 +502,10 @@ class AhpCluster extends AhpGroup
             echo "</td>";
         }
         echo "</tr></tbody>";
-        
-        echo "</tbody>\n</table></div>\n";    
+
+        echo "</tbody>\n</table></div>\n";
     }
+
 
     /*
      * Display Threshold Table
@@ -498,54 +545,60 @@ class AhpCluster extends AhpGroup
         $pctBfmt = "<span class='sm res'>%02.0f%%</span>";
         $lh =  ($this->sampleCnt > self::FULLMAT ? "2px" : "14px");
         $pad = ($this->sampleCnt > self::FULLMAT ? "4px" : "2px");
-        $bdl = "2px";   // --- Border thickness
+        $bdl = "2px";   // --- Cluster border thickness
         $ibd = 0;       // --- Index for border rows
         $jbd = 0;       // --- Index for border columns
         echo "\n<!-- Similarity Matrix -->";
-        echo "\n<div class='ofl'><table id='bMatTbl'>";
+        echo "\n<div class='ofl'>
+            <table id='bMatTbl' style='border-collapse:collapse;'>";
         // --- Header row for full matrix only
-        if($this->sampleCnt < self::FULLMAT){
+        if ($this->sampleCnt < self::FULLMAT) {
             echo "<thead><tr><th style='padding:$pad;'>0</th>";
-            for ($i=1; $i< $this->sampleCnt; $i++)
-                echo "<th style='padding:2px;'>",$this->srt[$i-1], "</th>";
+            for ($i=0; $i < $this->sampleCnt; $i++) {
+                echo "<th style='padding:2px;'>",$this->srt[$i]+1, "</th>";
+            }
             echo "</tr></thead>\n";
         }
         // --- Table body
         echo "<tbody>\n";
         $stp = (100 - (int) $this->bm)/19;
         // --- Rows
-        for ($i=1; $i < $this->sampleCnt; $i++) {
-            echo "<tr style='line-height:$lh;'>";
+        for ($i=0; $i < $this->sampleCnt; $i++) {
+            echo "<tr class='nb' style='line-height:$lh;'>";
             // --- Columns
-            if($this->sampleCnt < self::FULLMAT)
-                echo "<td class='sm' style='padding:$pad;'>",$this->srt[$i-1],"</td>";
-            
-            for ($j=1; $j < $this->sampleCnt; $j++) {
+            if ($this->sampleCnt < self::FULLMAT) {
+                echo "<td class='sm' style='padding:$pad;'>",$this->srt[$i]+1,"</td>";
+            }
+
+            for ($j=0; $j < $this->sampleCnt; $j++) {
                 $style ="";
                 // --- Cluster borders
-                if($i-1 == $this->border[$ibd] 
+                if ($i-1 == $this->border[$ibd]
                       && (($j <= $this->border[$ibd+1] && $j  > $this->border[$ibd])
-                      || ($j >  $this->border[$ibd-1] && $j <= $this->border[$ibd])))
+                      || ($j >  $this->border[$ibd-1] && $j <= $this->border[$ibd]))) {
                     $style = "border-top:solid $bdl green;";
-                elseif ($i >$this->border[$ibd] && $j>$this->border[$ibd])
-                    $ibd++;                    
-                if(($j-1 == $this->border[$jbd] && $i <= $this->border[$jbd+1] 
+                } elseif ($i >$this->border[$ibd] && $j>$this->border[$ibd]) {
+                    $ibd++;
+                }
+                if (($j-1 == $this->border[$jbd] && $i <= $this->border[$jbd+1]
                         && $i  > $this->border[$jbd])
-                        || ($j-1 == $this->border[$ibd] && $i >  $this->border[$ibd-1] 
-                        && $i  <= $this->border[$ibd]))
+                        || ($j-1 == $this->border[$ibd] && $i >  $this->border[$ibd-1]
+                        && $i  <= $this->border[$ibd])) {
                     $style .= "border-left:solid $bdl green;";
-                elseif ($i > $this->border[$jbd+1] && $j > $this->border[$jbd])
+                } elseif ($i > $this->border[$jbd+1] && $j > $this->border[$jbd]) {
                     $jbd++;
+                }
 
                 $val = 100 * $this->clMat[$i][$j];
                 $jv = (int) ($val - $this->bm) / $stp;
                 $style .= "background-color:" . $this->csc[$jv] . ";padding:$pad;";
-                echo "<td class='ca sm' style='$style'>";
+                echo "<td class='ca sm' style='$style;'>";
 
-                if($this->sampleCnt < self::FULLMAT)
+                if ($this->sampleCnt < self::FULLMAT) {
                     printf($pctBfmt, $val);
-                else
+                } else {
                     echo "<span class='sm res'> </span>";
+                }
                 echo "</td>";
             }
             echo "</tr>\n";

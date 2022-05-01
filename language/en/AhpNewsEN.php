@@ -17,6 +17,9 @@ class AhpNewsEN
 );
 
     public $info = array(
+    'news0'     =>  "<p>We have modified the program allowing participants to <span class='hl'>revise their 
+                    judgments</span> as long as the project status is \"open\". As a project owner you can 
+                    open/close projects using <i>Toggle Project Status</i> in the \"AHP Project Menu\".</p>",
     'news1'     =>  "<p>This latest version of AHP-OS includes a <i>new feature</i> to analyze group decisions. Under 
                     <span class='hl'>Group Consensus Cluster Analysis </span> on the AHP-OS main page you can open the 
                     AHP Consensus page. The program tries to cluster a group of decision makers into smaller subgroups 

@@ -28,8 +28,8 @@ $class = 'AhpNews' . $lang;
 $ahpOs = new $class();
 $_SESSION['lang'] = $lang;
 
-$version = substr('$LastChangedDate: 2022-02-19 18:06:35 +0800 (Sa, 19 Feb 2022) $', 18, 10);
-$rev = trim('$Rev: 159 $', "$");
+$version = substr('$LastChangedDate: 2022-04-30 12:26:26 +0800 (Sa, 30 Apr 2022) $', 18, 10);
+$rev = trim('$Rev: 207 $', "$");
 $rev = file_get_contents('VERSION');
 
 /*
@@ -49,6 +49,7 @@ if (defined('SYS_MSG')) {
     echo "<p class='hl'>" . SYS_MSG . "</p>";
 }
 printf($ahpOs->titles1['h3release'], "", $rev);
+echo $ahpOs->info['news0'];
 echo $ahpOs->info['news1'];
 echo $ahpOs->titles1['h3news2'];
 echo $ahpOs->info['news2'];

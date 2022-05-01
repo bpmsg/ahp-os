@@ -48,8 +48,8 @@ $loggedIn = $login->isUserLoggedIn();
 $msg ="";
 $subTitle = $ahpHiergini->titles['subTitle1'];
 
-$version = substr('$LastChangedDate: 2022-03-01 11:44:47 +0800 (Di, 01 Mär 2022) $', 18, 10);
-$rev = trim('$Rev: 178 $', "$");
+$version = substr('$LastChangedDate: 2022-04-28 14:14:51 +0800 (Do, 28 Apr 2022) $', 18, 10);
+$rev = trim('$Rev: 206 $', "$");
 
 /** get data (name, session code, description from POST parameter
 * called from ahp-hiergini page
@@ -220,11 +220,14 @@ $iniOwner = false;
         } else {
             $pCnt = count($ahpDb->getParticipants($sessCode));
             $action .= sprintf($ahpHiergini->info['act3'], $pCnt);
+            /* We now allow modification for participants, as long as
+             * the project is not closed.
             if (isset($_SESSION['pwcaDone']) && $_SESSION['pwcaDone']) {
                 $errMsg = sprintf($ahpHiergini->err['pwcCompl'], $user);
             } elseif (isset($_SESSION['pwcDone']) && !isset($_SESSION['alt'])) {
                 $errMsg = sprintf($ahpHiergini->err['pwcCompl'], $user);
             }
+            */
         }
     }
 

@@ -17,6 +17,10 @@ class AhpNewsPT
 );
 
     public $info = array(
+    'news0'     =>    "<p>Nós agora modificámos o programa para que <span class='hl'>os participantes possam alterar 
+                        as comparações de pares</span>, desde que o estado do projeto seja \"open\". 
+                        Como proprietário de um projeto, você pode verificar o 
+                        estado do projeto mudar no \"Menu de Administração do Projeto\" com <i>Alternar Status do Projeto</i>.</p>",
     'news1'     =>    "<p>Esta versão mais recente do AHP-OS inclui uma funcionalidade para analisar decisões de grupo. 
                         No âmbito da <span class='hl'>Análise do Cluster de Consenso do Grupo</span> na página principal 
                         da AHP-OS, pode aceder à página AHP Consensus. O programa tenta agrupar um grupo de decisores 

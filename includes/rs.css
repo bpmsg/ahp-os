@@ -79,6 +79,7 @@ tr.header {
 	background-color:#009DEC;
 	color:#f0f0f0;
 }
+tr.nb td {border: 0}
 textarea {
 	box-sizing: border-box;
 	background: #f9f9f9;

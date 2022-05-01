@@ -9,8 +9,8 @@
  * pairwise comparisons are stored. The AhpGroup class has all methods
  * to calculate and display the final results.
  *
- * $LastChangedDate: 2022-03-31 19:45:01 +0800 (Do, 31 Mär 2022) $
- * $Rev: 185 $
+ * $LastChangedDate: 2022-04-28 14:14:51 +0800 (Do, 28 Apr 2022) $
+ * $Rev: 206 $
  *
  * @author Klaus D. Goepel
  * @since 2014-01-06
@@ -51,7 +51,7 @@
  * private function getShannonBeta($node)
  * private function getConsensus($node, $iScale)
  * private function getGlbConsensus()
- * private function ahpShannonCor($nCrit, $mScale = 9, $kPart)
+ * private function ahpShannonCor($nCrit, $mScale = 9)
  * private function hamin($nCrit, $mScale = 9)
  * private function hgmax($nCrit, $mScale = 9, $kPart)
  * private function normd()
@@ -117,13 +117,13 @@ class AhpGroup
     {
         if ($c<=50) {
             return " <span class='res'>very low</span>";
-        } elseif ($c >50 && $c <= 65) {
+        } elseif ($c >50 && $c <= 62.5) {
             return " <span class='res'>low </span>";
-        } elseif ($c >65 && $c <= 75) {
+        } elseif ($c >62.5 && $c <= 75) {
             return " <span class='res'>moderate </span>";
-        } elseif ($c >75 && $c <= 85) {
+        } elseif ($c >75 && $c <= 87.5) {
             return " <span class='res'>high </span>";
-        } elseif ($c >85 && $c <= 100) {
+        } elseif ($c >87.5 && $c <= 100) {
             return " <span class='res'>very high</span>";
         } else {
             return "";
@@ -627,16 +627,20 @@ class AhpGroup
      */
     protected function ahpShannonCor($nCrit, $mScale = 9, $kPart)
     {
-        $halmin = $mScale/($nCrit + $mScale - 1.);
-        $halmin *= -log($halmin);
-        $tmp = 1./($nCrit + $mScale - 1.);
-        $tmp *= -log($tmp);
-        $halmin += ($nCrit - 1) * $tmp;
-        // up to here same as function hamin($nCrit, $mScale = 9) below
-        // $hgamax = ($nCrit - $kPart) * $tmp;
-        // $tmp =  ($kPart + $mScale - 1.)/($nCrit + $mScale - 1.)/$kPart;
-        // $tmp *= -log($tmp);
-        // $hgamax = log($nCrit);
+        $halmin = $this->hamin($nCrit, $mScale);
+        /* --- old version as published 2013
+        if($kPart < $nCrit){
+            $tmp = 1./($nCrit + $mScale - 1.);
+            $tmp *= -log($tmp);
+            $hgamax = ($nCrit - $kPart) * $tmp;
+            $tmp =  ($kPart + $mScale - 1.)/($nCrit + $mScale - 1. )/$kPart;
+            $tmp *= -log($tmp);
+            $hgamax += $kPart * $tmp;
+        } else {
+            $hgamax = log($nCrit);
+        }
+        $cor = exp($hgamax-$halmin);
+        */
         $cor = $nCrit/exp($halmin);
         return $cor;
     }
@@ -647,7 +651,7 @@ class AhpGroup
      * on the AHP scale  maximum value ($mScale) and the number
      * of criteria $nCrit
      */
-    private function hamin($nCrit, $mScale = 9)
+    protected function hamin($nCrit, $mScale = 9)
     {
         $halmin = $mScale/($nCrit + $mScale - 1.);
         $halmin *= -log($halmin);

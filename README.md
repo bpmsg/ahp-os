@@ -118,10 +118,11 @@ ahp-\
      |-- ahp-altcalc.php
      |-- ahp-g-input.php
      |-- ahp-group.php (AHP results)
-     |-- ahp-group-graph.php
+     |-- ahp-group-graph.php (diagram output)
      |-- ahp-project-import.php (Import project from json file)
      |-- ahp-session-admin.php (AHP project administration)
      |-- ahp-user-recover.php (Recover user from a backup database)
+     |-- cl-graph  (diagram output for ahp-cluster)
      |-- maintenance.php
      |-- index.php (entry page)
      |-- composer.json
