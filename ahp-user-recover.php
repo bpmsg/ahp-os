@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
- *  Revision: $Rev: 178 $
+ *  Revision: $Rev: 208 $
  *
  */
 
@@ -29,8 +29,8 @@ include 'includes/config.php';
  * TODO: error handling: check db connection to backup
  * database successful!
  */
-//$backupDb = 'ahp-os_bck';
-$backupDb = 'ahp_os.2022-01-30.db';
+$backupDb = 'ahp-os_bck';
+//$backupDb = 'ahp_os.2022-01-30.db';
 
 $storedUsers = array();  // users in active database
 $deletedUsers = array(); // users in backup db but not in active db
@@ -41,8 +41,8 @@ $ahpUser = array();
 $pageTitle ='AHP recover';
 $title="AHP-OS User Recovery";
 $subTitle = "User recovery from bachup database";
-$version = substr('$LastChangedDate: 2022-03-01 11:44:47 +0800 (Di, 01 Mär 2022) $', 18, 10);
-$rev = trim('$Rev: 178 $', "$");
+$version = substr('$LastChangedDate: 2022-07-15 10:59:47 +0800 (Fr, 15 Jul 2022) $', 18, 10);
+$rev = trim('$Rev: 208 $', "$");
 
 // productive database
 $login =  new Login();
@@ -64,6 +64,9 @@ if(substr($backupDb,-3) == ".db"){
         $errMsg = "<span class='err'>
             SQLITE backup database not found</span>";
     }
+} else {
+    $ahpAdmBck = new AhpAdmin($backupDb);
+    $ahpDbBck =  new AhpDb($backupDb);
 }
 
 /* --- MENU ACTIONS --- */
