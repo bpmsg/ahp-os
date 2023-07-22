@@ -9,8 +9,8 @@
  * pairwise comparisons are stored. The AhpGroup class has all methods
  * to calculate and display the final results.
  *
- * $LastChangedDate: 2022-04-28 14:14:51 +0800 (Do, 28 Apr 2022) $
- * $Rev: 206 $
+ * $LastChangedDate: 2022-07-19 13:31:32 +0800 (Di, 19 Jul 2022) $
+ * $Rev: 209 $
  *
  * @author Klaus D. Goepel
  * @since 2014-01-06
@@ -1054,6 +1054,10 @@ class AhpGroup
         }
         // --- first line tells Excel the character used as field seperator
         $textout[] = "sep=" . $fs . self::NEWL;
+        // --- One line of column numbers (0 ... 9) for easy automatic import in other php programs
+        for ($i=0; $i<14; $i++)
+            $textout[] = self::ENCL . $i . self::ENCL . $fs;
+        $textout[] = self::ENCL . "15" . self::ENCL . self::NEWL;        
         // --- Title
         $textout[] = self::ENCL . "Session Code" . self::ENCL .$fs . self::ENCL
                             . $this->sessionCode . self::ENCL . self::NEWL;

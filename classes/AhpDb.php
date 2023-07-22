@@ -2,8 +2,8 @@
 /**
 * Analytic Hierarchy Process database functions for ahp
 *
-* $LastChangedDate: 2022-03-31 19:45:01 +0800 (Do, 31 Mär 2022) $
-* $Rev: 185 $
+* $LastChangedDate: 2023-07-22 10:54:15 +0800 (Sa, 22 Jul 2023) $
+* $Rev: 210 $
 *
 * @author Klaus D. Goepel
 * @copyright 2014-2017 Klaus D. Goepel
@@ -1307,20 +1307,20 @@ class AhpDb
                     $queryInsert->bindValue(':project_datetime', $p['project_datetime'], PDO::PARAM_STR);
                     $queryInsert->bindValue(':project_author', $p['project_author'], PDO::PARAM_STR);
                     $insState &= $queryInsert->execute();
-                    if (!$insState)
+                    if (!$insState){
                         $err[] = DB_PROJECT_WRITE_ERROR;
-                    else 
-                        return true;
+                        return false;
+                    }
                 }
             }
         }
-        return false;
+        return true;
     }
 
     /* 
      * Restore alt from alt array
      */
-    public function restoreAlt($alt, $sc=""){
+    public function restoreAlt($alt, $sc=""){        
         try {
             $this->db_connection->exec("PRAGMA foreign_keys = ON;");
             $sql = "INSERT INTO alternatives ( project_sc, alt) 
@@ -1342,7 +1342,7 @@ class AhpDb
             $this->err[] = DB_PROJECT_WRITE_ERROR;
             return false;
         }
-        return true;    
+        return true;
     }
 
     /* 
@@ -1350,6 +1350,7 @@ class AhpDb
      */
     public function restorePwc($pwc, $sc=""){
         try {
+            $this->db_connection->exec("PRAGMA foreign_keys = ON;");
             $sql = "INSERT INTO pwc ( project_sc, pwc_part, pwc_timestamp, pwc_node, pwc_ab, pwc_intense ) 
                 VALUES ( :project_sc, :pwc_part, :pwc_timestamp, :pwc_node, :pwc_ab, :pwc_intense );";
             $queryIns = $this->db_connection->prepare($sql);
@@ -1672,7 +1673,10 @@ class AhpDb
         }
         // --- first line tells Excel the character used as field seperator
         $textout[] = "sep=" . $fs . self::NEWL;
-
+        // --- One line of column numbers (0 ... 9) for easy automatic import in other php programs
+        for ($i=0; $i<14; $i++)
+            $textout[] = self::ENCL . $i . self::ENCL . $fs;
+        $textout[] = self::ENCL . "15" . self::ENCL . self::NEWL;
         // --- Header (Project information)
         $textout[] = self::ENCL . "Session Code" . self::ENCL . $fs
                     . self::ENCL . $sc . self::ENCL . self::NEWL;

@@ -25,8 +25,8 @@ define('MAX_SIZE', 400000);
 
 include 'includes/config.php';
 
-$version = substr('$LastChangedDate: 2022-03-31 19:45:01 +0800 (Do, 31 Mär 2022) $', 18, 10);
-$rev = trim('$Rev: 185 $', "$");
+$version = substr('$LastChangedDate: 2022-07-19 13:31:32 +0800 (Di, 19 Jul 2022) $', 18, 10);
+$rev = trim('$Rev: 209 $', "$");
 
 $login = new Login();
 
@@ -120,17 +120,20 @@ if (isset($_FILES['file'])) {
                         $author
                     );
                     if (!$ins) {
+                        $err[] = "Write project data failed! ";
                         $err = array_merge($err, $ahpDb->err);
                     }
                     if (isset($project['alt'])) {
                         $ins = $ahpDb->restoreAlt($project['alt'], $newSc);
                         if (!$ins) {
+                            $err[] = "Write alternatives failed! ";
                             $err = array_merge($err, $ahpDb->err);
                         }
                     }
                     if (isset($project['pwc'])) {
                         $ins = $ahpDb->restorePwc($project['pwc'], $newSc);
                         if (!$ins) {
+                            $err = "Write pairwise comparisons failed! ";
                             $err = array_merge($err, $ahpDb->err);
                         }
                     }
