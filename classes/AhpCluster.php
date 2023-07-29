@@ -4,8 +4,8 @@
  * Contains functions for group decision cluster analysis
  * Extends AHPGroup class
  *
- * $LastChangedDate: 2022-04-30 12:26:26 +0800 (Sa, 30 Apr 2022) $
- * $Rev: 207 $
+ * $LastChangedDate: 2023-07-29 13:55:22 +0800 (Sa, 29 Jul 2023) $
+ * $Rev: 211 $
  *
  * @package AHP
  * @author Klaus D. Goepel
@@ -108,6 +108,7 @@ class AhpCluster extends AhpGroup
     public function __construct($priorities, $fct="S", $iScale=0)
     {
         //parent::__construct($priorities);
+        // Attention: loosing the array keys!
         array_shift($priorities); // group result [0] disregarded
         mb_internal_encoding('UTF-8');
         $this->fct = $fct;

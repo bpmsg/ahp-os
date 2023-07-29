@@ -31,8 +31,8 @@ define('SD', false);        // Testing purpose: display standard dev.
 
 include 'includes/config.php';
 
-$version = substr('$LastChangedDate: 2022-04-28 14:14:51 +0800 (Do, 28 Apr 2022) $', 18, 10);
-$rev = trim('$Rev: 206 $', "$");
+$version = substr('$LastChangedDate: 2023-07-29 13:55:22 +0800 (Sa, 29 Jul 2023) $', 18, 10);
+$rev = trim('$Rev: 211 $', "$");
 
 $err = array();
 $extensions = array("json", "JSON");
@@ -344,7 +344,8 @@ if ($login->isUserLoggedIn() === false) {
                 echo "(", round(100 * $clc/$pCnt), "%) participants :<br> <span class='var sm'>";
                 // --- Group members
                 foreach ($brnk['cluster'][$icl] as $ip => $p) {
-                    echo "<span class='hl'>", $p+1, "</span> - ", $ahpCluster->samples[$p], ", ";
+                // echo "<span class='hl'>", $p+1, "</span> - ", $ahpCluster->samples[$p], ", "; BUG! 
+                    echo "<span class='hl'>", $p+1, "</span> - ", $participants[$p+1], ", ";
                 }
                 echo "</span></li><p></p>";
                 // --- Cluster data Graphic
@@ -358,7 +359,7 @@ if ($login->isUserLoggedIn() === false) {
                 echo "</span> participant(s):<br> <span class='var sm'>";
                 foreach ($brnk['unclust'] as $ip => $p) {
                     echo "<span class='hl'>",$p+1, "</span> - ",
-                     $ahpCluster->samples[$p]. " ";
+                     $participants[$p+1]. " ";
                 }
                 echo "</span></p>";
                 // --- Unclustered data Graphic
