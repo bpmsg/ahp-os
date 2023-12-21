@@ -82,6 +82,7 @@ class WebHtml
            &nbsp;&nbsp;<a href='", $urlAct, "?lang=de'>Deutsch</a>
            &nbsp;&nbsp;<a href='", $urlAct, "?lang=es'>Español</a>
            &nbsp;&nbsp;<a href='", $urlAct, "?lang=pt'>Português</a>
+           &nbsp;&nbsp;<a href='", $urlAct, "?lang=tr'>Türkçe</a>
           </p>";
 
     }

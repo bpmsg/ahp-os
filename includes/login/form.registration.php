@@ -34,5 +34,5 @@
         }?>                
 
         <p class='sm'><input id='dpAgr' type=checkbox required ><?php echo $registration->rgTxt->info['conf']; ?></p>
-        <p class='ca'><input type="submit" name="register" value="Register" ></p>
+        <p class='ca'><input type="submit" name="register" value=<?php echo $registration->rgTxt->wrd['hlReg']; ?> ></p>
     </form>

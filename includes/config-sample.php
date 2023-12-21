@@ -3,8 +3,8 @@
  *
  *  Copyright (C) 2022  <Klaus D. Goepel>
  * 
- *  $Rev: 204 $
- *  $LastChangedDate: 2022-04-25 07:19:19 +0800 (Mo, 25 Apr 2022) $
+ *  $Rev: 212 $
+ *  $LastChangedDate: 2023-12-21 11:18:39 +0800 (Do, 21 Dez 2023) $
  * 
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -282,7 +282,7 @@
     }
 
     // --- sets the session variable for language
-    $languages = array('en','de','es','pt');
+    $languages = array('en','de','es','pt','tr');
     $lang = filter_input(INPUT_GET, 'lang', FILTER_SANITIZE_STRING);
         if ($lang != null && $lang != false && in_array($lang, $languages)) {
             $lang = strtoupper($lang);
