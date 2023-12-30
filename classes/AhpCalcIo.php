@@ -4,8 +4,8 @@
  * Contains functions for html and file i/o
  * Extends AHP base class
  *
- * $LastChangedDate: 2022-03-31 19:45:01 +0800 (Do, 31 Mär 2022) $
- * $Rev: 185 $
+ * $LastChangedDate: 2023-12-30 11:16:51 +0800 (Sa, 30 Dez 2023) $
+ * $Rev: 214 $
  *
  * Main methods:
  * set_txtbuf(), txtDownload($fname, $txt)
@@ -356,7 +356,7 @@ class AhpCalcIo extends AhpCalc
     public function getNewNames($act, $n, $title, $typ)
     {
         if (!defined("WLMAX")) {
-            define("WLMAX", 45);
+            define("WLMAX", 99);
         }
         $c = array_fill(0, $n, "");
         if ($typ == "") {

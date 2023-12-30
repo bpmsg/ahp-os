@@ -13,8 +13,8 @@
  *
  * With exportHierarchyTable($ds)csv output is generated for download.
  *
- * $LastChangedDate: 2022-03-19 13:33:03 +0800 (Sa, 19 Mär 2022) $
- * $Rev: 181 $
+ * $LastChangedDate: 2023-12-30 11:16:51 +0800 (Sa, 30 Dez 2023) $
+ * $Rev: 214 $
  *
  * @package AHP online
  * @author Klaus D. Goepel
@@ -106,7 +106,7 @@ class AhpHier
         $this->colors = new AhpColors();
 
         if (!defined('WLMAX')) {
-            define('WLMAX', 45);
+            define('WLMAX', 99);
         } // max word lenght for hierarchy elements
         if (!defined('ROUND')) {
             define('ROUND', 6);

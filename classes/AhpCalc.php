@@ -28,8 +28,8 @@
  * Final results are passed using get_evm() using an array with keys
  * 'evm_evec', 'evm_err', 'evm_eval' and 'cr'.
  *
- * $LastChangedDate: 2022-02-22 09:43:17 +0800 (Di, 22 Feb 2022) $
- * $Rev: 166 $
+ * $LastChangedDate: 2023-12-30 11:16:51 +0800 (Sa, 30 Dez 2023) $
+ * $Rev: 214 $
  *
  * Copyright (C) 2022  <Klaus D. Goepel>
  *
@@ -122,7 +122,7 @@ class AhpCalc
     public function setNamesFromGet(&$n, &$t, &$names, $nmax, $nameDef)
     {
         if (!defined("WLMAX")) {
-            define("WLMAX", 25);
+            define("WLMAX", 99);
         }
 
         $nOpt = array(
