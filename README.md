@@ -87,7 +87,7 @@ admninistrator.
 ## Limitations
 
 Defined in config.php:
-* WLMAX   = 99 word length of nodes and leafs
+* WLMAX   = 60 word length of nodes and leafs
 * CRITMAX = 20 max. number of criteria per node
 * ALTAHP  = 20 number of alternatives
 * SESSIONLMT = 50 number of projects per user

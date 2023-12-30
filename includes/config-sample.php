@@ -3,8 +3,8 @@
  *
  *  Copyright (C) 2022  <Klaus D. Goepel>
  * 
- *  $Rev: 214 $
- *  $LastChangedDate: 2023-12-30 11:16:51 +0800 (Sa, 30 Dez 2023) $
+ *  $Rev: 215 $
+ *  $LastChangedDate: 2023-12-30 12:04:25 +0800 (Sa, 30 Dez 2023) $
  * 
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -168,7 +168,7 @@
 
     // --- PROGRAM LIMITS - TXTMAX, NODE_CNT, LEAF_MAX, LEVEL_MAX 
     //     are defined in AhpHier.php
-    define('WLMAX', 99);      // word length of nodes and leafs in ahp
+    define('WLMAX', 60);      // word length of nodes and leafs in ahp, maximum is 64 
     define('ROUND', 6);       // rounding of results when exporting as csv
     define('CRITMAX', 20);    // max number of criteria
     define('ALTAHP', 16);     // max number of alternatives
