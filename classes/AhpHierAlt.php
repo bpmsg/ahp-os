@@ -3,8 +3,8 @@
 * Analytic Hierarchy Process Alternative Evaluation class 2014-01-06
 * extends ahpHierClass
 *
-* $LastChangedDate: 2022-02-16 11:53:54 +0800 (Mi, 16 Feb 2022) $
-* $Rev: 139 $
+* $LastChangedDate: 2023-12-30 15:01:15 +0800 (Sa, 30 Dez 2023) $
+* $Rev: 217 $
 *
 *
 * @package AHP-OS
@@ -209,10 +209,10 @@ class AhpHierAlt extends AhpHier
             if ($k == 0) {
                 $k = $r_sp[$l];
                 echo "<td class='hier sm' rowspan='", $k, "'>",
-                        $nda[$l++], "</td>";
+                        wordwrap($nda[$l++],30,'<br/>',true), "</td>";
             }
             $k--;
-            echo "<td class='hier var'>", $el, "</td>";
+            echo "<td class='hier var'>", wordwrap($el, 30,'<br/>',true), "</td>";
             echo "<td class='ca sm res'>", round(100 *$this->pGlb[$el], 1),
                     "% </td>";
             echo "\n<td class='ca'>";

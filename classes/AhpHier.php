@@ -13,8 +13,8 @@
  *
  * With exportHierarchyTable($ds)csv output is generated for download.
  *
- * $LastChangedDate: 2023-12-30 12:07:29 +0800 (Sa, 30 Dez 2023) $
- * $Rev: 216 $
+ * $LastChangedDate: 2023-12-30 15:01:15 +0800 (Sa, 30 Dez 2023) $
+ * $Rev: 217 $
  *
  * @package AHP online
  * @author Klaus D. Goepel
@@ -804,7 +804,7 @@ class AhpHier
                 $r_sp[$j] = $this->getNodeSpan($this->hierarchy, $k1[$j]);
                 if (!isset($k0[$j]) || $k1[$j] <> $k0[$j]) { // new node
                     $k0[$j] = $k1[$j];
-                    echo "<td class='hier' rowspan='", $r_sp[$j], "'>$k1[$j] "; // nodes
+                    echo "<td class='hier' rowspan='", $r_sp[$j], "'>", wordwrap($k1[$j],30,'<br/>',true), " "; // nodes
                     // --- show priorities for nodes
                     if ($pflag) {
                         $inpfmt = (($this->pwcDone && in_array($k1[$j], $this->pwcDone)
@@ -837,7 +837,7 @@ class AhpHier
             } // --- nodes
 
         // --- Leafs
-            echo "<td class='hier' colspan='", $c_sp, "'>$val ";
+            echo "<td class='hier' colspan='", $c_sp, "'>", wordwrap($val,30,'<br/>',true), " ";
             // --- show priorities for leafs
             if ($pflag) {
                 $inpfmt = (

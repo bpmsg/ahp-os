@@ -4,8 +4,8 @@
  * Contains functions for html and file i/o
  * Extends AHP base class
  *
- * $LastChangedDate: 2023-12-30 12:04:25 +0800 (Sa, 30 Dez 2023) $
- * $Rev: 215 $
+ * $LastChangedDate: 2023-12-30 15:01:15 +0800 (Sa, 30 Dez 2023) $
+ * $Rev: 217 $
  *
  * Main methods:
  * set_txtbuf(), txtDownload($fname, $txt)
@@ -216,7 +216,7 @@ class AhpCalcIo extends AhpCalc
             $style = $csc[$i];
             echo "<tr $rstyle>";
             echo "<td class='ca' >".($i+1)."</td>";
-            echo "<td class='ra var'>$names[$i]</td>";
+            echo "<td class='ra var'>", wordwrap($names[$i],30,'<br/>',true),"</td>";
             echo "<td class='ca' >";
             printf($pctBfmt, $vector[$i]*100);
             echo "</td><td class='ca' style='background-color:$style;' >"
